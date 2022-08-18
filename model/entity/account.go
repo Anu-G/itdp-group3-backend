@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type Account struct {
 	gorm.Model
-	User        User   `gorm:"foreignkey:Username" json:"user_name"`
+	Username    uint   `gorm:"not null" json:"user_name"`	
 	RoleID      int    `gorm:"not null" json:"role_id"`
 	DisplayName string `gorm:"size:36;not null" json:"display_name"`
 	PhoneNumber string `gorm:"size:15;unique;not null" json:"phone_number"`

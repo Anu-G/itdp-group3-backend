@@ -6,7 +6,7 @@ type Category struct {
 	gorm.Model
 	CategoryName string `gorm:"size:100;not null" json:"category_name"`
 
-	BusinessProfiles []BusinessProfile
+	BusinessProfiles []BusinessProfile `json:"business_profiles"`
 }
 
 func (c Category) TableName() string {

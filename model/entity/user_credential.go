@@ -13,7 +13,7 @@ type User struct {
 	Password string `gorm:"size:50;not null" json:"password"`
 	Email    string `gorm:"size:100;unique;not null" json:"email"`
 
-	Account Account `gorm:"foreignkey:Username;references:Username"`
+	Account Account `gorm:"foreignkey:Username;references:Username" json:"account"`
 }
 
 func (uc User) TableName() string {

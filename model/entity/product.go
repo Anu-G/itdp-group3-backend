@@ -9,7 +9,7 @@ type Product struct {
 	Price       float64 `gorm:"0;not null" json:"price"`
 	Description string  `gorm:"size:256;not null" json:"description"`
 
-	DetailMediaProducts []DetailMediaProduct
+	DetailMediaProducts []DetailMediaProduct `json:"detail_media_products"`
 }
 
 func (p Product) TableName() string {

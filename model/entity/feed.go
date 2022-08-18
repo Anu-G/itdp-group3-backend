@@ -7,8 +7,8 @@ type Feed struct {
 	AccountID   uint   `gorm:"not null" json:"account_id"`
 	CaptionPost string `gorm:"size:280;not null" json:"caption_post"`
 
-	DetailMediaFeeds []DetailMediaFeed
-	DetailComments   []DetailComment
+	DetailMediaFeeds []DetailMediaFeed `json:"detail_media_feeds"`
+	DetailComments   []DetailComment   `json:"detail_comments"`
 }
 
 func (f Feed) TableName() string {

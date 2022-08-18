@@ -14,6 +14,12 @@ type authUsecase struct {
 	repo repository.AuthRepository
 }
 
+func NewAuthUsecase(repo repository.AuthRepository) AuthUsecase {
+	return &authUsecase{
+		repo: repo,
+	}
+}
+
 func (au *authUsecase) CreateUser(uc *entity.UserCredential) error {
 	return au.repo.CreateUser(uc)
 }

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"itdp-group3-backend/auth"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/model/dto"
@@ -20,13 +21,15 @@ type AuthController struct {
 	api.BaseApi
 }
 
-func NewAuthController(router *gin.Engine, at auth.Token) *AuthController {
+func NewAuthController(router *gin.Engine, au usecase.AuthUsecase, uu usecase.UserUsecase, at auth.Token) *AuthController {
 	controller := AuthController{
 		router:    router,
+		authUC:    au,
+		userUC:    uu,
 		authToken: at,
 	}
 	routerAuth := controller.router.Group(("/auth"))
-	routerAuth.POST("/register")
+	routerAuth.POST("/register", controller.createUserAccount)
 	routerAuth.POST("/login/:business", controller.loginUser)
 
 	return &controller
@@ -34,18 +37,17 @@ func NewAuthController(router *gin.Engine, at auth.Token) *AuthController {
 
 func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 	var (
-		customerReq     dto.RegisterUserRequest
-		createdUserData entity.User
-		createdUser     entity.UserCredential
+		userReq     dto.RegisterUserRequest
+		createdUser entity.UserCredential
 	)
-	err := ac.ParseBodyRequest(ctx, &customerReq)
-	if customerReq.Username == "" {
+	err := ac.ParseBodyRequest(ctx, &userReq)
+	if userReq.Username == "" {
 		ac.FailedResponse(ctx, utils.RequiredError("username"))
 		return
-	} else if customerReq.Email == "" {
+	} else if userReq.Email == "" {
 		ac.FailedResponse(ctx, utils.RequiredError("password"))
 		return
-	} else if customerReq.Password == "" {
+	} else if userReq.Password == "" {
 		ac.FailedResponse(ctx, utils.RequiredError("customer name"))
 		return
 	} else if err != nil {
@@ -53,16 +55,17 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 		return
 	}
 
-	createdUserData.Username = customerReq.Username
-	if err = ac.userUC.CreateUser(&createdUserData); err != nil {
+	fmt.Println("controller", userReq)
+	createdUser.Username = userReq.Username
+	createdUser.Password = userReq.Password
+	createdUser.Email = userReq.Email
+	createdUser.Role = 2
+
+	if err = ac.userUC.CreateUser(&createdUser); err != nil {
 		ac.FailedResponse(ctx, err)
 		return
 	}
 
-	createdUser.Username = customerReq.Username
-	createdUser.Password = customerReq.Password
-	createdUser.Email = customerReq.Email
-	createdUser.ID = createdUserData.ID
 	createdUser.Encode()
 	if err = ac.authUC.CreateUser(&createdUser); err != nil {
 		ac.FailedResponse(ctx, err)

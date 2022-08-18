@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(u entity.User) error
+	Create(u entity.UserCredential) error
 }
 
 type userRepository struct {
@@ -20,6 +20,6 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-func (ur *userRepository) Create(u entity.User) error {
+func (ur *userRepository) Create(u entity.UserCredential) error {
 	return ur.db.Create(u).Error
 }

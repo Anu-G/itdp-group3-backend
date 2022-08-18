@@ -1,6 +1,9 @@
 package tools
 
-import "itdp-group3-backend/manager"
+import (
+	"itdp-group3-backend/manager"
+	"itdp-group3-backend/model/entity"
+)
 
 // RunMigrate : tool for db migration
 func RunMigrate(dbc manager.InfraManagerInterface) error {
@@ -10,7 +13,8 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 	defer sqlDB.Close()
 
 	err = dbc.DBCon().AutoMigrate(
-	// put entity models here
+		// put entity models here
+		&entity.UserCredential{},
 	)
 	if err != nil {
 		panic(err)

@@ -1,7 +1,9 @@
 package delivery
 
 import (
+	"itdp-group3-backend/auth"
 	"itdp-group3-backend/config"
+	"itdp-group3-backend/controller"
 	"itdp-group3-backend/manager"
 	"itdp-group3-backend/tools"
 	"log"
@@ -14,6 +16,7 @@ type appServer struct {
 	engine      *gin.Engine
 	host        string
 	startServer bool
+	Auth        auth.Token
 
 	UseCaseManager manager.UseCaseManagerInterface
 }
@@ -24,12 +27,14 @@ func Server() *appServer {
 
 	appCfg := config.NewConfig()
 	dbCon := manager.NewInfraSetup(appCfg)
+	auth := auth.NewTokenService(appCfg.TokenConfig)
 	repoManager := manager.NewRepo(dbCon)
 	usecaseManager := manager.NewUseCase(repoManager)
 
 	cfgServer := &appServer{
 		engine:         r,
 		host:           appCfg.APIConfig.APIUrl,
+		Auth:           auth,
 		UseCaseManager: usecaseManager,
 	}
 
@@ -63,6 +68,7 @@ func Server() *appServer {
 
 // initControllers : prepare the controller API
 func (a *appServer) initControllers() {
+	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
 }
 
 // Run : run the server

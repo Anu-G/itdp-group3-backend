@@ -17,6 +17,7 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 		&entity.Account{},
 		&entity.Category{},
 		&entity.BusinessProfile{},
+		&entity.NonBusinessProfile{},
 		&entity.Product{},
 		&entity.Feed{},
 		&entity.BusinessFAQ{},

@@ -10,7 +10,6 @@ type BusinessProfile struct {
 	ProfileImage  string `gorm:"size:250" json:"profile_image"`
 	ProfileBio    string `gorm:"size:150" json:"profile_bio"`
 	GmapsLink     string `gorm:"size:250" json:"gmaps_link"`
-	BusinessPhone string `gorm:"size:15" json:"business_phone"`
 
 	BusinessHours []BusinessHour `json:"business_hours"`
 	BusinessLinks []BusinessLink `json:"business_links"`

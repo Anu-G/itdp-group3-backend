@@ -5,6 +5,7 @@ import "itdp-group3-backend/usecase"
 type UseCaseManagerInterface interface {
 	UserUsecase() usecase.UserUsecase
 	AuthUsecase() usecase.AuthUsecase
+	AccountUsecase() usecase.AccountUsecase
 }
 
 type useCaseManager struct {
@@ -24,4 +25,8 @@ func (uc *useCaseManager) UserUsecase() usecase.UserUsecase {
 
 func (uc *useCaseManager) AuthUsecase() usecase.AuthUsecase {
 	return usecase.NewAuthUsecase(uc.repo.AuthRepo())
+}
+
+func (uc *useCaseManager) AccountUsecase() usecase.AccountUsecase {
+	return usecase.NewAccountUsecse(uc.repo.AccountRepo())
 }

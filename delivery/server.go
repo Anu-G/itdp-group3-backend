@@ -18,7 +18,8 @@ type appServer struct {
 	startServer bool
 	Auth        auth.Token
 
-	UseCaseManager manager.UseCaseManagerInterface
+	UseCaseManager    manager.UseCaseManagerInterface
+	MiddlewareManager manager.MiddlewareManager
 }
 
 // Server : prepare config and read arguments
@@ -30,12 +31,14 @@ func Server() *appServer {
 	auth := auth.NewTokenService(appCfg.TokenConfig)
 	repoManager := manager.NewRepo(dbCon)
 	usecaseManager := manager.NewUseCase(repoManager)
+	middlewareManager := manager.NewMiddlewareManager(auth)
 
 	cfgServer := &appServer{
-		engine:         r,
-		host:           appCfg.APIConfig.APIUrl,
-		Auth:           auth,
-		UseCaseManager: usecaseManager,
+		engine:            r,
+		host:              appCfg.APIConfig.APIUrl,
+		Auth:              auth,
+		UseCaseManager:    usecaseManager,
+		MiddlewareManager: middlewareManager,
 	}
 
 	args := os.Args[1:]
@@ -68,6 +71,7 @@ func Server() *appServer {
 
 // initControllers : prepare the controller API
 func (a *appServer) initControllers() {
+	controller.NewAccountController(a.engine, a.UseCaseManager.AccountUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
 }
 

@@ -7,8 +7,8 @@ import (
 )
 
 type AuthRepository interface {
-	CreateUser(uc *entity.UserCredential) error
-	FindUser(uc *entity.UserCredential) (entity.UserCredential, error)
+	CreateUser(uc *entity.User) error
+	FindUser(uc *entity.User) error
 }
 
 type authRepository struct {
@@ -21,12 +21,12 @@ func NewAuthRepo(db *gorm.DB) AuthRepository {
 	}
 }
 
-func (ar *authRepository) CreateUser(uc *entity.UserCredential) error {
-	return ar.db.Create(&uc).Error
+func (ar *authRepository) CreateUser(u *entity.User) error {
+	return ar.db.Create(&u).Error
 }
 
-func (ar *authRepository) FindUser(uc *entity.UserCredential) (entity.UserCredential, error) {
-	uc.Encode()
-	res := ar.db.First(&uc, "user_name = ?", uc.Username)
-	return *uc, res.Error
+func (ar *authRepository) FindUser(u *entity.User) error {
+	u.Encode()
+	res := ar.db.Preload("Account").First(&u, "username = ?", u.Username)
+	return res.Error
 }

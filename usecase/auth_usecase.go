@@ -6,8 +6,8 @@ import (
 )
 
 type AuthUsecase interface {
-	CreateUser(uc *entity.UserCredential) error
-	FindUser(uc *entity.UserCredential) (entity.UserCredential, error)
+	CreateUser(uc *entity.User) error
+	FindUser(uc *entity.User) error
 }
 
 type authUsecase struct {
@@ -20,10 +20,10 @@ func NewAuthUsecase(repo repository.AuthRepository) AuthUsecase {
 	}
 }
 
-func (au *authUsecase) CreateUser(uc *entity.UserCredential) error {
+func (au *authUsecase) CreateUser(uc *entity.User) error {
 	return au.repo.CreateUser(uc)
 }
 
-func (au *authUsecase) FindUser(uc *entity.UserCredential) (entity.UserCredential, error) {
+func (au *authUsecase) FindUser(uc *entity.User) error {
 	return au.repo.FindUser(uc)
 }

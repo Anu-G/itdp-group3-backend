@@ -6,7 +6,7 @@ import (
 )
 
 type UserUsecase interface {
-	CreateUser(u *entity.UserCredential) error
+	CreateUser(u *entity.User) error
 }
 
 type userUsecase struct {
@@ -19,6 +19,6 @@ func NewUserUsecase(ur repository.UserRepository) UserUsecase {
 	}
 }
 
-func (uc userUsecase) CreateUser(u *entity.UserCredential) error {
-	return uc.repo.Create(*u)
+func (uc userUsecase) CreateUser(u *entity.User) error {
+	return uc.repo.Create(u)
 }

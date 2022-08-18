@@ -30,7 +30,7 @@ func NewAuthController(router *gin.Engine, au usecase.AuthUsecase, uu usecase.Us
 	}
 	routerAuth := controller.router.Group(("/auth"))
 	routerAuth.POST("/register", controller.createUserAccount)
-	routerAuth.POST("/login/:business", controller.loginUser)
+	routerAuth.POST("/login", controller.loginUser)
 
 	return &controller
 }
@@ -38,7 +38,7 @@ func NewAuthController(router *gin.Engine, au usecase.AuthUsecase, uu usecase.Us
 func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 	var (
 		userReq     dto.RegisterUserRequest
-		createdUser entity.UserCredential
+		createdUser entity.User
 	)
 	err := ac.ParseBodyRequest(ctx, &userReq)
 	if userReq.Username == "" {
@@ -55,17 +55,11 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("controller", userReq)
 	createdUser.Username = userReq.Username
 	createdUser.Password = userReq.Password
 	createdUser.Email = userReq.Email
-	createdUser.Role = 2
 
-	if err = ac.userUC.CreateUser(&createdUser); err != nil {
-		ac.FailedResponse(ctx, err)
-		return
-	}
-
+	fmt.Println("controller", userReq)
 	createdUser.Encode()
 	if err = ac.authUC.CreateUser(&createdUser); err != nil {
 		ac.FailedResponse(ctx, err)
@@ -76,16 +70,12 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 }
 
 func (ac *AuthController) loginUser(ctx *gin.Context) {
-	readRole, err := utils.StringToInt64(ctx.Param("business"))
-	if err != nil {
-		ac.FailedResponse(ctx, err)
-	}
 	var (
-		user     entity.UserCredential
-		realUser entity.UserCredential
+		user     entity.User
+		realUser entity.User
 	)
 
-	err = ac.ParseBodyRequest(ctx, &user)
+	err := ac.ParseBodyRequest(ctx, &user)
 	if user.Username == "" {
 		ac.FailedResponse(ctx, utils.RequiredError("username"))
 		return
@@ -98,7 +88,7 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 	}
 
 	realUser.Username = user.Username
-	userV, err := ac.authUC.FindUser(&realUser)
+	err = ac.authUC.FindUser(&realUser)
 	if err != nil {
 		ac.FailedResponse(ctx, errors.New("wrong username"))
 		return
@@ -108,7 +98,7 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 		ac.FailedResponse(ctx, errors.New("wrong password"))
 		return
 	}
-	generateToken, err := ac.authToken.CreateAccessToken(&user)
+	generateToken, err := ac.authToken.CreateAccessToken(&realUser)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 		return
@@ -117,9 +107,9 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 		ac.FailedResponse(ctx, err)
 		return
 	}
-	if userV.Role != uint(readRole) {
-		err = errors.New("not a bussiness account")
-		ac.FailedResponse(ctx, err)
-	}
+	// if userV.Role != uint(readRole) {
+	// 	err = errors.New("not a bussiness account")
+	// 	ac.FailedResponse(ctx, err)
+	// }
 	ac.SuccessResponse(ctx, generateToken.AccessToken)
 }

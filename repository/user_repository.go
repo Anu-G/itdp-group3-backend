@@ -7,7 +7,8 @@ import (
 )
 
 type UserRepository interface {
-	Create(u entity.UserCredential) error
+	Create(u *entity.User) error
+	FindAccountByUsername(u *entity.User) error
 }
 
 type userRepository struct {
@@ -20,6 +21,10 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-func (ur *userRepository) Create(u entity.UserCredential) error {
-	return ur.db.Create(u).Error
+func (ur *userRepository) Create(u *entity.User) error {
+	return ur.db.Create(&u).Error
+}
+
+func (ur *userRepository) FindAccountByUsername(u *entity.User) error {
+	return ur.db.First(&u, "username = ?", u.Username).Error
 }

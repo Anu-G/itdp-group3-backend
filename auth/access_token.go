@@ -11,7 +11,7 @@ import (
 )
 
 type Token interface {
-	CreateAccessToken(cred *entity.UserCredential) (*entity.TokenDetails, error)
+	CreateAccessToken(cred *entity.User) (*entity.TokenDetails, error)
 	VerifyAccessToken(tokenStr string) (*entity.AccessDetail, error)
 	StoreAccessToken(userName string, tokenDetail *entity.TokenDetails) error
 	FetchAccessToken(accessDetail *entity.AccessDetail) (string, error)
@@ -21,7 +21,7 @@ type token struct {
 	cfg config.TokenConfig
 }
 
-func (ts *token) CreateAccessToken(uc *entity.UserCredential) (*entity.TokenDetails, error) {
+func (ts *token) CreateAccessToken(uc *entity.User) (*entity.TokenDetails, error) {
 	newTokenDetail := new(entity.TokenDetails)
 	now := time.Now().Local()
 	end := now.Add(ts.cfg.AccessTokenLifeTime)
@@ -36,7 +36,7 @@ func (ts *token) CreateAccessToken(uc *entity.UserCredential) (*entity.TokenDeta
 		},
 		Username:   uc.Username,
 		Email:      uc.Email,
-		Role:       uc.Role,
+		Role:       uint(uc.Account.RoleID),
 		AccessUuid: newTokenDetail.AccessUuid,
 	}
 
@@ -65,7 +65,7 @@ func (ts *token) VerifyAccessToken(tokenStr string) (*entity.AccessDetail, error
 		return nil, err
 	}
 	newAccessDetail.AccessUuid = claims["accessUUID"].(string)
-	newAccessDetail.Role = claims["role"].(uint)
+	newAccessDetail.Role = uint(claims["role"].(float64))
 	newAccessDetail.Username = claims["userName"].(string)
 
 	return newAccessDetail, nil

@@ -2,21 +2,21 @@ package entity
 
 import "gorm.io/gorm"
 
-type BussinessProfile struct {
+type BusinessProfile struct {
 	gorm.Model
-	AccountID      uint   `gorm:"not null"`
-	CategoryID     uint   `gorm:"not null"`
-	Address        string `gorm:"size:250;not null"`
-	ProfileImage   string `gorm:"size:250"`
-	ProfileBio     string `gorm:"size:150"`
-	GmapsLink      string `gorm:"size:250"`
-	BussinessPhone string `gorm:"size:15"`
+	AccountID      uint   `gorm:"not null" json:"account_id"`
+	CategoryID     uint   `gorm:"not null" json:"category_id"`
+	Address        string `gorm:"size:250;not null" json:"address"`
+	ProfileImage   string `gorm:"size:250" json:"profile_image"`
+	ProfileBio     string `gorm:"size:150" json:"profile_bio"`
+	GmapsLink      string `gorm:"size:250" json:"gmaps_link"`
+	BusinessPhone string `gorm:"size:15" json:"business_phone"`
 
-	BussinessHours []BussinessHour
-	BussinessLinks []BussinessLink
-	BussinessFAQs  []BussinessFAQ
+	BusinessHours []BusinessHour
+	BusinessLinks []BusinessLink
+	BusinessFAQs  []BusinessFAQ
 }
 
-func (bp BussinessProfile) TableName() string {
-	return "m_bussiness_profile"
+func (bp BusinessProfile) TableName() string {
+	return "m_business_profile"
 }

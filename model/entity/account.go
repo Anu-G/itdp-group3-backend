@@ -4,14 +4,14 @@ import "gorm.io/gorm"
 
 type Account struct {
 	gorm.Model
-	Username    uint   `gorm:"not null"`
-	RoleID      int    `gorm:"not null"`
-	DisplayName string `gorm:"size:36;not null"`
-	PhoneNumber string `gorm:"size:15;unique;not null"`
+	User        User   `gorm:"foreignkey:Username" json:"user_name"`
+	RoleID      int    `gorm:"not null" json:"role_id"`
+	DisplayName string `gorm:"size:36;not null" json:"display_name"`
+	PhoneNumber string `gorm:"size:15;unique;not null" json:"phone_number"`
 
-	BussinessProfile BussinessProfile
-	Products         []Product
-	Feeds            []Feed
+	BusinessProfile BusinessProfile
+	Products        []Product
+	Feeds           []Feed
 }
 
 func (a Account) TableName() string {

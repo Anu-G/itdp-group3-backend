@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type Feed struct {
 	gorm.Model
-	AccountID   uint   `gorm:"not null"`
-	CaptionPost string `gorm:"size:280;not null"`
+	AccountID   uint   `gorm:"not null" json:"account_id"`
+	CaptionPost string `gorm:"size:280;not null" json:"caption_post"`
 
 	DetailMediaFeeds []DetailMediaFeed
 	DetailComments   []DetailComment

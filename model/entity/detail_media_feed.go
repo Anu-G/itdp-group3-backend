@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type DetailMediaFeed struct {
 	gorm.Model
-	FeedID uint `gorm:"not null"`
-	MediaLink string `gorm:"size:150;not null"`
+	FeedID uint `gorm:"not null" json:"feed_id"`
+	MediaLink string `gorm:"size:150;not null" json:"media_link"`
 }
 
 func (dmf DetailMediaFeed) TableName() string {

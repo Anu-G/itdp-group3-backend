@@ -2,13 +2,13 @@ package entity
 
 import "gorm.io/gorm"
 
-type BussinessFAQ struct {
+type BusinessFAQ struct {
 	gorm.Model
-	BussinessProfileID uint   `gorm:"not null"`
-	Question           string `gorm:"size:250;not null"`
-	Answer             string `gorm:"size:500;not null"`
+	BusinessProfileID uint   `gorm:"not null" json:"business_profile_id"`
+	Question           string `gorm:"size:250;not null" json:"question"`
+	Answer             string `gorm:"size:500;not null" json:"answer"`
 }
 
-func (bf BussinessFAQ) TableName() string {
-	return "m_bussiness_faq"
+func (bf BusinessFAQ) TableName() string {
+	return "m_business_faq"
 }

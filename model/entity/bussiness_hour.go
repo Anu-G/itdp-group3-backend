@@ -6,14 +6,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type BussinessHour struct {
+type BusinessHour struct {
 	gorm.Model
-	BussinessProfileID uint      `gorm:"not null"`
-	Day                int       `gorm:"not null"`
-	OpenHour           time.Time `gorm:"not null"`
-	CloseHour          time.Time `gorm:"not null"`
+	BusinessProfileID uint      `gorm:"not null" json:"business_profile_id"`
+	Day               int       `gorm:"not null" json:"day"`
+	OpenHour          time.Time `gorm:"not null" json:"open_hour"`
+	CloseHour         time.Time `gorm:"not null" json:"close_hour"`
 }
 
-func (bh BussinessHour) TableName() string {
-	return "m_bussiness_hours"
+func (bh BusinessHour) TableName() string {
+	return "m_business_hours"
 }

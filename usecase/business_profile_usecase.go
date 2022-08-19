@@ -6,11 +6,13 @@ import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
 	"mime/multipart"
+	"strconv"
+	"time"
 )
 
 type BusinessProfileUseCaseInterface interface {
 	CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error)
-	CreateProfileImage(bp *entity.BusinessProfile , file multipart.File, fileExt string) (entity.BusinessProfile, error)
+	CreateProfileImage(account_id string , file multipart.File, fileExt string) (string, error)
 }
 
 type businessProfileUseCase struct {
@@ -18,39 +20,39 @@ type businessProfileUseCase struct {
 	fileRepo     repository.FileRepository
 }
 
-func (b *businessProfileUseCase) CreateProfileImage(bp *entity.BusinessProfile , file multipart.File, fileExt string) (entity.BusinessProfile, error)  {
-	var createdBusinessProfile entity.BusinessProfile
-
-	fileName := fmt.Sprintf("img-%d.%s", bp.AccountID, fileExt)
+func (b *businessProfileUseCase) CreateProfileImage(account_id string, file multipart.File, fileExt string) (string, error)  {
+	fileName := fmt.Sprintf("img-%s.%s", account_id, fileExt)
 	fileLocation, err := b.fileRepo.Save(file, fileName)
 
 	if err != nil {
-		return entity.BusinessProfile{}, err
+		return "", err
 	}
 
-	createdBusinessProfile.ProfileImage = fileLocation
-
-	if err := b.repo.Create(&createdBusinessProfile); err != nil {
-		return createdBusinessProfile, err
-	}
-
-	return entity.BusinessProfile{}, nil
+	return fileLocation, nil
 }
 
 func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error) {
 	var createdBusinessProfile entity.BusinessProfile
+	accountId, _ := strconv.Atoi(bp.AccountID)
+	categoryId, _ := strconv.Atoi(bp.CategoryID)
 
-	createdBusinessProfile.AccountID = bp.AccountID
-	createdBusinessProfile.CategoryID = bp.CategoryID
+	createdBusinessProfile.AccountID = uint(accountId)
+	createdBusinessProfile.CategoryID = uint(categoryId)
 	createdBusinessProfile.Address = bp.Address
+	createdBusinessProfile.ProfileImage = bp.ProfileImage
 	createdBusinessProfile.ProfileBio = bp.ProfileBio
 	createdBusinessProfile.GmapsLink = bp.GmapsLink
 
 	for _, businessHour := range bp.BusinessHours {
+		layoutFormat := "15:04"
+		open, _ := time.Parse(layoutFormat, businessHour.OpenHour)
+		close, _ := time.Parse(layoutFormat, businessHour.CloseHour)
+		convDay, _ := strconv.Atoi(businessHour.Day)
+
 		createdBusinessProfile.BusinessHours = append(createdBusinessProfile.BusinessHours, entity.BusinessHour{
-			Day:       businessHour.Day,
-			OpenHour:  businessHour.OpenHour,
-			CloseHour: businessHour.CloseHour,
+			Day:       convDay,
+			OpenHour:  open,
+			CloseHour: close,
 		})
 	}
 

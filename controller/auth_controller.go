@@ -60,7 +60,11 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 	createdUser.Account.Username = userReq.Username
 	createdUser.Account.RoleID = 1
 	createdUser.Encode()
-	createdUser.Account.PhoneNumber = createdUser.Username[0:15]
+	if len(createdUser.Username) > 15 {
+		createdUser.Account.PhoneNumber = createdUser.Username[0:15]
+	} else {
+		createdUser.Account.PhoneNumber = createdUser.Username
+	}
 	if err = ac.authUC.CreateUser(&createdUser); err != nil {
 		ac.FailedResponse(ctx, err)
 		return

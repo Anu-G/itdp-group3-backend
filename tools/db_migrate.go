@@ -15,7 +15,6 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 	err = dbc.DBCon().AutoMigrate(
 		// put entity models here
 		&entity.User{},
-		&entity.User{},
 		&entity.Account{},
 		&entity.Category{},
 		&entity.BusinessProfile{},

@@ -7,6 +7,7 @@ import (
 
 type AccountUsecase interface {
 	Update(a *entity.Account) error
+	FindByUsername(a *entity.Account) error
 }
 
 type accountUsecase struct {
@@ -21,4 +22,8 @@ func NewAccountUsecse(repo repository.AccountRepository) AccountUsecase {
 
 func (ac *accountUsecase) Update(a *entity.Account) error {
 	return ac.repo.Update(a)
+}
+
+func (ac *accountUsecase) FindByUsername(a *entity.Account) error {
+	return ac.repo.FindByUsername(a)
 }

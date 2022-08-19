@@ -34,11 +34,15 @@ func (ac *AccountController) readAccount(ctx *gin.Context) {
 
 func (ac *AccountController) createAccount(ctx *gin.Context) {
 	var newAccount entity.Account
+	var regAccount entity.Account
+	userName := ac.middleware.OpenToken(ctx)
 	err := ac.ParseBodyRequest(ctx, newAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}
-	err = ac.accUC.Update(&newAccount)
+	regAccount = newAccount
+	regAccount.Username = userName
+	err = ac.accUC.Update(&regAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}

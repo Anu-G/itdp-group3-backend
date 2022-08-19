@@ -7,7 +7,6 @@ import (
 )
 
 type UserRepository interface {
-	Create(u *entity.User) error
 	FindAccountByUsername(u *entity.User) error
 }
 
@@ -19,10 +18,6 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{
 		db: db,
 	}
-}
-
-func (ur *userRepository) Create(u *entity.User) error {
-	return ur.db.Create(&u).Error
 }
 
 func (ur *userRepository) FindAccountByUsername(u *entity.User) error {

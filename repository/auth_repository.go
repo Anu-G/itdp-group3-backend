@@ -22,7 +22,17 @@ func NewAuthRepo(db *gorm.DB) AuthRepository {
 }
 
 func (ar *authRepository) CreateUser(u *entity.User) error {
-	return ar.db.Create(&u).Error
+	trx := ar.db.Begin()
+	if err := ar.db.Create(&u).Error; err != nil {
+		trx.Callback()
+		return err
+	}
+	if err := ar.db.Create(&u.Account).Error; err != nil {
+		trx.Callback()
+		return err
+	}
+	trx.Commit()
+	return nil
 }
 
 func (ar *authRepository) FindUser(u *entity.User) error {

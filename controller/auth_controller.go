@@ -47,7 +47,7 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 		ac.FailedResponse(ctx, utils.RequiredError("password"))
 		return
 	} else if userReq.Password == "" {
-		ac.FailedResponse(ctx, utils.RequiredError("customer name"))
+		ac.FailedResponse(ctx, utils.RequiredError("user name"))
 		return
 	} else if err != nil {
 		ac.FailedResponse(ctx, err)

@@ -43,7 +43,7 @@ func (ac *AccountController) createAccount(ctx *gin.Context) {
 	var newAccount entity.Account
 	var regAccount entity.Account
 	userName := ac.middleware.OpenToken(ctx)
-	err := ac.ParseBodyRequest(ctx, newAccount)
+	err := ac.ParseBodyRequest(ctx, &newAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}

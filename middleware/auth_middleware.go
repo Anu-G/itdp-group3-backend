@@ -31,7 +31,6 @@ func NewTokenValidator(t auth.Token) AuthTokenMiddleware {
 func (at *authTokenMiddleware) RequireToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		h := authHeader{}
-		fmt.Println(&h)
 		if err := ctx.ShouldBindHeader(&h); err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"err": err.Error(),
@@ -105,11 +104,13 @@ func (at *authTokenMiddleware) OpenToken(ctx *gin.Context) string {
 		ctx.Abort()
 		return ""
 	}
+	fmt.Println(token)
 	userName, err := at.token.OpenAccessToken(token)
 	if userName == "" || err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"err": "unauthorized",
 		})
+		return ""
 	}
 	return userName
 }

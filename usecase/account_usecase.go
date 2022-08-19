@@ -6,7 +6,7 @@ import (
 )
 
 type AccountUsecase interface {
-	Create(a *entity.Account) error
+	Update(a *entity.Account) error
 }
 
 type accountUsecase struct {
@@ -19,6 +19,6 @@ func NewAccountUsecse(repo repository.AccountRepository) AccountUsecase {
 	}
 }
 
-func (ac *accountUsecase) Create(a *entity.Account) error {
-	return ac.repo.Create(a)
+func (ac *accountUsecase) Update(a *entity.Account) error {
+	return ac.repo.Update(a)
 }

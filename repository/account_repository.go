@@ -1,14 +1,13 @@
 package repository
 
 import (
-	"fmt"
 	"itdp-group3-backend/model/entity"
 
 	"gorm.io/gorm"
 )
 
 type AccountRepository interface {
-	Create(a *entity.Account) error
+	Update(a *entity.Account) error
 }
 
 type accountRepository struct {
@@ -21,7 +20,6 @@ func NewAccountRepository(db *gorm.DB) AccountRepository {
 	}
 }
 
-func (ar *accountRepository) Create(a *entity.Account) error {
-	fmt.Println("tes4")
-	return ar.db.Create(&a).Error
+func (ar *accountRepository) Update(a *entity.Account) error {
+	return ar.db.Updates(&a).Error
 }

@@ -24,7 +24,12 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	}
 	routeAccount := controller.router.Group("/account")
 	routeAccount.Use(middleware.RequireToken())
-	routeAccount.POST("/create", controller.createAccount)
+	routeAccount.GET("/")
+	routeAccount.PUT("/update", controller.createAccount)
+}
+
+func (ac *AccountController) readAccount(ctx *gin.Context) {
+
 }
 
 func (ac *AccountController) createAccount(ctx *gin.Context) {
@@ -33,7 +38,7 @@ func (ac *AccountController) createAccount(ctx *gin.Context) {
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}
-	err = ac.accUC.Create(&newAccount)
+	err = ac.accUC.Update(&newAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}

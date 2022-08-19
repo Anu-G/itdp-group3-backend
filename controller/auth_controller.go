@@ -107,9 +107,5 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 		ac.FailedResponse(ctx, err)
 		return
 	}
-	// if userV.Role != uint(readRole) {
-	// 	err = errors.New("not a bussiness account")
-	// 	ac.FailedResponse(ctx, err)
-	// }
 	ac.SuccessResponse(ctx, generateToken.AccessToken)
 }

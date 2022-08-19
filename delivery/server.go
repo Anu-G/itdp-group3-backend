@@ -2,6 +2,7 @@ package delivery
 
 import (
 	"itdp-group3-backend/config"
+	"itdp-group3-backend/delivery/controller"
 	"itdp-group3-backend/manager"
 	"itdp-group3-backend/tools"
 	"log"
@@ -63,6 +64,7 @@ func Server() *appServer {
 
 // initControllers : prepare the controller API
 func (a *appServer) initControllers() {
+	controller.NewBusinessProfileController(a.engine, a.UseCaseManager.BusinessProfileUseCase())
 }
 
 // Run : run the server

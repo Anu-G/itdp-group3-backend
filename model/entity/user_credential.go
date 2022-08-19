@@ -29,6 +29,5 @@ func (uc *User) Decode() {
 	if err != nil {
 		log.Println(err)
 	}
-
 	uc.Password = string(data)
 }

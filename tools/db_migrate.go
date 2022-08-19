@@ -13,6 +13,7 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 	defer sqlDB.Close()
 
 	err = dbc.DBCon().AutoMigrate(
+		// put entity models here
 		&entity.User{},
 		&entity.Account{},
 		&entity.Category{},

@@ -22,7 +22,7 @@ func NewAccountRepository(db *gorm.DB) AccountRepository {
 }
 
 func (ar *accountRepository) Update(a *entity.Account) error {
-	return ar.db.Where("username = ?", a.Username).Save(&a).Error
+	return ar.db.Where("username = ?", a.Username).Updates(&a).Error
 }
 
 func (ar *accountRepository) FindByUsername(a *entity.Account) error {

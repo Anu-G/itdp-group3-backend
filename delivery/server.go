@@ -71,6 +71,7 @@ func Server() *appServer {
 
 // initControllers : prepare the controller API
 func (a *appServer) initControllers() {
+	controller.NewUserController(a.engine, a.UseCaseManager.UserUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAccountController(a.engine, a.UseCaseManager.AccountUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
 }

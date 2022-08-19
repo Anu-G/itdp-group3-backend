@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"itdp-group3-backend/auth"
 	"net/http"
 	"strings"
@@ -15,7 +14,6 @@ type authHeader struct {
 
 type AuthTokenMiddleware interface {
 	RequireToken() gin.HandlerFunc
-	OpenToken(ctx *gin.Context) string
 }
 
 type authTokenMiddleware struct {
@@ -74,43 +72,4 @@ func (at *authTokenMiddleware) RequireToken() gin.HandlerFunc {
 			return
 		}
 	}
-}
-
-func (at *authTokenMiddleware) OpenToken(ctx *gin.Context) string {
-	h := authHeader{}
-	fmt.Println(&h)
-	if err := ctx.ShouldBindHeader(&h); err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"err": err.Error(),
-		})
-		ctx.Abort()
-		return ""
-	}
-
-	tokenStr := strings.Replace(h.AuthorizationHeader, "Bearer ", "", -1)
-	if tokenStr == "" {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"err": "unauthorized",
-		})
-		ctx.Abort()
-		return ""
-	}
-
-	token, err := at.token.VerifyAccessToken(tokenStr)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"err": err.Error(),
-		})
-		ctx.Abort()
-		return ""
-	}
-	fmt.Println(token)
-	userName, err := at.token.OpenAccessToken(token)
-	if userName == "" || err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"err": "unauthorized",
-		})
-		return ""
-	}
-	return userName
 }

@@ -7,6 +7,7 @@ import (
 )
 
 type UserRepository interface {
+	Update(u *entity.User) error
 	FindAccountByUsername(u *entity.User) error
 }
 
@@ -18,6 +19,10 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userRepository{
 		db: db,
 	}
+}
+
+func (ur *userRepository) Update(u *entity.User) error {
+	return ur.db.Where("username = ?", u.Username).Updates(u).Error
 }
 
 func (ur *userRepository) FindAccountByUsername(u *entity.User) error {

@@ -44,10 +44,10 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 		ac.FailedResponse(ctx, utils.RequiredError("username"))
 		return
 	} else if userReq.Email == "" {
-		ac.FailedResponse(ctx, utils.RequiredError("password"))
+		ac.FailedResponse(ctx, utils.RequiredError("email"))
 		return
 	} else if userReq.Password == "" {
-		ac.FailedResponse(ctx, utils.RequiredError("user name"))
+		ac.FailedResponse(ctx, utils.RequiredError("password"))
 		return
 	} else if err != nil {
 		ac.FailedResponse(ctx, err)

@@ -30,9 +30,11 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 
 func (ac *AccountController) readAccount(ctx *gin.Context) {
 	var readAccount entity.Account
-	userName := ac.middleware.OpenToken(ctx)
-	readAccount.Username = userName
-	err := ac.accUC.FindByUsername(&readAccount)
+	err := ac.ParseBodyRequest(ctx, &readAccount)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+	}
+	err = ac.accUC.FindByUsername(&readAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}
@@ -41,15 +43,11 @@ func (ac *AccountController) readAccount(ctx *gin.Context) {
 
 func (ac *AccountController) createAccount(ctx *gin.Context) {
 	var newAccount entity.Account
-	var regAccount entity.Account
-	userName := ac.middleware.OpenToken(ctx)
 	err := ac.ParseBodyRequest(ctx, &newAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}
-	regAccount = newAccount
-	regAccount.Username = userName
-	err = ac.accUC.Update(&regAccount)
+	err = ac.accUC.Update(&newAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}

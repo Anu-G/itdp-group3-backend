@@ -2,7 +2,6 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"itdp-group3-backend/auth"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/model/dto"
@@ -58,9 +57,10 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 	createdUser.Username = userReq.Username
 	createdUser.Password = userReq.Password
 	createdUser.Email = userReq.Email
-
-	fmt.Println("controller", userReq)
+	createdUser.Account.Username = userReq.Username
+	createdUser.Account.RoleID = 1
 	createdUser.Encode()
+	createdUser.Account.PhoneNumber = createdUser.Username[0:15]
 	if err = ac.authUC.CreateUser(&createdUser); err != nil {
 		ac.FailedResponse(ctx, err)
 		return

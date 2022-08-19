@@ -24,12 +24,19 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	}
 	routeAccount := controller.router.Group("/account")
 	routeAccount.Use(middleware.RequireToken())
-	routeAccount.GET("/")
+	routeAccount.GET("/", controller.readAccount)
 	routeAccount.PUT("/update", controller.createAccount)
 }
 
 func (ac *AccountController) readAccount(ctx *gin.Context) {
-
+	var readAccount entity.Account
+	userName := ac.middleware.OpenToken(ctx)
+	readAccount.Username = userName
+	err := ac.accUC.FindByUsername(&readAccount)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+	}
+	ac.SuccessResponse(ctx, readAccount)
 }
 
 func (ac *AccountController) createAccount(ctx *gin.Context) {

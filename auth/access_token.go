@@ -35,6 +35,7 @@ func (ts *token) CreateAccessToken(uc *entity.User) (*entity.TokenDetails, error
 			ExpiresAt: end.Unix(),
 		},
 		Username:   uc.Username,
+		AccountID:  uint(uc.Account.ID),
 		Email:      uc.Email,
 		Role:       uint(uc.Account.RoleID),
 		AccessUuid: newTokenDetail.AccessUuid,

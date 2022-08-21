@@ -16,7 +16,7 @@ type AccountController struct {
 	api.BaseApi
 }
 
-func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, middleware middleware.AuthTokenMiddleware) {
+func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, middleware middleware.AuthTokenMiddleware) *AccountController {
 	controller := AccountController{
 		router:     router,
 		accUC:      accUc,
@@ -26,6 +26,8 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	routeAccount.Use(middleware.RequireToken())
 	routeAccount.GET("/", controller.readAccount)
 	routeAccount.PUT("/update", controller.createAccount)
+
+	return &controller
 }
 
 func (ac *AccountController) readAccount(ctx *gin.Context) {

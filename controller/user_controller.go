@@ -16,7 +16,7 @@ type UserController struct {
 	api.BaseApi
 }
 
-func NewUserController(router *gin.Engine, uUc usecase.UserUsecase, md middleware.AuthTokenMiddleware) {
+func NewUserController(router *gin.Engine, uUc usecase.UserUsecase, md middleware.AuthTokenMiddleware) *UserController {
 	controller := UserController{
 		router:     router,
 		uUC:        uUc,
@@ -26,6 +26,8 @@ func NewUserController(router *gin.Engine, uUc usecase.UserUsecase, md middlewar
 	routeUser.Use(md.RequireToken())
 	routeUser.GET("/", controller.readUser)
 	routeUser.PUT("/update", controller.updateUser)
+
+	return &controller
 }
 
 func (u *UserController) readUser(ctx *gin.Context) {

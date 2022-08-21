@@ -7,21 +7,43 @@ import (
 	"itdp-group3-backend/repository"
 	"mime/multipart"
 	"strconv"
-	"time"
 )
 
 type BusinessProfileUseCaseInterface interface {
 	CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error)
-	CreateProfileImage(account_id string , file multipart.File, fileExt string) (string, error)
+	CreateProfileImage(accountId string, file multipart.File, fileExt string) (string, error)
+	GetBusinessProfile(bp *dto.BusinessProfileRequest) (dto.BusinessProfileResponse, error)
 }
 
 type businessProfileUseCase struct {
-	repo         repository.BusinessProfileRepositoryInterface
-	fileRepo     repository.FileRepository
+	repo     repository.BusinessProfileRepositoryInterface
+	fileRepo repository.FileRepository
 }
 
-func (b *businessProfileUseCase) CreateProfileImage(account_id string, file multipart.File, fileExt string) (string, error)  {
-	fileName := fmt.Sprintf("img-%s.%s", account_id, fileExt)
+func (b *businessProfileUseCase) GetBusinessProfile(bp *dto.BusinessProfileRequest) (dto.BusinessProfileResponse, error) {
+	var createdBp entity.BusinessProfile
+	var response dto.BusinessProfileResponse
+	accountId, _ := strconv.Atoi(bp.AccountID)
+
+	createdBp.AccountID = uint(accountId)
+	err := b.repo.GetByIdPreload(&createdBp)
+	if err != nil {
+		return dto.BusinessProfileResponse{}, err
+	}
+
+	account, err := b.repo.GetPhoneNumber(uint(accountId))
+	if err != nil {
+		return dto.BusinessProfileResponse{}, err
+	}
+
+	response.BusinessProfile = createdBp
+	response.PhoneNumber = account.PhoneNumber
+
+	return response, nil
+}
+
+func (b *businessProfileUseCase) CreateProfileImage(accountId string, file multipart.File, fileExt string) (string, error) {
+	fileName := fmt.Sprintf("img-bp-%s.%s", accountId, fileExt)
 	fileLocation, err := b.fileRepo.Save(file, fileName)
 
 	if err != nil {
@@ -42,17 +64,14 @@ func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRe
 	createdBusinessProfile.ProfileImage = bp.ProfileImage
 	createdBusinessProfile.ProfileBio = bp.ProfileBio
 	createdBusinessProfile.GmapsLink = bp.GmapsLink
+	createdBusinessProfile.DisplayName = bp.DisplayName
 
 	for _, businessHour := range bp.BusinessHours {
-		layoutFormat := "15:04"
-		open, _ := time.Parse(layoutFormat, businessHour.OpenHour)
-		close, _ := time.Parse(layoutFormat, businessHour.CloseHour)
 		convDay, _ := strconv.Atoi(businessHour.Day)
-
 		createdBusinessProfile.BusinessHours = append(createdBusinessProfile.BusinessHours, entity.BusinessHour{
 			Day:       convDay,
-			OpenHour:  open,
-			CloseHour: close,
+			OpenHour:  businessHour.OpenHour,
+			CloseHour: businessHour.CloseHour,
 		})
 	}
 
@@ -72,7 +91,7 @@ func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRe
 
 func NewBusinessProfileUseCase(repo repository.BusinessProfileRepositoryInterface, fileRepo repository.FileRepository) BusinessProfileUseCaseInterface {
 	return &businessProfileUseCase{
-		repo:         repo,
-		fileRepo:     fileRepo,
+		repo:     repo,
+		fileRepo: fileRepo,
 	}
 }

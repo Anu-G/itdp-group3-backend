@@ -25,8 +25,9 @@ func NewBusinessProfileController(router *gin.Engine, uc usecase.BusinessProfile
 	}
 
 	routeBusinessProfile := controller.router.Group("/business-profile")
+	routeBusinessProfile.POST("/add/profile", controller.addBusinessProfile)
 	routeBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
-	routeBusinessProfile.POST("/add/business-profile", controller.addBusinessProfile)
+	routeBusinessProfile.POST("/get/business-profile", controller.getBusinessProfile)
 
 	return &controller
 }
@@ -38,8 +39,17 @@ func (b *BusinessProfileController) addBusinessProfile(ctx *gin.Context) {
 	)
 
 	err := b.ParseBodyRequest(ctx, &businessProfileReq)
-	if businessProfileReq.Address == "" {
+	if businessProfileReq.AccountID == ""{
+		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	}else if businessProfileReq.CategoryID == ""{
+		b.FailedResponse(ctx, utils.RequiredError("category"))
+		return
+	}else if businessProfileReq.Address == "" {
 		b.FailedResponse(ctx, utils.RequiredError("address"))
+		return
+	}else if businessProfileReq.DisplayName == ""{
+		b.FailedResponse(ctx, utils.RequiredError("display_name"))
 		return
 	}
 
@@ -72,4 +82,25 @@ func (b *BusinessProfileController) addProfileImage(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, fileLocation)
+}
+
+func (b *BusinessProfileController) getBusinessProfile(ctx *gin.Context) {
+	var (
+		businessProfileReq dto.BusinessProfileRequest
+		businessProfileRes dto.BusinessProfileResponse
+	)
+
+	err := b.ParseBodyRequest(ctx, &businessProfileReq)
+	if businessProfileReq.AccountID == ""{
+		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	}
+
+	businessProfileRes, err = b.usecase.GetBusinessProfile(&businessProfileReq)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+
+	b.SuccessResponse(ctx, businessProfileRes)	
 }

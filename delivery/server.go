@@ -65,6 +65,7 @@ func Server() *appServer {
 // initControllers : prepare the controller API
 func (a *appServer) initControllers() {
 	controller.NewBusinessProfileController(a.engine, a.UseCaseManager.BusinessProfileUseCase())
+	controller.NewNonBusinessProfileController(a.engine, a.UseCaseManager.NonBusinessProfileUseCase())
 }
 
 // Run : run the server

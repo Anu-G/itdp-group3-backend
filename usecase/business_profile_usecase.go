@@ -25,13 +25,13 @@ func (b *businessProfileUseCase) GetBusinessProfile(bp *dto.BusinessProfileReque
 	var response dto.BusinessProfileResponse
 	accountId, _ := strconv.Atoi(bp.AccountID)
 
-	createdBp.AccountID = uint(accountId)
-	err := b.repo.GetByIdPreload(&createdBp)
+	account, err := b.repo.GetPhoneNumber(uint(accountId))
 	if err != nil {
 		return dto.BusinessProfileResponse{}, err
 	}
 
-	account, err := b.repo.GetPhoneNumber(uint(accountId))
+	createdBp.AccountID = uint(accountId)
+	err = b.repo.GetByIdPreload(&createdBp)
 	if err != nil {
 		return dto.BusinessProfileResponse{}, err
 	}

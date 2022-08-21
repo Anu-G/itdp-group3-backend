@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type NonBusinessProfile struct {
 	gorm.Model
-	AccountID    uint   `gorm:"not null" json:"account_id"`
+	AccountID    uint   `gorm:"not null;unique" json:"account_id"`
 	ProfileImage string `gorm:"size:250" json:"profile_image"`
 	ProfileBio   string `gorm:"size:150" json:"profile_bio"`
 	DisplayName  string `gorm:"size:36;not null" json:"display_name"`

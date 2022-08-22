@@ -6,7 +6,8 @@ import (
 )
 
 type UserUsecase interface {
-	CreateUser(u *entity.User) error
+	Update(u *entity.User) error
+	FindByUsername(u *entity.User) error
 }
 
 type userUsecase struct {
@@ -19,6 +20,10 @@ func NewUserUsecase(ur repository.UserRepository) UserUsecase {
 	}
 }
 
-func (uc userUsecase) CreateUser(u *entity.User) error {
-	return uc.repo.Create(u)
+func (uc *userUsecase) Update(u *entity.User) error {
+	return uc.repo.Update(u)
+}
+
+func (uc *userUsecase) FindByUsername(u *entity.User) error {
+	return uc.repo.FindAccountByUsername(u)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(u *entity.User) error
+	Update(u *entity.User) error
 	FindAccountByUsername(u *entity.User) error
 }
 
@@ -21,8 +21,8 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-func (ur *userRepository) Create(u *entity.User) error {
-	return ur.db.Create(&u).Error
+func (ur *userRepository) Update(u *entity.User) error {
+	return ur.db.Where("username = ?", u.Username).Updates(u).Error
 }
 
 func (ur *userRepository) FindAccountByUsername(u *entity.User) error {

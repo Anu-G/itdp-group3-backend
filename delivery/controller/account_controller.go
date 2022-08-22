@@ -16,7 +16,7 @@ type AccountController struct {
 	api.BaseApi
 }
 
-func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, middleware middleware.AuthTokenMiddleware) {
+func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, middleware middleware.AuthTokenMiddleware) *AccountController {
 	controller := AccountController{
 		router:     router,
 		accUC:      accUc,
@@ -24,17 +24,28 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	}
 	routeAccount := controller.router.Group("/account")
 	routeAccount.Use(middleware.RequireToken())
-	routeAccount.GET("/")
+	routeAccount.GET("/", controller.readAccount)
 	routeAccount.PUT("/update", controller.createAccount)
+
+	return &controller
 }
 
 func (ac *AccountController) readAccount(ctx *gin.Context) {
-
+	var readAccount entity.Account
+	err := ac.ParseBodyRequest(ctx, &readAccount)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+	}
+	err = ac.accUC.FindByUsername(&readAccount)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+	}
+	ac.SuccessResponse(ctx, readAccount)
 }
 
 func (ac *AccountController) createAccount(ctx *gin.Context) {
 	var newAccount entity.Account
-	err := ac.ParseBodyRequest(ctx, newAccount)
+	err := ac.ParseBodyRequest(ctx, &newAccount)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 	}

@@ -15,6 +15,7 @@ type Token interface {
 	VerifyAccessToken(tokenStr string) (*entity.AccessDetail, error)
 	StoreAccessToken(userName string, tokenDetail *entity.TokenDetails) error
 	FetchAccessToken(accessDetail *entity.AccessDetail) (string, error)
+	OpenAccessToken(accessDetail *entity.AccessDetail) (string, error)
 }
 
 type token struct {
@@ -88,6 +89,18 @@ func (ts *token) FetchAccessToken(accessDetail *entity.AccessDetail) (string, er
 			return "", err
 		}
 		return userId, nil
+	} else {
+		return "", fmt.Errorf("invalid access")
+	}
+}
+
+func (ts *token) OpenAccessToken(accessDetail *entity.AccessDetail) (string, error) {
+	if accessDetail != nil {
+		userName, err := ts.cfg.Redis.Get(accessDetail.Username).Result()
+		if err != nil {
+			return "", err
+		}
+		return userName, nil
 	} else {
 		return "", fmt.Errorf("invalid access")
 	}

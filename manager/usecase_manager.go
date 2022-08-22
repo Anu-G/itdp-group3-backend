@@ -6,10 +6,23 @@ type UseCaseManagerInterface interface {
 	UserUsecase() usecase.UserUsecase
 	AuthUsecase() usecase.AuthUsecase
 	AccountUsecase() usecase.AccountUsecase
+	FeedUsecase() usecase.FeedUsecase
+	DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase
+	DetailCommentUsecase() usecase.DetailCommentUsecase
+	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
+	ProductUseCase() usecase.ProductUseCaseInterface
 }
 
 type useCaseManager struct {
 	repo RepositoryManagerInterface
+}
+
+func (um *useCaseManager) ProductUseCase() usecase.ProductUseCaseInterface {
+	return usecase.NewProductUseCase(um.repo.ProductRepo())
+}
+
+func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {
+	return usecase.NewBusinessProfileUseCase(um.repo.BusinessProfileRepo(), um.repo.FileRepo())
 }
 
 // NewUseCase : init new use case manager
@@ -29,4 +42,16 @@ func (uc *useCaseManager) AuthUsecase() usecase.AuthUsecase {
 
 func (uc *useCaseManager) AccountUsecase() usecase.AccountUsecase {
 	return usecase.NewAccountUsecse(uc.repo.AccountRepo())
+}
+
+func (uc *useCaseManager) FeedUsecase() usecase.FeedUsecase {
+	return usecase.NewFeedUsecase(uc.repo.FeedRepo())
+}
+
+func (uc useCaseManager) DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase {
+	return usecase.NewDetailMediaFeedUsecase(uc.repo.DetailMediaFeedRepo(), uc.repo.FileRepo())
+}
+
+func (uc useCaseManager) DetailCommentUsecase() usecase.DetailCommentUsecase {
+	return usecase.NewDetailCommentUsecase(uc.repo.DetailCommentRepo())
 }

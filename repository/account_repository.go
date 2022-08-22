@@ -8,6 +8,7 @@ import (
 
 type AccountRepository interface {
 	Update(a *entity.Account) error
+	FindByUsername(a *entity.Account) error
 }
 
 type accountRepository struct {
@@ -21,5 +22,9 @@ func NewAccountRepository(db *gorm.DB) AccountRepository {
 }
 
 func (ar *accountRepository) Update(a *entity.Account) error {
-	return ar.db.Updates(&a).Error
+	return ar.db.Where("username = ?", a.Username).Updates(&a).Error
+}
+
+func (ar *accountRepository) FindByUsername(a *entity.Account) error {
+	return ar.db.First(&a, "username = ?", a.Username).Error
 }

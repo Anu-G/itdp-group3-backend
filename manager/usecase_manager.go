@@ -4,15 +4,10 @@ import "itdp-group3-backend/usecase"
 
 type UseCaseManagerInterface interface {
 	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
-	NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface
 }
 
 type useCaseManager struct {
 	repo RepositoryManagerInterface
-}
-
-func (um *useCaseManager) NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface {
-	return usecase.NewNonBusinessProfileUseCase(um.repo.NonBusinessProfileRepo(), um.repo.FileRepo())
 }
 
 func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {

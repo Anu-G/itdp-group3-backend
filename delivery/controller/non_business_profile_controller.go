@@ -27,7 +27,8 @@ func NewNonBusinessProfileController(router *gin.Engine, uc usecase.NonBusinessP
 	routeNonBusinessProfile := controller.router.Group("/non-business-profile")
 	routeNonBusinessProfile.POST("/add/profile", controller.addNonBusinessProfile)
 	routeNonBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
-	routeNonBusinessProfile.POST("/get/non-business-profile", controller.getNonBusinessProfile)
+	routeNonBusinessProfile.POST("/get/profile", controller.getProfile)
+	routeNonBusinessProfile.POST("/get/profile-image", controller.getProfileImage)
 
 	return &controller
 }
@@ -35,14 +36,14 @@ func NewNonBusinessProfileController(router *gin.Engine, uc usecase.NonBusinessP
 func (b *NonBusinessProfileController) addNonBusinessProfile(ctx *gin.Context) {
 	var (
 		nonBusinessProfileReq dto.NonBusinessProfileRequest
-		createdBp          entity.NonBusinessProfile
+		createdBp             entity.NonBusinessProfile
 	)
 
 	err := b.ParseBodyRequest(ctx, &nonBusinessProfileReq)
-	if nonBusinessProfileReq.AccountID == ""{
+	if nonBusinessProfileReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
 		return
-	}else if nonBusinessProfileReq.DisplayName == ""{
+	} else if nonBusinessProfileReq.DisplayName == "" {
 		b.FailedResponse(ctx, utils.RequiredError("display_name"))
 		return
 	}
@@ -78,14 +79,14 @@ func (b *NonBusinessProfileController) addProfileImage(ctx *gin.Context) {
 	b.SuccessResponse(ctx, fileLocation)
 }
 
-func (b *NonBusinessProfileController) getNonBusinessProfile(ctx *gin.Context) {
+func (b *NonBusinessProfileController) getProfile(ctx *gin.Context) {
 	var (
 		nonBusinessProfileReq dto.NonBusinessProfileRequest
 		nonBusinessProfileRes dto.NonBusinessProfileResponse
 	)
 
 	err := b.ParseBodyRequest(ctx, &nonBusinessProfileReq)
-	if nonBusinessProfileReq.AccountID == ""{
+	if nonBusinessProfileReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
 		return
 	}
@@ -96,5 +97,27 @@ func (b *NonBusinessProfileController) getNonBusinessProfile(ctx *gin.Context) {
 		return
 	}
 
-	b.SuccessResponse(ctx, nonBusinessProfileRes)	
+	b.SuccessResponse(ctx, nonBusinessProfileRes)
+}
+
+func (b *NonBusinessProfileController) getProfileImage(ctx *gin.Context) {
+	var (
+		nonBusinessProfileReq dto.NonBusinessProfileRequest
+		nonBusinessProfileRes dto.NonBusinessProfileResponse
+	)
+
+	err := b.ParseBodyRequest(ctx, &nonBusinessProfileReq)
+	if nonBusinessProfileReq.AccountID == "" {
+		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	}
+
+	nonBusinessProfileRes, err = b.usecase.GetNonBusinessProfile(&nonBusinessProfileReq)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+
+	b.SuccessDownload(ctx, nonBusinessProfileRes.NonBusinessProfile.ProfileImage)
+	// b.SuccessResponse(ctx, nonBusinessProfileRes.NonBusinessProfile.ProfileImage)
 }

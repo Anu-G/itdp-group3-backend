@@ -57,8 +57,6 @@ func (b *NonBusinessProfileController) addNonBusinessProfile(ctx *gin.Context) {
 }
 
 func (b *NonBusinessProfileController) addProfileImage(ctx *gin.Context) {
-	accountId := ctx.PostForm("account_id")
-
 	file, fileHeader, err := ctx.Request.FormFile("profile_image")
 	if err != nil {
 		b.FailedResponse(ctx, errors.New("failed get file"))
@@ -70,7 +68,7 @@ func (b *NonBusinessProfileController) addProfileImage(ctx *gin.Context) {
 		b.FailedResponse(ctx, errors.New("Unrecognized file extension"))
 	}
 
-	fileLocation, err := b.usecase.CreateProfileImage(accountId, file, fileName[1])
+	fileLocation, err := b.usecase.CreateProfileImage(file, fileName[1])
 	if err != nil {
 		b.FailedResponse(ctx, errors.New("failed while saving file"))
 		return

@@ -5,11 +5,16 @@ import "itdp-group3-backend/repository"
 type RepositoryManagerInterface interface {
 	BusinessProfileRepo() repository.BusinessProfileRepositoryInterface
 	NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface
+	ProductRepo() repository.ProductRepositoryInterface
 	FileRepo() repository.FileRepository
 }
 
 type repositoryManager struct {
 	dbCon InfraManagerInterface
+}
+
+func (rm *repositoryManager) ProductRepo() repository.ProductRepositoryInterface {
+	return repository.NewProductRepo(rm.dbCon.DBCon())
 }
 
 func (rm *repositoryManager) NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface {

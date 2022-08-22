@@ -7,11 +7,13 @@ import (
 	"itdp-group3-backend/repository"
 	"mime/multipart"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type NonBusinessProfileUseCaseInterface interface {
 	CreateNonBusinessProfile(bp *dto.NonBusinessProfileRequest) (entity.NonBusinessProfile, error)
-	CreateProfileImage(accountId string, file multipart.File, fileExt string) (string, error)
+	CreateProfileImage(file multipart.File, fileExt string) (string, error)
 	GetNonBusinessProfile(bp *dto.NonBusinessProfileRequest) (dto.NonBusinessProfileResponse, error)
 }
 
@@ -42,8 +44,8 @@ func (b *nonBusinessProfileUseCase) GetNonBusinessProfile(bp *dto.NonBusinessPro
 	return response, nil
 }
 
-func (b *nonBusinessProfileUseCase) CreateProfileImage(accountId string, file multipart.File, fileExt string) (string, error) {
-	fileName := fmt.Sprintf("img-nbp-%s.%s", accountId, fileExt)
+func (b *nonBusinessProfileUseCase) CreateProfileImage(file multipart.File, fileExt string) (string, error) {
+	fileName := fmt.Sprintf("img-nbp-%s.%s", uuid.New().String(), fileExt)
 	fileLocation, err := b.fileRepo.Save(file, fileName)
 
 	if err != nil {

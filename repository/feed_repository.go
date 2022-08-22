@@ -9,8 +9,9 @@ import (
 type FeedRepository interface {
 	Create(f *entity.Feed) error
 	Read(f *entity.Feed) error
-	ReadByAccountID(id uint, page int, pageLim int) (entity.Feed, error)
-	ReadByPage(page int, pageLim int) (entity.Feed, error)
+	ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
 	BaseRepository
 }
 
@@ -32,15 +33,24 @@ func (fr *feedRepository) Read(f *entity.Feed) error {
 	return fr.db.Preload("DetailMediaFeeds").Preload("DetailComments").Find(&f).Error
 }
 
-func (fr *feedRepository) ReadByAccountID(id uint, page int, pageLim int) (entity.Feed, error) {
+func (fr *feedRepository) ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error) {
 	var f entity.Feed
-	read := fr.db.Where("category = ?", f.AccountID).Preload("DetailMediaFeeds").Preload("DetailComments").Find(&f)
+	var feedRes []entity.Feed
+	read := fr.db.Model(&f).Where("account_id = ?", id).Preload("DetailMediaFeeds").Preload("DetailComments").Find(&feedRes)
 	res := fr.Paging(read, page, pageLim).Error
-	return f, res
+	return feedRes, res
 }
 
-func (fr *feedRepository) ReadByPage(page int, pageLim int) (entity.Feed, error) {
-	var feedRes entity.Feed
+func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error) {
+	var f entity.Feed
+	var feedRes []entity.Feed
+	read := fr.db.Model(&f).Where("bp.category_id = ?", cat).Joins("join m_business_profile as bp on bp.account_id = m_feed.account_id").Scan(&feedRes)
+	res := fr.Paging(read, page, pageLim).Error
+	return feedRes, res
+}
+
+func (fr *feedRepository) ReadByPage(page int, pageLim int) ([]entity.Feed, error) {
+	var feedRes []entity.Feed
 	read := fr.db.Preload("DetailMediaFeeds").Preload("DetailComments").Find(&feedRes)
 	res := fr.Paging(read, page, pageLim).Error
 	return feedRes, res

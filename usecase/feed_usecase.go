@@ -8,8 +8,9 @@ import (
 type FeedUsecase interface {
 	Create(f *entity.Feed) error
 	Read(f *entity.Feed) error
-	ReadByAccountID(id uint, page int, pageLim int) (entity.Feed, error)
-	ReadByPage(page int, pageLim int) (entity.Feed, error)
+	ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
 	Delete(id uint) error
 }
 
@@ -31,11 +32,15 @@ func (fc *feedUsecase) Read(f *entity.Feed) error {
 	return fc.repo.Read(f)
 }
 
-func (fc *feedUsecase) ReadByAccountID(id uint, page int, pageLim int) (entity.Feed, error) {
+func (fc *feedUsecase) ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error) {
 	return fc.repo.ReadByAccountID(id, page, pageLim)
 }
 
-func (fc *feedUsecase) ReadByPage(page int, pageLim int) (entity.Feed, error) {
+func (fc *feedUsecase) ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error) {
+	return fc.repo.ReadByProfileCategory(cat, page, pageLim)
+}
+
+func (fc *feedUsecase) ReadByPage(page int, pageLim int) ([]entity.Feed, error) {
 	return fc.repo.ReadByPage(page, pageLim)
 }
 

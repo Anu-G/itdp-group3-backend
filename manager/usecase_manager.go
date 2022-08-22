@@ -8,6 +8,7 @@ type UseCaseManagerInterface interface {
 	AccountUsecase() usecase.AccountUsecase
 	FeedUsecase() usecase.FeedUsecase
 	DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase
+	DetailCommentUsecase() usecase.DetailCommentUsecase
 }
 
 type useCaseManager struct {
@@ -39,4 +40,8 @@ func (uc *useCaseManager) FeedUsecase() usecase.FeedUsecase {
 
 func (uc useCaseManager) DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase {
 	return usecase.NewDetailMediaFeedUsecase(uc.repo.DetailMediaFeedRepo())
+}
+
+func (uc useCaseManager) DetailCommentUsecase() usecase.DetailCommentUsecase {
+	return usecase.NewDetailCommentUsecase(uc.repo.DetailCommentRepo())
 }

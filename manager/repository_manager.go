@@ -8,6 +8,7 @@ type RepositoryManagerInterface interface {
 	AccountRepo() repository.AccountRepository
 	FeedRepo() repository.FeedRepository
 	DetailMediaFeedRepo() repository.DetailMediaFeedRepository
+	DetailCommentRepo() repository.DetailCommentRepository
 }
 
 type repositoryManager struct {
@@ -39,4 +40,8 @@ func (r *repositoryManager) FeedRepo() repository.FeedRepository {
 
 func (r *repositoryManager) DetailMediaFeedRepo() repository.DetailMediaFeedRepository {
 	return repository.NewDetailMediaFeedRepository(r.dbCon.DBCon())
+}
+
+func (r *repositoryManager) DetailCommentRepo() repository.DetailCommentRepository {
+	return repository.NewDetailCommentRepository(r.dbCon.DBCon())
 }

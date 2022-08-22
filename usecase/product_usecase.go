@@ -5,34 +5,60 @@ import (
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
-	"mime/multipart"
 	"strconv"
-
-	"github.com/google/uuid"
+	"strings"
 )
 
 type ProductUseCaseInterface interface {
-	CreateProduct(p *dto.ProductRequest) (entity.Product,error)
-	CreateProductImage(file multipart.File, fileExt string) (string, error)
+	CreateProduct(p *dto.ProductRequest) (entity.Product, error)
+	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
+	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
 }
 
 type productUseCase struct {
-	repo     repository.ProductRepositoryInterface
-	fileRepo repository.FileRepository
+	repo repository.ProductRepositoryInterface
 }
 
-func (pu *productUseCase) CreateProductImage(file multipart.File, fileExt string) (string, error) {
-	fileName := fmt.Sprintf("img-product-%s.%s", uuid.New().String(), fileExt)
-	fileLocation, err := pu.fileRepo.Save(file, fileName)
+func (pu *productUseCase) GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error) {
+	var products []dto.ProductResponse
 
+	res, err := pu.repo.GetByAccount(p)
 	if err != nil {
-		return "", err
+		return []dto.ProductResponse{}, err
 	}
 
-	return fileLocation, nil
+	for _, product := range res {
+		products = append(products, dto.ProductResponse{
+			ProductID:           fmt.Sprintf("%d", product.ID),
+			AccountID:           fmt.Sprintf("%d", product.AccountID),
+			ProductName:         product.ProductName,
+			Price:               fmt.Sprintf("%.f", product.Price),
+			Description:         product.Description,
+			DetailMediaProducts: strings.Split(product.DetailMediaProducts, ", "),
+		})
+	}
+	return products, nil
 }
 
-func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product,error) {
+func (pu *productUseCase) GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error) {
+	var product dto.ProductResponse
+
+	res, err := pu.repo.GetByProduct(p)
+	if err != nil {
+		return dto.ProductResponse{}, err
+	}
+
+	product.ProductID = fmt.Sprintf("%d", res.ID)
+	product.AccountID = fmt.Sprintf("%d", res.AccountID)
+	product.ProductName = res.ProductName
+	product.Price = fmt.Sprintf("%.f", res.Price)
+	product.Description = res.Description
+	product.DetailMediaProducts = strings.Split(res.DetailMediaProducts, ", ")
+
+	return product, nil
+}
+
+func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, error) {
 	var createdProduct entity.Product
 	accountId, _ := strconv.Atoi(p.AccountID)
 	priceConv, _ := strconv.Atoi(p.Price)
@@ -41,12 +67,7 @@ func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product,e
 	createdProduct.ProductName = p.ProductName
 	createdProduct.Price = float64(priceConv)
 	createdProduct.Description = p.Description
-
-	for _, detailMediaProduct := range p.DetailMediaProducts {
-		createdProduct.DetailMediaProducts = append(createdProduct.DetailMediaProducts, entity.DetailMediaProduct{
-			MediaLink: detailMediaProduct.MediaLink,
-		})
-	}
+	createdProduct.DetailMediaProducts = strings.Join(p.DetailMediaProducts, ", ")
 
 	if err := pu.repo.Create(&createdProduct); err != nil {
 		return createdProduct, err
@@ -56,9 +77,8 @@ func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product,e
 
 }
 
-func NewProductUseCase(repo repository.ProductRepositoryInterface, fileRepo repository.FileRepository) ProductUseCaseInterface {
+func NewProductUseCase(repo repository.ProductRepositoryInterface) ProductUseCaseInterface {
 	return &productUseCase{
-		repo:     repo,
-		fileRepo: fileRepo,
+		repo: repo,
 	}
 }

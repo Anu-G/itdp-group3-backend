@@ -23,3 +23,8 @@ func (b *BaseApi) SuccessResponse(c *gin.Context, data interface{}) {
 func (b *BaseApi) FailedResponse(c *gin.Context, err error) {
 	JsonResponseFailedBuilder(c, err).Send()
 }
+
+func (b *BaseApi) SuccessDownload(c *gin.Context, filePath string) {
+	FileResponseSuccessBuilder(c, filePath).Send()
+}
+

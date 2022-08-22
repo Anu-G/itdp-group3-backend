@@ -73,6 +73,7 @@ func Server() *appServer {
 func (a *appServer) initControllers() {
 	controller.NewAccountController(a.engine, a.UseCaseManager.AccountUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
+	controller.NewBusinessProfileController(a.engine, a.UseCaseManager.BusinessProfileUseCase())
 }
 
 // Run : run the server

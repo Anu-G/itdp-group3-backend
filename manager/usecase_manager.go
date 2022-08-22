@@ -6,10 +6,15 @@ type UseCaseManagerInterface interface {
 	UserUsecase() usecase.UserUsecase
 	AuthUsecase() usecase.AuthUsecase
 	AccountUsecase() usecase.AccountUsecase
+	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
 }
 
 type useCaseManager struct {
 	repo RepositoryManagerInterface
+}
+
+func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {
+	return usecase.NewBusinessProfileUseCase(um.repo.BusinessProfileRepo(), um.repo.FileRepo())
 }
 
 // NewUseCase : init new use case manager

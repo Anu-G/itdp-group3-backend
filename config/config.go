@@ -15,6 +15,7 @@ type Config struct {
 	APIConfig
 	TokenConfig
 	RedisClient
+	MediaPath
 }
 
 type DBConfig struct {
@@ -43,6 +44,10 @@ type TokenConfig struct {
 
 type RedisClient struct {
 	RedisAddress string `mapstructure:"REDIS_ADDRESS"`
+}
+
+type MediaPath struct {
+	Path string `mapstructure:"FILEPATH"`
 }
 
 // loadConfig : get configuration from .env
@@ -84,6 +89,10 @@ func (c *Config) loadConfig(path string) (config Config, err error) {
 		DB:   0,
 	})
 	config.TokenConfig.Redis = newRedisClient
+
+	if err = viper.Unmarshal(&config.MediaPath); err != nil {
+		return
+	}
 	return
 }
 

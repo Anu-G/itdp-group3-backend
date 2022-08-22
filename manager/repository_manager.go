@@ -15,48 +15,48 @@ type RepositoryManagerInterface interface {
 }
 
 type repositoryManager struct {
-	dbCon InfraManagerInterface
+	infra InfraManagerInterface
 }
 
 func (rm *repositoryManager) ProductRepo() repository.ProductRepositoryInterface {
-	return repository.NewProductRepo(rm.dbCon.DBCon())
+	return repository.NewProductRepo(rm.infra.DBCon())
 }
 
 func (rm *repositoryManager) BusinessProfileRepo() repository.BusinessProfileRepositoryInterface {
-	return repository.NewBusinessProfileRepo(rm.dbCon.DBCon())
+	return repository.NewBusinessProfileRepo(rm.infra.DBCon())
 }
 
 func (rm *repositoryManager) FileRepo() repository.FileRepository {
-	return repository.NewFileRepository(`E:\ITDP Sinarmas Mining\toktok_dev\img`)
+	return repository.NewFileRepository(rm.infra.GetMediaPath())
 }
 
 // NewRepo : init new repository manager
-func NewRepo(dbCon InfraManagerInterface) RepositoryManagerInterface {
+func NewRepo(infra InfraManagerInterface) RepositoryManagerInterface {
 	return &repositoryManager{
-		dbCon: dbCon,
+		infra: infra,
 	}
 }
 
 func (r *repositoryManager) UserRepo() repository.UserRepository {
-	return repository.NewUserRepository(r.dbCon.DBCon())
+	return repository.NewUserRepository(r.infra.DBCon())
 }
 
 func (r *repositoryManager) AuthRepo() repository.AuthRepository {
-	return repository.NewAuthRepo(r.dbCon.DBCon())
+	return repository.NewAuthRepo(r.infra.DBCon())
 }
 
 func (r *repositoryManager) AccountRepo() repository.AccountRepository {
-	return repository.NewAccountRepository(r.dbCon.DBCon())
+	return repository.NewAccountRepository(r.infra.DBCon())
 }
 
 func (r *repositoryManager) FeedRepo() repository.FeedRepository {
-	return repository.NewFeedRepository(r.dbCon.DBCon())
+	return repository.NewFeedRepository(r.infra.DBCon())
 }
 
 func (r *repositoryManager) DetailMediaFeedRepo() repository.DetailMediaFeedRepository {
-	return repository.NewDetailMediaFeedRepository(r.dbCon.DBCon())
+	return repository.NewDetailMediaFeedRepository(r.infra.DBCon())
 }
 
 func (r *repositoryManager) DetailCommentRepo() repository.DetailCommentRepository {
-	return repository.NewDetailCommentRepository(r.dbCon.DBCon())
+	return repository.NewDetailCommentRepository(r.infra.DBCon())
 }

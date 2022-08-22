@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"itdp-group3-backend/delivery/api"
+	"itdp-group3-backend/middleware"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
@@ -19,15 +20,18 @@ type ProductController struct {
 	router  *gin.Engine
 	usecase usecase.ProductUseCaseInterface
 	api.BaseApi
+	middleware middleware.AuthTokenMiddleware
 }
 
-func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface) *ProductController {
+func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface, middleware middleware.AuthTokenMiddleware) *ProductController {
 	controller := ProductController{
-		router:  router,
-		usecase: uc,
+		router:     router,
+		usecase:    uc,
+		middleware: middleware,
 	}
 
 	routeProduct := controller.router.Group("/product")
+	routeProduct.Use(middleware.RequireToken())
 	routeProduct.POST("/add/product", controller.addProduct)
 	routeProduct.POST("/add/product-image", controller.addProductImage)
 	routeProduct.POST("/get/by-account", controller.getByAccount)
@@ -57,6 +61,9 @@ func (b *ProductController) addProduct(ctx *gin.Context) {
 		return
 	} else if len(productReq.DetailMediaProducts) == 0 {
 		b.FailedResponse(ctx, utils.RequiredError("product must have minimum 1 image"))
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
+		return
 	}
 
 	createdProduct, err = b.usecase.CreateProduct(&productReq)
@@ -117,6 +124,9 @@ func (b *ProductController) getByAccount(ctx *gin.Context) {
 	if productReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
 		return
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
+		return
 	}
 
 	productRes, err = b.usecase.GetByAccount(productReq)
@@ -138,8 +148,11 @@ func (b *ProductController) getByProduct(ctx *gin.Context) {
 	if productReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
 		return
-	}else if productReq.ProductID == ""{
+	} else if productReq.ProductID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("product_id"))
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
+		return
 	}
 
 	productRes, err = b.usecase.GetByProduct(productReq)

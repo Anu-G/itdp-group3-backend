@@ -3,7 +3,7 @@ package delivery
 import (
 	"itdp-group3-backend/auth"
 	"itdp-group3-backend/config"
-	"itdp-group3-backend/controller"
+	"itdp-group3-backend/delivery/controller"
 	"itdp-group3-backend/manager"
 	"itdp-group3-backend/tools"
 	"log"
@@ -76,7 +76,7 @@ func (a *appServer) initControllers() {
 	controller.NewDetailMediaFeedController(a.engine, a.UseCaseManager.DetailMediaFeedUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewFeedController(a.engine, a.UseCaseManager.FeedUsecase(), a.UseCaseManager.DetailMediaFeedUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
-	controller.NewProductController(a.engine, a.UseCaseManager.ProductUseCase())
+	controller.NewProductController(a.engine, a.UseCaseManager.ProductUseCase(), a.MiddlewareManager.AuthMiddleware())
 }
 
 // Run : run the server

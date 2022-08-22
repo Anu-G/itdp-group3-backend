@@ -4,11 +4,13 @@ import (
 	"errors"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
+	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type DetailMediaFeedController struct {
@@ -38,33 +40,46 @@ func (fm *DetailMediaFeedController) readDetailMediaFeed(ctx *gin.Context) {
 	err := fm.ParseBodyRequest(ctx, &readDetailMediaFeed)
 	if err != nil {
 		fm.FailedResponse(ctx, err)
+		return
 	}
 	err = fm.fmUC.Read(&readDetailMediaFeed)
 	if err != nil {
 		fm.FailedResponse(ctx, err)
+		return
 	}
 	fm.SuccessResponse(ctx, readDetailMediaFeed)
 }
 
 func (fm *DetailMediaFeedController) createDetailMediaFeed(ctx *gin.Context) {
-	feedId := ctx.PostForm("feed_id")
+	var detailMediaFeed []dto.DetailMediaFeed
 
-	file, fileHeader, err := ctx.Request.FormFile("feed_image")
+	form, err := ctx.MultipartForm()
+	files := form.File["feed_images"]
+
 	if err != nil {
 		fm.FailedResponse(ctx, errors.New("failed get file"))
 		return
 	}
 
-	fileName := strings.Split(fileHeader.Filename, ".")
-	if len(fileName) != 2 {
-		fm.FailedResponse(ctx, errors.New("Unrecognized file extension"))
+	for _, file := range files {
+		newFileName := strings.Split(file.Filename, ".")
+		if len(newFileName) != 2 {
+			fm.FailedResponse(ctx, errors.New("Unrecognize file extension"))
+			return
+		}
+
+		path := `E:\` + "img-feed-" + uuid.New().String() + "." + newFileName[1]
+
+		if err := ctx.SaveUploadedFile(file, path); err != nil {
+			fm.FailedResponse(ctx, errors.New("failed while saving file"))
+			return
+		}
+
+		detailMediaFeed = append(detailMediaFeed, dto.DetailMediaFeed{
+			MediaLink: path,
+		})
 	}
 
-	fileLocation, err := fm.fmUC.Create(feedId, file, fileName[1])
-	if err != nil {
-		fm.FailedResponse(ctx, errors.New("failed while saving file"))
-		return
-	}
+	fm.SuccessResponse(ctx, detailMediaFeed)
 
-	fm.SuccessResponse(ctx, fileLocation)
 }

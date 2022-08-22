@@ -10,11 +10,16 @@ type RepositoryManagerInterface interface {
 	DetailMediaFeedRepo() repository.DetailMediaFeedRepository
 	DetailCommentRepo() repository.DetailCommentRepository
 	BusinessProfileRepo() repository.BusinessProfileRepositoryInterface
+	ProductRepo() repository.ProductRepositoryInterface
 	FileRepo() repository.FileRepository
 }
 
 type repositoryManager struct {
 	dbCon InfraManagerInterface
+}
+
+func (rm *repositoryManager) ProductRepo() repository.ProductRepositoryInterface {
+	return repository.NewProductRepo(rm.dbCon.DBCon())
 }
 
 func (rm *repositoryManager) BusinessProfileRepo() repository.BusinessProfileRepositoryInterface {

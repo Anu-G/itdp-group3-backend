@@ -10,3 +10,13 @@ type ReadPage struct {
 type DeleteFeed struct {
 	ID uint `json:"feed_id"`
 }
+
+type DetailMediaFeed struct {
+	MediaLink string `json:"media_link"`
+}
+
+type CreateFeed struct {
+	AccountID   uint     `json:"account_ID"`
+	CaptionPost string   `json:"caption_post"`
+	MediaLinks  []string `json:"media_links"`
+}

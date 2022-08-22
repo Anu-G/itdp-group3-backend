@@ -10,10 +10,15 @@ type UseCaseManagerInterface interface {
 	DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase
 	DetailCommentUsecase() usecase.DetailCommentUsecase
 	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
+	ProductUseCase() usecase.ProductUseCaseInterface
 }
 
 type useCaseManager struct {
 	repo RepositoryManagerInterface
+}
+
+func (um *useCaseManager) ProductUseCase() usecase.ProductUseCaseInterface {
+	return usecase.NewProductUseCase(um.repo.ProductRepo(), um.repo.FileRepo())
 }
 
 func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {

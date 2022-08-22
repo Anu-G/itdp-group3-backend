@@ -1,15 +1,12 @@
 package usecase
 
 import (
-	"fmt"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
-	"mime/multipart"
-	"strconv"
 )
 
 type DetailMediaFeedUsecase interface {
-	Create(feedID string, file multipart.File, fileName string) (string, error)
+	Create(feedID uint, filePath string) error
 	Read(fm *entity.DetailMediaFeed) error
 }
 
@@ -25,22 +22,15 @@ func NewDetailMediaFeedUsecase(repo repository.DetailMediaFeedRepository, fileRe
 	}
 }
 
-func (fmc *detailMediaDetailMediaFeedUsecase) Create(feedID string, file multipart.File, fileName string) (string, error) {
-	fileExt := fmt.Sprintf("img-bp-%s.%s", feedID, fileName)
-	fileLocation, err := fmc.fileRepo.Save(file, fileExt)
-
-	if err != nil {
-		return "", err
-	}
-	feedIDint, _ := strconv.Atoi(feedID)
+func (fmc *detailMediaDetailMediaFeedUsecase) Create(feedID uint, filePath string) error {
 	var createFeed entity.DetailMediaFeed
-	createFeed.FeedID = uint(feedIDint)
-	createFeed.MediaLink = fileLocation
-	err = fmc.repo.Create(&createFeed)
+	createFeed.FeedID = uint(feedID)
+	createFeed.MediaLink = filePath
+	err := fmc.repo.Create(&createFeed)
 	if err != nil {
-		return "", err
+		return err
 	}
-	return fileLocation, err
+	return nil
 }
 
 func (fmc *detailMediaDetailMediaFeedUsecase) Read(fm *entity.DetailMediaFeed) error {

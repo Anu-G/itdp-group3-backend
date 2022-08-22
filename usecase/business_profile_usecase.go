@@ -7,11 +7,13 @@ import (
 	"itdp-group3-backend/repository"
 	"mime/multipart"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type BusinessProfileUseCaseInterface interface {
 	CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error)
-	CreateProfileImage(accountId string, file multipart.File, fileExt string) (string, error)
+	CreateProfileImage(file multipart.File, fileExt string) (string, error)
 	GetBusinessProfile(bp *dto.BusinessProfileRequest) (dto.BusinessProfileResponse, error)
 }
 
@@ -42,8 +44,8 @@ func (b *businessProfileUseCase) GetBusinessProfile(bp *dto.BusinessProfileReque
 	return response, nil
 }
 
-func (b *businessProfileUseCase) CreateProfileImage(accountId string, file multipart.File, fileExt string) (string, error) {
-	fileName := fmt.Sprintf("img-bp-%s.%s", accountId, fileExt)
+func (b *businessProfileUseCase) CreateProfileImage(file multipart.File, fileExt string) (string, error) {
+	fileName := fmt.Sprintf("img-bp-%s.%s", uuid.New().String(), fileExt)
 	fileLocation, err := b.fileRepo.Save(file, fileName)
 
 	if err != nil {

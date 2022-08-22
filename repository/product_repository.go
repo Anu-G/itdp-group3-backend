@@ -21,7 +21,7 @@ func (pr *productRepository) GetByIdPreload(p *entity.Product) error {
 }
 
 func (pr *productRepository) GetAllPreload(p *[]entity.Product) error {
-	return pr.db.Preload("DetailMediaProducts").Find(&p).Error
+	return pr.db.Preload("DetailMediaProducts").Find(&p, "m_product.account_id = ?", ).Error
 }
 
 func (pr *productRepository) Create(p *entity.Product) error {

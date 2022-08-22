@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ProductController struct {
@@ -52,6 +53,8 @@ func (b *ProductController) addProduct(ctx *gin.Context) {
 	} else if productReq.Description == "" {
 		b.FailedResponse(ctx, utils.RequiredError("description"))
 		return
+	} else if len(productReq.DetailMediaProducts) == 0 {
+		b.FailedResponse(ctx, utils.RequiredError("product must have minimum 1 image"))
 	}
 
 	createdProduct, err = b.usecase.CreateProduct(&productReq)
@@ -63,24 +66,36 @@ func (b *ProductController) addProduct(ctx *gin.Context) {
 }
 
 func (b *ProductController) addProductImage(ctx *gin.Context) {
-	file, fileHeader, err := ctx.Request.FormFile("product_image")
+	var detailMediaProducts []dto.DetailMediaProduct
+
+	form, err := ctx.MultipartForm()
+	files := form.File["product_images"]
+
 	if err != nil {
 		b.FailedResponse(ctx, errors.New("failed get file"))
 		return
 	}
 
-	fileName := strings.Split(fileHeader.Filename, ".")
-	if len(fileName) != 2 {
-		b.FailedResponse(ctx, errors.New("Unrecognized file extension"))
+	for _, file := range files {
+		newFileName := strings.Split(file.Filename, ".")
+		if len(newFileName) != 2 {
+			b.FailedResponse(ctx, errors.New("Unrecognize file extension"))
+			return
+		}
+
+		path := `E:\ITDP Sinarmas Mining\toktok_dev\img\` + "img-product-" + uuid.New().String() + "." + newFileName[1]
+
+		if err := ctx.SaveUploadedFile(file, path); err != nil {
+			b.FailedResponse(ctx, errors.New("failed while saving file"))
+			return
+		}
+
+		detailMediaProducts = append(detailMediaProducts, dto.DetailMediaProduct{
+			MediaLink: path,
+		})
 	}
 
-	fileLocation, err := b.usecase.CreateProductImage(file, fileName[1])
-	if err != nil {
-		b.FailedResponse(ctx, errors.New("failed while saving file"))
-		return
-	}
-
-	b.SuccessResponse(ctx, fileLocation)
+	b.SuccessResponse(ctx, detailMediaProducts)
 }
 
 // func (b *ProductController) getProfile(ctx *gin.Context) {

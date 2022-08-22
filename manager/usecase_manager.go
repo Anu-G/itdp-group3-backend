@@ -9,10 +9,15 @@ type UseCaseManagerInterface interface {
 	FeedUsecase() usecase.FeedUsecase
 	DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase
 	DetailCommentUsecase() usecase.DetailCommentUsecase
+	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
 }
 
 type useCaseManager struct {
 	repo RepositoryManagerInterface
+}
+
+func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {
+	return usecase.NewBusinessProfileUseCase(um.repo.BusinessProfileRepo(), um.repo.FileRepo())
 }
 
 // NewUseCase : init new use case manager
@@ -39,7 +44,7 @@ func (uc *useCaseManager) FeedUsecase() usecase.FeedUsecase {
 }
 
 func (uc useCaseManager) DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase {
-	return usecase.NewDetailMediaFeedUsecase(uc.repo.DetailMediaFeedRepo())
+	return usecase.NewDetailMediaFeedUsecase(uc.repo.DetailMediaFeedRepo(), uc.repo.FileRepo())
 }
 
 func (uc useCaseManager) DetailCommentUsecase() usecase.DetailCommentUsecase {

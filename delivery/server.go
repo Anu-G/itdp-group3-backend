@@ -76,6 +76,7 @@ func (a *appServer) initControllers() {
 	controller.NewDetailMediaFeedController(a.engine, a.UseCaseManager.DetailMediaFeedUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewFeedController(a.engine, a.UseCaseManager.FeedUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
+	controller.NewBusinessProfileController(a.engine, a.UseCaseManager.BusinessProfileUseCase())
 }
 
 // Run : run the server

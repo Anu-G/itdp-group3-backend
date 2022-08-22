@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"errors"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,14 +47,24 @@ func (fm *DetailMediaFeedController) readDetailMediaFeed(ctx *gin.Context) {
 }
 
 func (fm *DetailMediaFeedController) createDetailMediaFeed(ctx *gin.Context) {
-	var createDetailMediaFeed entity.DetailMediaFeed
-	err := fm.ParseBodyRequest(ctx, &createDetailMediaFeed)
+	feedId := ctx.PostForm("feed_id")
+
+	file, fileHeader, err := ctx.Request.FormFile("feed_image")
 	if err != nil {
-		fm.FailedResponse(ctx, err)
+		fm.FailedResponse(ctx, errors.New("failed get file"))
+		return
 	}
-	err = fm.fmUC.Create(&createDetailMediaFeed)
+
+	fileName := strings.Split(fileHeader.Filename, ".")
+	if len(fileName) != 2 {
+		fm.FailedResponse(ctx, errors.New("Unrecognized file extension"))
+	}
+
+	fileLocation, err := fm.fmUC.Create(feedId, file, fileName[1])
 	if err != nil {
-		fm.FailedResponse(ctx, err)
+		fm.FailedResponse(ctx, errors.New("failed while saving file"))
+		return
 	}
-	fm.SuccessResponse(ctx, createDetailMediaFeed)
+
+	fm.SuccessResponse(ctx, fileLocation)
 }

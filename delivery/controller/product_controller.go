@@ -2,11 +2,13 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,8 +30,8 @@ func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface
 	routeProduct := controller.router.Group("/product")
 	routeProduct.POST("/add/product", controller.addProduct)
 	routeProduct.POST("/add/product-image", controller.addProductImage)
-	// routeProduct.POST("/get/profile", controller.getProfile)
-	// routeProduct.POST("/get/profile-image", controller.getProfileImage)
+	routeProduct.POST("/get/by-account", controller.getByAccount)
+	routeProduct.POST("/get/by-product", controller.getByProduct)
 
 	return &controller
 }
@@ -66,7 +68,7 @@ func (b *ProductController) addProduct(ctx *gin.Context) {
 }
 
 func (b *ProductController) addProductImage(ctx *gin.Context) {
-	var detailMediaProducts []dto.DetailMediaProduct
+	var detailMediaProducts []string
 
 	form, err := ctx.MultipartForm()
 	files := form.File["product_images"]
@@ -76,6 +78,14 @@ func (b *ProductController) addProductImage(ctx *gin.Context) {
 		return
 	}
 
+	path := `E:\ITDP Sinarmas Mining\toktok_dev\img\products\` + uuid.New().String() + `\`
+	if err := os.MkdirAll(path, os.ModePerm); err != nil {
+		b.FailedResponse(ctx, errors.New("failed while making directory"))
+		return
+	}
+
+	fmt.Println(path)
+
 	for _, file := range files {
 		newFileName := strings.Split(file.Filename, ".")
 		if len(newFileName) != 2 {
@@ -83,59 +93,60 @@ func (b *ProductController) addProductImage(ctx *gin.Context) {
 			return
 		}
 
-		path := `E:\ITDP Sinarmas Mining\toktok_dev\img\` + "img-product-" + uuid.New().String() + "." + newFileName[1]
+		newPath := path + "img-product-" + uuid.New().String() + "." + newFileName[1]
+		fmt.Println(newPath)
 
-		if err := ctx.SaveUploadedFile(file, path); err != nil {
+		if err := ctx.SaveUploadedFile(file, newPath); err != nil {
 			b.FailedResponse(ctx, errors.New("failed while saving file"))
 			return
 		}
 
-		detailMediaProducts = append(detailMediaProducts, dto.DetailMediaProduct{
-			MediaLink: path,
-		})
+		detailMediaProducts = append(detailMediaProducts, newPath)
 	}
 
 	b.SuccessResponse(ctx, detailMediaProducts)
 }
 
-// func (b *ProductController) getProfile(ctx *gin.Context) {
-// 	var (
-// 		productReq dto.ProductRequest
-// 		productRes dto.ProductResponse
-// 	)
+func (b *ProductController) getByAccount(ctx *gin.Context) {
+	var (
+		productReq dto.ProductRequest
+		productRes []dto.ProductResponse
+	)
 
-// 	err := b.ParseBodyRequest(ctx, &productReq)
-// 	if productReq.AccountID == "" {
-// 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
-// 		return
-// 	}
+	err := b.ParseBodyRequest(ctx, &productReq)
+	if productReq.AccountID == "" {
+		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	}
 
-// 	productRes, err = b.usecase.GetProduct(&productReq)
-// 	if err != nil {
-// 		b.FailedResponse(ctx, err)
-// 		return
-// 	}
+	productRes, err = b.usecase.GetByAccount(productReq)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
 
-// 	b.SuccessResponse(ctx, productRes)
-// }
+	b.SuccessResponse(ctx, productRes)
+}
 
-// func (b *ProductController) getProfileImage(ctx *gin.Context) {
-// 	var (
-// 		productReq dto.ProductRequest
-// 		productRes dto.ProductResponse
-// 	)
+func (b *ProductController) getByProduct(ctx *gin.Context) {
+	var (
+		productReq dto.ProductRequest
+		productRes dto.ProductResponse
+	)
 
-// 	err := b.ParseBodyRequest(ctx, &productReq)
-// 	if productReq.AccountID == "" {
-// 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
-// 		return
-// 	}
+	err := b.ParseBodyRequest(ctx, &productReq)
+	if productReq.AccountID == "" {
+		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	}else if productReq.ProductID == ""{
+		b.FailedResponse(ctx, utils.RequiredError("product_id"))
+	}
 
-// 	productRes, err = b.usecase.GetProduct(&productReq)
-// 	if err != nil {
-// 		b.FailedResponse(ctx, err)
-// 		return
-// 	}
+	productRes, err = b.usecase.GetByProduct(productReq)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
 
-// 	b.SuccessDownload(ctx, productRes.Product.ProfileImage)
-// }
+	b.SuccessResponse(ctx, productRes)
+}

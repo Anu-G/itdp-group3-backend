@@ -12,6 +12,7 @@ type RepositoryManagerInterface interface {
 	BusinessProfileRepo() repository.BusinessProfileRepositoryInterface
 	ProductRepo() repository.ProductRepositoryInterface
 	FileRepo() repository.FileRepository
+	NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface
 }
 
 type repositoryManager struct {
@@ -28,6 +29,10 @@ func (rm *repositoryManager) BusinessProfileRepo() repository.BusinessProfileRep
 
 func (rm *repositoryManager) FileRepo() repository.FileRepository {
 	return repository.NewFileRepository(rm.infra.GetMediaPath())
+}
+
+func (rm *repositoryManager) NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface {
+	return repository.NewNonBusinessProfileRepo(rm.infra.DBCon())
 }
 
 // NewRepo : init new repository manager

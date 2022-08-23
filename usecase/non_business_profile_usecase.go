@@ -27,9 +27,9 @@ func (b *nonBusinessProfileUseCase) GetNonBusinessProfile(bp *dto.NonBusinessPro
 	var createdBp entity.NonBusinessProfile
 	var response dto.NonBusinessProfileResponse
 	var account entity.Account
-
 	accountId, _ := strconv.Atoi(bp.AccountID)
 
+	account.ID = uint(accountId)
 	err := b.accountRepo.FindById(&account)
 	if err != nil {
 		return dto.NonBusinessProfileResponse{}, err
@@ -72,7 +72,7 @@ func (b *nonBusinessProfileUseCase) CreateNonBusinessProfile(bp *dto.NonBusiness
 	account.ID = uint(accountId)
 	b.accountRepo.FindById(&account)
 
-	if account.Username != ""{
+	if account.Username != "" {
 		if err := b.repo.Delete(strconv.FormatUint(uint64(createdNonBusinessProfile.AccountID), 10)); err != nil {
 			return createdNonBusinessProfile, err
 		}
@@ -87,8 +87,8 @@ func (b *nonBusinessProfileUseCase) CreateNonBusinessProfile(bp *dto.NonBusiness
 
 func NewNonBusinessProfileUseCase(repo repository.NonBusinessProfileRepositoryInterface, accountRepo repository.AccountRepository, fileRepo repository.FileRepository) NonBusinessProfileUseCaseInterface {
 	return &nonBusinessProfileUseCase{
-		repo:     repo,
+		repo:        repo,
 		accountRepo: accountRepo,
-		fileRepo: fileRepo,
+		fileRepo:    fileRepo,
 	}
 }

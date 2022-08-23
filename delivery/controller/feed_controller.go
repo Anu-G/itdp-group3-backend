@@ -134,10 +134,10 @@ func (f *FeedController) createFeed(ctx *gin.Context) {
 	if createFeed.AccountID == 0 {
 		f.FailedResponse(ctx, utils.RequiredError("account ID"))
 		return
-	} else if createFeed.CaptionPost != "" {
+	} else if createFeed.CaptionPost == "" {
 		f.FailedResponse(ctx, utils.RequiredError("feed caption"))
 		return
-	} else if createFeed.MediaLinks != nil {
+	} else if createFeed.MediaLinks == nil {
 		f.FailedResponse(ctx, utils.RequiredError("photos/videos"))
 		return
 	}

@@ -3,10 +3,13 @@ package usecase
 import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
+	"mime/multipart"
+
+	"github.com/gin-gonic/gin"
 )
 
 type DetailMediaFeedUsecase interface {
-	Create(feedID uint, filePath string) error
+	Create(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error)
 	Read(fm *entity.DetailMediaFeed) error
 }
 
@@ -22,15 +25,8 @@ func NewDetailMediaFeedUsecase(repo repository.DetailMediaFeedRepository, fileRe
 	}
 }
 
-func (fmc *detailMediaDetailMediaFeedUsecase) Create(feedID uint, filePath string) error {
-	var createFeed entity.DetailMediaFeed
-	createFeed.FeedID = uint(feedID)
-	createFeed.MediaLink = filePath
-	err := fmc.repo.Create(&createFeed)
-	if err != nil {
-		return err
-	}
-	return nil
+func (fmc *detailMediaDetailMediaFeedUsecase) Create(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
+	return fmc.fileRepo.SavefromCtx(file, fileName, ctx)
 }
 
 func (fmc *detailMediaDetailMediaFeedUsecase) Read(fm *entity.DetailMediaFeed) error {

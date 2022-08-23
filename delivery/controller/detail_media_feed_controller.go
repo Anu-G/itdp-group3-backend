@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type DetailMediaFeedController struct {
@@ -68,9 +67,9 @@ func (fm *DetailMediaFeedController) createDetailMediaFeed(ctx *gin.Context) {
 			return
 		}
 
-		path := `E:\` + "img-feed-" + uuid.New().String() + "." + newFileName[1]
+		path, err := fm.fmUC.Create(file, newFileName[1], ctx)
 
-		if err := ctx.SaveUploadedFile(file, path); err != nil {
+		if err != nil {
 			fm.FailedResponse(ctx, errors.New("failed while saving file"))
 			return
 		}

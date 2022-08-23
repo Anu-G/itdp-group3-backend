@@ -2,12 +2,14 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"itdp-group3-backend/auth"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +22,10 @@ type AuthController struct {
 	api.BaseApi
 }
 
+type authHeader struct {
+	AuthorizationHeader string `header:"Authorization"`
+}
+
 func NewAuthController(router *gin.Engine, au usecase.AuthUsecase, uu usecase.UserUsecase, at auth.Token) *AuthController {
 	controller := AuthController{
 		router:    router,
@@ -30,6 +36,7 @@ func NewAuthController(router *gin.Engine, au usecase.AuthUsecase, uu usecase.Us
 	routerAuth := controller.router.Group(("/auth"))
 	routerAuth.POST("/register", controller.createUserAccount)
 	routerAuth.POST("/login", controller.loginUser)
+	routerAuth.POST("/logout", controller.logoutUser)
 
 	return &controller
 }
@@ -107,9 +114,36 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 		ac.FailedResponse(ctx, err)
 		return
 	}
-	if err := ac.authToken.StoreAccessToken(user.Username, generateToken); err != nil {
+	if err := ac.authToken.StoreAccessToken(generateToken.AccessUuid, generateToken); err != nil {
 		ac.FailedResponse(ctx, err)
 		return
 	}
 	ac.SuccessResponse(ctx, generateToken.AccessToken)
+}
+
+func (ac *AuthController) logoutUser(ctx *gin.Context) {
+	h := authHeader{}
+	if err := ctx.ShouldBindHeader(&h); err != nil {
+		ac.FailedResponse(ctx, errors.New("unauthorized"))
+		return
+	}
+
+	tokenStr := strings.Replace(h.AuthorizationHeader, "Bearer ", "", -1)
+	if tokenStr == "" {
+		ac.FailedResponse(ctx, errors.New("unauthorized"))
+		return
+	}
+
+	token, err := ac.authToken.VerifyAccessToken(tokenStr)
+	if err != nil {
+		ac.FailedResponse(ctx, errors.New("unauthorized"))
+		return
+	}
+	tokenUuid, err := ac.authToken.DeleteAccessToken(token)
+	if err != nil {
+		ac.FailedResponse(ctx, errors.New("unauthorized"))
+		return
+	}
+	responseDel := fmt.Sprintf("deleted token : %v", tokenUuid)
+	ac.SuccessResponse(ctx, responseDel)
 }

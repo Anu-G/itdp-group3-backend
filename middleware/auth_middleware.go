@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"itdp-group3-backend/auth"
 	"net/http"
 	"strings"
@@ -55,6 +56,7 @@ func (at *authTokenMiddleware) RequireToken() gin.HandlerFunc {
 			return
 		}
 		userId, err := at.token.FetchAccessToken(token)
+		fmt.Println(userId)
 		if userId == "" || err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
 				"err": "unauthorized",

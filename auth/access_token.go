@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"itdp-group3-backend/config"
 	"itdp-group3-backend/model/entity"
@@ -13,9 +14,10 @@ import (
 type Token interface {
 	CreateAccessToken(cred *entity.User) (*entity.TokenDetails, error)
 	VerifyAccessToken(tokenStr string) (*entity.AccessDetail, error)
-	StoreAccessToken(userName string, tokenDetail *entity.TokenDetails) error
+	StoreAccessToken(accessUuid string, tokenDetail *entity.TokenDetails) error
 	FetchAccessToken(accessDetail *entity.AccessDetail) (string, error)
 	OpenAccessToken(accessDetail *entity.AccessDetail) (string, error)
+	DeleteAccessToken(accessDetail *entity.AccessDetail) (string, error)
 }
 
 type token struct {
@@ -73,10 +75,10 @@ func (ts *token) VerifyAccessToken(tokenStr string) (*entity.AccessDetail, error
 	return newAccessDetail, nil
 }
 
-func (ts *token) StoreAccessToken(userName string, tokenDetail *entity.TokenDetails) error {
+func (ts *token) StoreAccessToken(accessUuid string, tokenDetail *entity.TokenDetails) error {
 	now := time.Now().Local()
 	end := time.Unix(tokenDetail.AtExpires, 0)
-	if err := ts.cfg.Redis.Set(tokenDetail.AccessUuid, userName, end.Sub(now)).Err(); err != nil {
+	if err := ts.cfg.Redis.Set(tokenDetail.AccessUuid, accessUuid, end.Sub(now)).Err(); err != nil {
 		return err
 	}
 	return nil
@@ -103,6 +105,15 @@ func (ts *token) OpenAccessToken(accessDetail *entity.AccessDetail) (string, err
 		return userName, nil
 	} else {
 		return "", fmt.Errorf("invalid access")
+	}
+}
+
+func (ts *token) DeleteAccessToken(accessDetail *entity.AccessDetail) (string, error) {
+	if accessDetail != nil {
+		_, err := ts.cfg.Redis.Del(accessDetail.AccessUuid).Result()
+		return accessDetail.AccessUuid, err
+	} else {
+		return accessDetail.AccessUuid, errors.New("no token can be found")
 	}
 }
 

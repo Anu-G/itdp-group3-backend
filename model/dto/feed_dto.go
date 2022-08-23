@@ -26,3 +26,9 @@ type ResponseFeed struct {
 	CaptionPost string   `json:"caption_post"`
 	MediaLinks  []string `json:"media_links"`
 }
+
+type RequestUpdateFeed struct {
+	FeedID      uint     `json:"feed_ID"`
+	CaptionPost string   `json:"caption_post"`
+	MediaLinks  []string `json:"media_links"`
+}

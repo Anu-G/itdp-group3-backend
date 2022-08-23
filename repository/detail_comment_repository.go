@@ -9,6 +9,7 @@ import (
 type DetailCommentRepository interface {
 	Create(cm *entity.DetailComment) error
 	Read(cm *entity.DetailComment) error
+	Delete(cm *entity.DetailComment) error
 }
 
 type detailCommentRepository struct {
@@ -27,4 +28,8 @@ func (cmr *detailCommentRepository) Create(cm *entity.DetailComment) error {
 
 func (cmr *detailCommentRepository) Read(cm *entity.DetailComment) error {
 	return cmr.db.Find(&cm, "id = ?", cm.ID).Error
+}
+
+func (cmr *detailCommentRepository) Delete(cm *entity.DetailComment) error {
+	return cmr.db.Where("id = ?", cm.ID).Delete(&cm).Error
 }

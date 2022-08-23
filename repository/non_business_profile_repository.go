@@ -9,16 +9,20 @@ import (
 type NonBusinessProfileRepositoryInterface interface {
 	Create(bp *entity.NonBusinessProfile) error
 	GetById(bp *entity.NonBusinessProfile) error
-	GetPhoneNumber(accountId uint) (acc entity.Account, err error)
+	Update(bp *entity.NonBusinessProfile) error
+	Delete(id string) error
 }
 
 type nonBusinessProfileRepository struct {
 	db *gorm.DB
 }
 
-func (n *nonBusinessProfileRepository) GetPhoneNumber(accountId uint) (acc entity.Account, err error) {
-	err = n.db.First(&acc, "m_account.id = ?", accountId).Error
-	return acc, err
+func (n *nonBusinessProfileRepository) Delete(id string) error {
+	return n.db.Unscoped().Where("account_id = ?", id).Delete(&entity.NonBusinessProfile{}).Error
+}
+
+func (n *nonBusinessProfileRepository) Update(bp *entity.NonBusinessProfile) error {
+	return n.db.Where("account_id = ?", bp.AccountID).Updates(bp).Error
 }
 
 func (n *nonBusinessProfileRepository) GetById(bp *entity.NonBusinessProfile) error {

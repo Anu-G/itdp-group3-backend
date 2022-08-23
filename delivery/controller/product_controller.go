@@ -36,6 +36,7 @@ func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface
 	routeProduct.POST("/add/product-image", controller.addProductImage)
 	routeProduct.POST("/get/by-account", controller.getByAccount)
 	routeProduct.POST("/get/by-product", controller.getByProduct)
+	routeProduct.POST("/delete/product", controller.deleteProduct)
 
 	return &controller
 }
@@ -162,4 +163,26 @@ func (b *ProductController) getByProduct(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, productRes)
+}
+
+func (b *ProductController) deleteProduct(ctx *gin.Context) {
+	var (
+		productReq dto.ProductRequest
+	)
+
+	err := b.ParseBodyRequest(ctx, &productReq)
+	if productReq.ProductID == "" {
+		b.FailedResponse(ctx, utils.RequiredError("product_id"))
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+
+	err = b.usecase.Delete(productReq.ProductID)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+
+	b.SuccessResponse(ctx, "success delete productID "+productReq.ProductID)
 }

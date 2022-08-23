@@ -13,10 +13,20 @@ type RepositoryManagerInterface interface {
 	ProductRepo() repository.ProductRepositoryInterface
 	FileRepo() repository.FileRepository
 	NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface
+	BusinessHourRepo() repository.BusinessHourRepositoryInterface
+	BusinessLinkRepo() repository.BusinessLinkRepositoryInterface
 }
 
 type repositoryManager struct {
 	infra InfraManagerInterface
+}
+
+func (rm *repositoryManager) BusinessHourRepo() repository.BusinessHourRepositoryInterface {
+	return repository.NewBusinessHourRepo(rm.infra.DBCon())
+}
+
+func (rm *repositoryManager) BusinessLinkRepo() repository.BusinessLinkRepositoryInterface {
+	return repository.NewBusinessLinkRepo(rm.infra.DBCon())
 }
 
 func (rm *repositoryManager) ProductRepo() repository.ProductRepositoryInterface {

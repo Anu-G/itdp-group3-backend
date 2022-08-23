@@ -13,10 +13,15 @@ type ProductUseCaseInterface interface {
 	CreateProduct(p *dto.ProductRequest) (entity.Product, error)
 	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
 	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
+	Delete(id string) error
 }
 
 type productUseCase struct {
 	repo repository.ProductRepositoryInterface
+}
+
+func (pu *productUseCase) Delete(id string) error {
+	return pu.repo.Delete(id)
 }
 
 func (pu *productUseCase) GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error) {

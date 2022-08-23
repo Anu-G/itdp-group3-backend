@@ -9,6 +9,7 @@ import (
 type AccountRepository interface {
 	Update(a *entity.Account) error
 	FindByUsername(a *entity.Account) error
+	FindById(a *entity.Account) error
 }
 
 type accountRepository struct {
@@ -27,4 +28,8 @@ func (ar *accountRepository) Update(a *entity.Account) error {
 
 func (ar *accountRepository) FindByUsername(a *entity.Account) error {
 	return ar.db.First(&a, "username = ?", a.Username).Error
+}
+
+func (ar *accountRepository) FindById(a *entity.Account) error {
+	return ar.db.First(&a, "id = ?", a.ID).Error
 }

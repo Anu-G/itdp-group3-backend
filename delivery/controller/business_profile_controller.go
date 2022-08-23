@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"itdp-group3-backend/delivery/api"
+	"itdp-group3-backend/middleware"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
@@ -16,15 +17,18 @@ type BusinessProfileController struct {
 	router  *gin.Engine
 	usecase usecase.BusinessProfileUseCaseInterface
 	api.BaseApi
+	middleware middleware.AuthTokenMiddleware
 }
 
-func NewBusinessProfileController(router *gin.Engine, uc usecase.BusinessProfileUseCaseInterface) *BusinessProfileController {
+func NewBusinessProfileController(router *gin.Engine, uc usecase.BusinessProfileUseCaseInterface, middleware middleware.AuthTokenMiddleware) *BusinessProfileController {
 	controller := BusinessProfileController{
-		router:  router,
-		usecase: uc,
+		router:     router,
+		usecase:    uc,
+		middleware: middleware,
 	}
 
 	routeBusinessProfile := controller.router.Group("/business-profile")
+	routeBusinessProfile.Use(middleware.RequireToken())
 	routeBusinessProfile.POST("/add/profile", controller.addBusinessProfile)
 	routeBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
 	routeBusinessProfile.POST("/get/profile", controller.getProfile)
@@ -40,17 +44,20 @@ func (b *BusinessProfileController) addBusinessProfile(ctx *gin.Context) {
 	)
 
 	err := b.ParseBodyRequest(ctx, &businessProfileReq)
-	if businessProfileReq.AccountID == ""{
+	if businessProfileReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
 		return
-	}else if businessProfileReq.CategoryID == ""{
+	} else if businessProfileReq.CategoryID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("category"))
 		return
-	}else if businessProfileReq.Address == "" {
+	} else if businessProfileReq.Address == "" {
 		b.FailedResponse(ctx, utils.RequiredError("address"))
 		return
-	}else if businessProfileReq.DisplayName == ""{
+	} else if businessProfileReq.DisplayName == "" {
 		b.FailedResponse(ctx, utils.RequiredError("display_name"))
+		return
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
 		return
 	}
 
@@ -90,8 +97,11 @@ func (b *BusinessProfileController) getProfile(ctx *gin.Context) {
 	)
 
 	err := b.ParseBodyRequest(ctx, &businessProfileReq)
-	if businessProfileReq.AccountID == ""{
+	if businessProfileReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
 		return
 	}
 
@@ -101,7 +111,7 @@ func (b *BusinessProfileController) getProfile(ctx *gin.Context) {
 		return
 	}
 
-	b.SuccessResponse(ctx, businessProfileRes)	
+	b.SuccessResponse(ctx, businessProfileRes)
 }
 
 func (b *BusinessProfileController) getProfileImage(ctx *gin.Context) {
@@ -111,8 +121,11 @@ func (b *BusinessProfileController) getProfileImage(ctx *gin.Context) {
 	)
 
 	err := b.ParseBodyRequest(ctx, &businessProfileReq)
-	if businessProfileReq.AccountID == ""{
+	if businessProfileReq.AccountID == "" {
 		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
 		return
 	}
 
@@ -122,5 +135,5 @@ func (b *BusinessProfileController) getProfileImage(ctx *gin.Context) {
 		return
 	}
 
-	b.SuccessDownload(ctx, businessProfileRes.BusinessProfile.ProfileImage)	
+	b.SuccessDownload(ctx, businessProfileRes.BusinessProfile.ProfileImage)
 }

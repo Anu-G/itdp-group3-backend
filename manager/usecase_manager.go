@@ -11,6 +11,7 @@ type UseCaseManagerInterface interface {
 	DetailCommentUsecase() usecase.DetailCommentUsecase
 	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
 	ProductUseCase() usecase.ProductUseCaseInterface
+	NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface
 }
 
 type useCaseManager struct {
@@ -18,11 +19,15 @@ type useCaseManager struct {
 }
 
 func (um *useCaseManager) ProductUseCase() usecase.ProductUseCaseInterface {
-	return usecase.NewProductUseCase(um.repo.ProductRepo(), um.repo.FileRepo())
+	return usecase.NewProductUseCase(um.repo.ProductRepo())
 }
 
 func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {
 	return usecase.NewBusinessProfileUseCase(um.repo.BusinessProfileRepo(), um.repo.FileRepo())
+}
+
+func (um *useCaseManager) NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface {
+	return usecase.NewNonBusinessProfileUseCase(um.repo.NonBusinessProfileRepo(), um.repo.FileRepo())
 }
 
 // NewUseCase : init new use case manager

@@ -24,7 +24,6 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 		&entity.BusinessFAQ{},
 		&entity.BusinessHour{},
 		&entity.BusinessLink{},
-		&entity.DetailMediaProduct{},
 		&entity.DetailMediaFeed{},
 		&entity.DetailComment{},
 	)

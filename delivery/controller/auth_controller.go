@@ -77,7 +77,8 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 		return
 	}
 
-	ac.SuccessResponse(ctx, createdUser)
+	responseRegister := fmt.Sprintf("user %s registered successfully", createdUser.Username)
+	ac.SuccessResponse(ctx, responseRegister)
 }
 
 func (ac *AuthController) loginUser(ctx *gin.Context) {
@@ -87,8 +88,8 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 	)
 
 	err := ac.ParseBodyRequest(ctx, &user)
-	if user.Username == "" {
-		ac.FailedResponse(ctx, utils.RequiredError("username"))
+	if user.Email == "" {
+		ac.FailedResponse(ctx, utils.RequiredError("email"))
 		return
 	} else if user.Password == "" {
 		ac.FailedResponse(ctx, utils.RequiredError("password"))
@@ -98,10 +99,10 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 		return
 	}
 
-	realUser.Username = user.Username
+	realUser.Email = user.Email
 	err = ac.authUC.FindUser(&realUser)
 	if err != nil {
-		ac.FailedResponse(ctx, errors.New("wrong username"))
+		ac.FailedResponse(ctx, errors.New("wrong email"))
 		return
 	}
 	realUser.Decode()

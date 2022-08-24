@@ -8,6 +8,7 @@ import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -82,6 +83,7 @@ func (f *FeedController) readCategoryFeed(ctx *gin.Context) {
 
 func (f *FeedController) readByPageFeed(ctx *gin.Context) {
 	var readFeed dto.ReadPage
+	var responseFeed []dto.ResponseFeed
 	err := f.ParseBodyRequest(ctx, &readFeed)
 	if err != nil {
 		f.FailedResponse(ctx, err)
@@ -92,7 +94,17 @@ func (f *FeedController) readByPageFeed(ctx *gin.Context) {
 		f.FailedResponse(ctx, err)
 		return
 	}
-	f.SuccessResponse(ctx, resFeed)
+	var holdFeed dto.ResponseFeed
+	for _, feed := range resFeed {
+		holdFeed.AccountID = feed.AccountID
+		holdFeed.CaptionPost = feed.CaptionPost
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		for _, link := range links[0 : len(links)-2] {
+			holdFeed.MediaLinks = append(holdFeed.MediaLinks, link)
+		}
+		responseFeed = append(responseFeed, holdFeed)
+	}
+	f.SuccessResponse(ctx, responseFeed)
 }
 
 func (f *FeedController) deleteFeed(ctx *gin.Context) {
@@ -112,7 +124,7 @@ func (f *FeedController) deleteFeed(ctx *gin.Context) {
 }
 
 func (f *FeedController) createFeed(ctx *gin.Context) {
-	var createFeed dto.CreateFeed
+	var createFeed dto.RequestFeed
 	var feedInput entity.Feed
 	err := f.ParseBodyRequest(ctx, &createFeed)
 	if err != nil {
@@ -122,20 +134,20 @@ func (f *FeedController) createFeed(ctx *gin.Context) {
 	if createFeed.AccountID == 0 {
 		f.FailedResponse(ctx, utils.RequiredError("account ID"))
 		return
-	} else if createFeed.CaptionPost != "" {
+	} else if createFeed.CaptionPost == "" {
 		f.FailedResponse(ctx, utils.RequiredError("feed caption"))
 		return
-	} else if createFeed.MediaLinks != nil {
+	} else if createFeed.MediaLinks == nil {
 		f.FailedResponse(ctx, utils.RequiredError("photos/videos"))
 		return
 	}
 	feedInput.AccountID = createFeed.AccountID
 	feedInput.CaptionPost = createFeed.CaptionPost
+	var holdLink string
 	for _, link := range createFeed.MediaLinks {
-		feedInput.DetailMediaFeeds = append(feedInput.DetailMediaFeeds, entity.DetailMediaFeed{
-			MediaLink: link,
-		})
+		holdLink = holdLink + link + ","
 	}
+	feedInput.DetailMediaFeeds = holdLink
 	err = f.fUC.Create(&feedInput)
 	if err != nil {
 		f.FailedResponse(ctx, err)

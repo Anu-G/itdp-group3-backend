@@ -15,7 +15,13 @@ type DetailMediaFeed struct {
 	MediaLink string `json:"media_link"`
 }
 
-type CreateFeed struct {
+type RequestFeed struct {
+	AccountID   uint     `json:"account_ID"`
+	CaptionPost string   `json:"caption_post"`
+	MediaLinks  []string `json:"media_links"`
+}
+
+type ResponseFeed struct {
 	AccountID   uint     `json:"account_ID"`
 	CaptionPost string   `json:"caption_post"`
 	MediaLinks  []string `json:"media_links"`

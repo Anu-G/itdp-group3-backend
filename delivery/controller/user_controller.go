@@ -49,7 +49,7 @@ func (u *UserController) updateUser(ctx *gin.Context) {
 	if err != nil {
 		u.FailedResponse(ctx, err)
 	}
-	newUser.Encode()
+	newUser.Encrypt()
 	err = u.uUC.Update(&newUser)
 	if err != nil {
 		u.FailedResponse(ctx, err)

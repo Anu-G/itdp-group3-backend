@@ -12,10 +12,15 @@ type ProductRepositoryInterface interface {
 	Create(p *entity.Product) error
 	GetByAccount(p dto.ProductRequest) ([]entity.Product, error)
 	GetByProduct(p dto.ProductRequest) (entity.Product, error)
+	Delete(id string) error
 }
 
 type productRepository struct {
 	db *gorm.DB
+}
+
+func (pr *productRepository) Delete(id string) error {
+	return pr.db.Where("id = ?", id).Delete(&entity.Product{}).Error
 }
 
 func (pr *productRepository) GetByAccount(p dto.ProductRequest) ([]entity.Product, error) {

@@ -2,8 +2,8 @@ package dto
 
 import "itdp-group3-backend/model/entity"
 
-type NonBusinessProfileRequest struct{
-	AccountID    string   `json:"account_id"`
+type NonBusinessProfileRequest struct {
+	AccountID    string `json:"account_id"`
 	ProfileImage string `json:"profile_image"`
 	ProfileBio   string `json:"profile_bio"`
 	DisplayName  string `json:"display_name"`

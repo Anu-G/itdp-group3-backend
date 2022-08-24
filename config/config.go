@@ -48,6 +48,7 @@ type RedisClient struct {
 
 type MediaPath struct {
 	Path string `mapstructure:"FILEPATH"`
+	PathProduct string `mapstructure:"FILEPATH_PRODUCT"`
 }
 
 // loadConfig : get configuration from .env

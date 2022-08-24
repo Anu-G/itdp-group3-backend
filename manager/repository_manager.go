@@ -13,6 +13,7 @@ type RepositoryManagerInterface interface {
 	ProductRepo() repository.ProductRepositoryInterface
 	FileRepo() repository.FileRepository
 	NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface
+	CategoryRepo() repository.CategoryRepository
 }
 
 type repositoryManager struct {
@@ -64,4 +65,8 @@ func (r *repositoryManager) DetailMediaFeedRepo() repository.DetailMediaFeedRepo
 
 func (r *repositoryManager) DetailCommentRepo() repository.DetailCommentRepository {
 	return repository.NewDetailCommentRepository(r.infra.DBCon())
+}
+
+func (r *repositoryManager) CategoryRepo() repository.CategoryRepository {
+	return repository.NewCategoryRepository(r.infra.DBCon())
 }

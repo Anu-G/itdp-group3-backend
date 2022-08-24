@@ -12,6 +12,7 @@ type UseCaseManagerInterface interface {
 	BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface
 	ProductUseCase() usecase.ProductUseCaseInterface
 	NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface
+	CategoryUsecase() usecase.CategoryUsecase
 }
 
 type useCaseManager struct {
@@ -59,4 +60,8 @@ func (uc useCaseManager) DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase
 
 func (uc useCaseManager) DetailCommentUsecase() usecase.DetailCommentUsecase {
 	return usecase.NewDetailCommentUsecase(uc.repo.DetailCommentRepo())
+}
+
+func (um useCaseManager) CategoryUsecase() usecase.CategoryUsecase {
+	return usecase.NewCategoryUsecase(um.repo.CategoryRepo())
 }

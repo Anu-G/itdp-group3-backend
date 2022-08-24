@@ -30,13 +30,13 @@ func (fr *feedRepository) Create(f *entity.Feed) error {
 }
 
 func (fr *feedRepository) Read(f *entity.Feed) error {
-	return fr.db.Preload("DetailMediaFeeds").Preload("DetailComments").Find(&f).Error
+	return fr.db.Preload("DetailComments").Find(&f).Error
 }
 
 func (fr *feedRepository) ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error) {
 	var f entity.Feed
 	var feedRes []entity.Feed
-	read := fr.db.Model(&f).Where("account_id = ?", id).Preload("DetailMediaFeeds").Preload("DetailComments").Find(&feedRes)
+	read := fr.db.Model(&f).Where("account_id = ?", id).Preload("DetailComments").Find(&feedRes)
 	res := fr.Paging(read, page, pageLim).Error
 	return feedRes, res
 }
@@ -51,7 +51,7 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 
 func (fr *feedRepository) ReadByPage(page int, pageLim int) ([]entity.Feed, error) {
 	var feedRes []entity.Feed
-	read := fr.db.Preload("DetailMediaFeeds").Preload("DetailComments").Find(&feedRes)
+	read := fr.db.Preload("DetailComments").Find(&feedRes)
 	res := fr.Paging(read, page, pageLim).Error
 	return feedRes, res
 }

@@ -5,10 +5,14 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type FileRepository interface {
 	Save(file multipart.File, fileName string) (string, error)
+	SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error)
 }
 
 type fileRepository struct {
@@ -32,6 +36,12 @@ func (f *fileRepository) Save(file multipart.File, fileName string) (string, err
 		return "", err
 	}
 	return fileLocation, nil
+}
+
+func (f *fileRepository) SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
+	path := f.path + "img-feed-" + uuid.New().String() + "." + fileName
+	err := ctx.SaveUploadedFile(file, path)
+	return path, err
 }
 
 func NewFileRepository(path string) FileRepository {

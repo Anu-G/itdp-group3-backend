@@ -14,6 +14,7 @@ type RepositoryManagerInterface interface {
 	FileRepo() repository.FileRepository
 	FileProductRepo() repository.FileProductRepository
 	NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface
+	CategoryRepo() repository.CategoryRepository
 	BusinessHourRepo() repository.BusinessHourRepositoryInterface
 	BusinessLinkRepo() repository.BusinessLinkRepositoryInterface
 }
@@ -79,4 +80,8 @@ func (r *repositoryManager) DetailMediaFeedRepo() repository.DetailMediaFeedRepo
 
 func (r *repositoryManager) DetailCommentRepo() repository.DetailCommentRepository {
 	return repository.NewDetailCommentRepository(r.infra.DBCon())
+}
+
+func (r *repositoryManager) CategoryRepo() repository.CategoryRepository {
+	return repository.NewCategoryRepository(r.infra.DBCon())
 }

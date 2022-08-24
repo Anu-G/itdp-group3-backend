@@ -36,11 +36,15 @@ func NewCategoryController(router *gin.Engine, catUC usecase.CategoryUsecase, md
 
 func (catc *CategoryController) readAll(ctx *gin.Context) {
 	var readCategory []entity.Category
+	var responseRead dto.ReadCategoryResponse
 	err := catc.catUC.ReadAll(&readCategory)
 	if err != nil {
 		catc.FailedResponse(ctx, err)
 	}
-	catc.SuccessResponse(ctx, readCategory)
+	for _, cats := range readCategory {
+		responseRead.CategoryNames = append(responseRead.CategoryNames, cats.CategoryName)
+	}
+	catc.SuccessResponse(ctx, responseRead)
 }
 
 func (catc *CategoryController) create(ctx *gin.Context) {

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"io"
+	"itdp-group3-backend/config"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -16,11 +17,11 @@ type FileRepository interface {
 }
 
 type fileRepository struct {
-	path string
+	path config.MediaPath
 }
 
 func (f *fileRepository) Save(file multipart.File, fileName string) (string, error) {
-	fileLocation := filepath.Join(f.path, fileName)
+	fileLocation := filepath.Join(f.path.Path, fileName)
 	out, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return "", err
@@ -39,12 +40,12 @@ func (f *fileRepository) Save(file multipart.File, fileName string) (string, err
 }
 
 func (f *fileRepository) SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
-	path := f.path + "img-feed-" + uuid.New().String() + "." + fileName
+	path := f.path.PathFeed + "img-feed-" + uuid.New().String() + "." + fileName
 	err := ctx.SaveUploadedFile(file, path)
 	return path, err
 }
 
-func NewFileRepository(path string) FileRepository {
+func NewFileRepository(path config.MediaPath) FileRepository {
 	return &fileRepository{
 		path: path,
 	}

@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type BusinessProfileUseCaseInterface interface {
@@ -18,16 +19,21 @@ type BusinessProfileUseCaseInterface interface {
 }
 
 type businessProfileUseCase struct {
-	repo     repository.BusinessProfileRepositoryInterface
-	fileRepo repository.FileRepository
+	repo             repository.BusinessProfileRepositoryInterface
+	accountRepo      repository.AccountRepository
+	businessHourRepo repository.BusinessHourRepositoryInterface
+	businessLinkRepo repository.BusinessLinkRepositoryInterface
+	fileRepo         repository.FileRepository
 }
 
 func (b *businessProfileUseCase) GetBusinessProfile(bp *dto.BusinessProfileRequest) (dto.BusinessProfileResponse, error) {
-	var createdBp entity.BusinessProfile
-	var response dto.BusinessProfileResponse
 	accountId, _ := strconv.Atoi(bp.AccountID)
 
-	account, err := b.repo.GetPhoneNumber(uint(accountId))
+	var createdBp entity.BusinessProfile
+	var response dto.BusinessProfileResponse
+	var account = entity.Account{Model: gorm.Model{ID: uint(accountId)}}
+
+	err := b.accountRepo.FindById(&account)
 	if err != nil {
 		return dto.BusinessProfileResponse{}, err
 	}
@@ -57,6 +63,8 @@ func (b *businessProfileUseCase) CreateProfileImage(file multipart.File, fileExt
 
 func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error) {
 	var createdBusinessProfile entity.BusinessProfile
+	var account entity.Account
+
 	accountId, _ := strconv.Atoi(bp.AccountID)
 	categoryId, _ := strconv.Atoi(bp.CategoryID)
 
@@ -84,6 +92,30 @@ func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRe
 		})
 	}
 
+	account.ID = uint(accountId)
+	b.accountRepo.FindById(&account)
+
+	if account.Username != "" {
+		var businessProfile = entity.BusinessProfile{AccountID: account.ID}
+		b.repo.GetByIdPreload(&businessProfile)
+
+		for _, bhour := range businessProfile.BusinessHours {
+			if err := b.businessHourRepo.Delete(strconv.FormatUint(uint64(bhour.ID), 10)); err != nil {
+				return createdBusinessProfile, err
+			}
+		}
+
+		for _, blink := range businessProfile.BusinessLinks {
+			if err := b.businessLinkRepo.Delete(strconv.FormatUint(uint64(blink.ID), 10)); err != nil {
+				return createdBusinessProfile, err
+			}
+		}
+
+		if err := b.repo.Delete(strconv.FormatUint(uint64(createdBusinessProfile.AccountID), 10)); err != nil {
+			return createdBusinessProfile, err
+		}
+	}
+
 	if err := b.repo.Create(&createdBusinessProfile); err != nil {
 		return createdBusinessProfile, err
 	}
@@ -91,9 +123,20 @@ func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRe
 	return createdBusinessProfile, nil
 }
 
-func NewBusinessProfileUseCase(repo repository.BusinessProfileRepositoryInterface, fileRepo repository.FileRepository) BusinessProfileUseCaseInterface {
+func NewBusinessProfileUseCase(
+	repo repository.BusinessProfileRepositoryInterface,
+	accountRepo repository.AccountRepository,
+	businessHourRepo repository.BusinessHourRepositoryInterface,
+	businessLinkRepo repository.BusinessLinkRepositoryInterface,
+	fileRepo repository.FileRepository,
+) BusinessProfileUseCaseInterface {
+
 	return &businessProfileUseCase{
-		repo:     repo,
-		fileRepo: fileRepo,
+		repo:             repo,
+		accountRepo:      accountRepo,
+		businessHourRepo: businessHourRepo,
+		businessLinkRepo: businessLinkRepo,
+		fileRepo:         fileRepo,
 	}
+
 }

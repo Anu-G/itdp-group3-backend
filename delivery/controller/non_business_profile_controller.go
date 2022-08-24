@@ -32,7 +32,6 @@ func NewNonBusinessProfileController(router *gin.Engine, uc usecase.NonBusinessP
 	routeNonBusinessProfile.POST("/add/profile", controller.addNonBusinessProfile)
 	routeNonBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
 	routeNonBusinessProfile.POST("/get/profile", controller.getProfile)
-	routeNonBusinessProfile.POST("/get/profile-image", controller.getProfileImage)
 
 	return &controller
 }
@@ -104,28 +103,4 @@ func (b *NonBusinessProfileController) getProfile(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, nonBusinessProfileRes)
-}
-
-func (b *NonBusinessProfileController) getProfileImage(ctx *gin.Context) {
-	var (
-		nonBusinessProfileReq dto.NonBusinessProfileRequest
-		nonBusinessProfileRes dto.NonBusinessProfileResponse
-	)
-
-	err := b.ParseBodyRequest(ctx, &nonBusinessProfileReq)
-	if nonBusinessProfileReq.AccountID == "" {
-		b.FailedResponse(ctx, utils.RequiredError("account_id"))
-		return
-	} else if err != nil {
-		b.FailedResponse(ctx, err)
-	}
-
-	nonBusinessProfileRes, err = b.usecase.GetNonBusinessProfile(&nonBusinessProfileReq)
-	if err != nil {
-		b.FailedResponse(ctx, err)
-		return
-	}
-
-	b.SuccessDownload(ctx, nonBusinessProfileRes.NonBusinessProfile.ProfileImage)
-	// b.SuccessResponse(ctx, nonBusinessProfileRes.NonBusinessProfile.ProfileImage)
 }

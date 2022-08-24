@@ -32,7 +32,6 @@ func NewBusinessProfileController(router *gin.Engine, uc usecase.BusinessProfile
 	routeBusinessProfile.POST("/add/profile", controller.addBusinessProfile)
 	routeBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
 	routeBusinessProfile.POST("/get/profile", controller.getProfile)
-	routeBusinessProfile.POST("/get/profile-image", controller.getProfileImage)
 
 	return &controller
 }
@@ -112,28 +111,4 @@ func (b *BusinessProfileController) getProfile(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, businessProfileRes)
-}
-
-func (b *BusinessProfileController) getProfileImage(ctx *gin.Context) {
-	var (
-		businessProfileReq dto.BusinessProfileRequest
-		businessProfileRes dto.BusinessProfileResponse
-	)
-
-	err := b.ParseBodyRequest(ctx, &businessProfileReq)
-	if businessProfileReq.AccountID == "" {
-		b.FailedResponse(ctx, utils.RequiredError("account_id"))
-		return
-	} else if err != nil {
-		b.FailedResponse(ctx, err)
-		return
-	}
-
-	businessProfileRes, err = b.usecase.GetBusinessProfile(&businessProfileReq)
-	if err != nil {
-		b.FailedResponse(ctx, err)
-		return
-	}
-
-	b.SuccessDownload(ctx, businessProfileRes.BusinessProfile.ProfileImage)
 }

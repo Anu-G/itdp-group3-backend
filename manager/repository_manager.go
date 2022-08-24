@@ -12,6 +12,7 @@ type RepositoryManagerInterface interface {
 	BusinessProfileRepo() repository.BusinessProfileRepositoryInterface
 	ProductRepo() repository.ProductRepositoryInterface
 	FileRepo() repository.FileRepository
+	FileProductRepo() repository.FileProductRepository
 	NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface
 	BusinessHourRepo() repository.BusinessHourRepositoryInterface
 	BusinessLinkRepo() repository.BusinessLinkRepositoryInterface
@@ -35,6 +36,10 @@ func (rm *repositoryManager) ProductRepo() repository.ProductRepositoryInterface
 
 func (rm *repositoryManager) BusinessProfileRepo() repository.BusinessProfileRepositoryInterface {
 	return repository.NewBusinessProfileRepo(rm.infra.DBCon())
+}
+
+func (rm *repositoryManager) FileProductRepo() repository.FileProductRepository {
+	return repository.NewFileProductRepository(rm.infra.GetMediaPathProduct())
 }
 
 func (rm *repositoryManager) FileRepo() repository.FileRepository {

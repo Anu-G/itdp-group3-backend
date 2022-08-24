@@ -2,18 +2,14 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
-	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type ProductController struct {
@@ -76,8 +72,6 @@ func (b *ProductController) addProduct(ctx *gin.Context) {
 }
 
 func (b *ProductController) addProductImage(ctx *gin.Context) {
-	var detailMediaProducts []string
-
 	form, err := ctx.MultipartForm()
 	files := form.File["product_images"]
 
@@ -86,31 +80,7 @@ func (b *ProductController) addProductImage(ctx *gin.Context) {
 		return
 	}
 
-	path := `E:\ITDP Sinarmas Mining\toktok_dev\img\products\` + uuid.New().String() + `\`
-	if err := os.MkdirAll(path, os.ModePerm); err != nil {
-		b.FailedResponse(ctx, errors.New("failed while making directory"))
-		return
-	}
-
-	fmt.Println(path)
-
-	for _, file := range files {
-		newFileName := strings.Split(file.Filename, ".")
-		if len(newFileName) != 2 {
-			b.FailedResponse(ctx, errors.New("Unrecognize file extension"))
-			return
-		}
-
-		newPath := path + "img-product-" + uuid.New().String() + "." + newFileName[1]
-		fmt.Println(newPath)
-
-		if err := ctx.SaveUploadedFile(file, newPath); err != nil {
-			b.FailedResponse(ctx, errors.New("failed while saving file"))
-			return
-		}
-
-		detailMediaProducts = append(detailMediaProducts, newPath)
-	}
+	detailMediaProducts, err := b.usecase.CreateProductImage(files, ctx)
 
 	b.SuccessResponse(ctx, detailMediaProducts)
 }

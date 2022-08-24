@@ -5,19 +5,24 @@ import (
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
+	"mime/multipart"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ProductUseCaseInterface interface {
 	CreateProduct(p *dto.ProductRequest) (entity.Product, error)
+	CreateProductImage(files []*multipart.FileHeader, ctx *gin.Context) ([]string, error)
 	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
 	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
 	Delete(id string) error
 }
 
 type productUseCase struct {
-	repo repository.ProductRepositoryInterface
+	repo            repository.ProductRepositoryInterface
+	fileProductRepo repository.FileProductRepository
 }
 
 func (pu *productUseCase) Delete(id string) error {
@@ -63,6 +68,10 @@ func (pu *productUseCase) GetByProduct(p dto.ProductRequest) (dto.ProductRespons
 	return product, nil
 }
 
+func (pu *productUseCase) CreateProductImage(files []*multipart.FileHeader, ctx *gin.Context) ([]string, error) {
+	return pu.fileProductRepo.CreateProductImage(files, ctx)
+}
+
 func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, error) {
 	var createdProduct entity.Product
 	accountId, _ := strconv.Atoi(p.AccountID)
@@ -82,8 +91,9 @@ func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, 
 
 }
 
-func NewProductUseCase(repo repository.ProductRepositoryInterface) ProductUseCaseInterface {
+func NewProductUseCase(repo repository.ProductRepositoryInterface, fileProductRepo repository.FileProductRepository) ProductUseCaseInterface {
 	return &productUseCase{
 		repo: repo,
+		fileProductRepo: fileProductRepo,
 	}
 }

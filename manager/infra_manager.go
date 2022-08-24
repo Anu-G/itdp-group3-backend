@@ -15,11 +15,13 @@ import (
 type InfraManagerInterface interface {
 	DBCon() *gorm.DB
 	GetMediaPath() string
+	GetMediaPathProduct() string
 }
 
 type infraManager struct {
-	db   *gorm.DB
-	path string
+	db          *gorm.DB
+	path        string
+	pathProduct string
 
 	cfgDB config.DBConfig
 }
@@ -30,6 +32,7 @@ func NewInfraSetup(config config.Config) InfraManagerInterface {
 	newInfra.cfgDB = config.DBConfig
 	newInfra.db = newInfra.dbConnect()
 	newInfra.path = config.Path
+	newInfra.pathProduct = config.PathProduct
 	return newInfra
 }
 
@@ -69,4 +72,8 @@ func (im *infraManager) DBCon() *gorm.DB {
 
 func (im *infraManager) GetMediaPath() string {
 	return im.path
+}
+
+func (im *infraManager) GetMediaPathProduct() string {
+	return im.pathProduct
 }

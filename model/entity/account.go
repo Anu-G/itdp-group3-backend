@@ -10,6 +10,8 @@ type Account struct {
 
 	BusinessProfile    BusinessProfile    `json:"business_profile"`
 	NonBusinessProfile NonBusinessProfile `json:"non_business_profile"`
+	Follower           []Follower         `json:"follower"`
+	Followed           []Followed         `json:"followed"`
 	Products           []Product          `json:"products"`
 	Feeds              []Feed             `json:"feeds"`
 }

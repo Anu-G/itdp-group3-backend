@@ -13,6 +13,7 @@ type UseCaseManagerInterface interface {
 	ProductUseCase() usecase.ProductUseCaseInterface
 	NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface
 	CategoryUsecase() usecase.CategoryUsecase
+	FollowUsecase() usecase.FollowUsecase
 }
 
 type useCaseManager struct {
@@ -51,7 +52,7 @@ func (uc *useCaseManager) AccountUsecase() usecase.AccountUsecase {
 }
 
 func (uc *useCaseManager) FeedUsecase() usecase.FeedUsecase {
-	return usecase.NewFeedUsecase(uc.repo.FeedRepo())
+	return usecase.NewFeedUsecase(uc.repo.FeedRepo(), uc.repo.AccountRepo())
 }
 
 func (uc useCaseManager) DetailMediaFeedUsecase() usecase.DetailMediaFeedUsecase {
@@ -64,4 +65,8 @@ func (uc useCaseManager) DetailCommentUsecase() usecase.DetailCommentUsecase {
 
 func (um useCaseManager) CategoryUsecase() usecase.CategoryUsecase {
 	return usecase.NewCategoryUsecase(um.repo.CategoryRepo())
+}
+
+func (um *useCaseManager) FollowUsecase() usecase.FollowUsecase {
+	return usecase.NewFollowUsecase(um.repo.FollowerRepo(), um.repo.FollowedRepo())
 }

@@ -10,6 +10,7 @@ type AccountRepository interface {
 	Update(a *entity.Account) error
 	FindByUsername(a *entity.Account) error
 	FindById(a *entity.Account) error
+	FindListById(ids []uint) ([]entity.Account, error)
 }
 
 type accountRepository struct {
@@ -27,9 +28,22 @@ func (ar *accountRepository) Update(a *entity.Account) error {
 }
 
 func (ar *accountRepository) FindByUsername(a *entity.Account) error {
-	return ar.db.First(&a, "username = ?", a.Username).Error
+	return ar.db.Preload("Follower").Preload("Followed").First(&a, "username = ?", a.Username).Error
 }
 
 func (ar *accountRepository) FindById(a *entity.Account) error {
-	return ar.db.First(&a, "id = ?", a.ID).Error
+	return ar.db.Preload("Follower").Preload("Followed").First(&a, "id = ?", a.ID).Error
+}
+
+func (ar *accountRepository) FindListById(ids []uint) ([]entity.Account, error) {
+	var accountList *[]entity.Account
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	res := ar.db.Where("id = ?", ids[0])
+	for i := 1; i < len(ids); i++ {
+		res = res.Or("id = ?", ids[i])
+	}
+	res = res.Find(&accountList)
+	return *accountList, res.Error
 }

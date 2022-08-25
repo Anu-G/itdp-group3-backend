@@ -35,6 +35,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.GET("/account", controller.readAccountFeed)
 	routeFeed.GET("/category", controller.readCategoryFeed)
 	routeFeed.GET("/paged", controller.readByPageFeed)
+	routeFeed.GET("/followed", controller.readFollowedFeed)
 	routeFeed.POST("/create", controller.createFeed)
 	routeFeed.DELETE("/", controller.deleteFeed)
 
@@ -59,6 +60,21 @@ func (f *FeedController) readAccountFeed(ctx *gin.Context) {
 		return
 	}
 	resFeed, err := f.fUC.ReadByAccountID(readFeed.ID, readFeed.Page, readFeed.PageLim)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	f.SuccessResponse(ctx, resFeed)
+}
+
+func (f *FeedController) readFollowedFeed(ctx *gin.Context) {
+	var readFeed dto.ReadPage
+	err := f.ParseBodyRequest(ctx, &readFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	resFeed, err := f.fUC.ReadByFollowerAccountID(readFeed.ID, readFeed.Page, readFeed.PageLim)
 	if err != nil {
 		f.FailedResponse(ctx, err)
 		return

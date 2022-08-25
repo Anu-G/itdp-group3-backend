@@ -15,5 +15,6 @@ type FollowListRequest struct {
 }
 
 type FollowListResponse struct {
-	Username string `json:"user_name"`
+	AccountID uint   `json:"account_id"`
+	Username  string `json:"user_name"`
 }

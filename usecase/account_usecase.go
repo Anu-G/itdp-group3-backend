@@ -51,7 +51,8 @@ func (ac *accountUsecase) FollowList(rf dto.FollowListRequest) ([]dto.FollowList
 	accountList, err := ac.repo.FindListById(accountIDList)
 	for _, account := range accountList {
 		response = append(response, dto.FollowListResponse{
-			Username: account.Username,
+			AccountID: account.ID,
+			Username:  account.Username,
 		})
 	}
 	return response, err

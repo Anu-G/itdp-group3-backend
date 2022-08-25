@@ -17,3 +17,7 @@ type ProductResponse struct {
 	Description         string   `json:"description"`
 	DetailMediaProducts []string `json:"detail_media_products"`
 }
+
+type SearchProductRequest struct{
+	Keyword string `json:"keyword"`
+}

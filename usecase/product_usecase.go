@@ -17,12 +17,35 @@ type ProductUseCaseInterface interface {
 	CreateProductImage(files []*multipart.FileHeader, ctx *gin.Context) ([]string, error)
 	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
 	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
+	SearchProduct(keyword string) ([]dto.ProductResponse, error)
 	Delete(id string) error
 }
 
 type productUseCase struct {
 	repo            repository.ProductRepositoryInterface
 	fileProductRepo repository.FileProductRepository
+}
+
+func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductResponse, error) {
+	var products []dto.ProductResponse
+
+	res, err := pu.repo.SearchProduct(keyword)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, product := range res {
+		products = append(products, dto.ProductResponse{
+			ProductID:           fmt.Sprintf("%d", product.ID),
+			AccountID:           fmt.Sprintf("%d", product.AccountID),
+			ProductName:         product.ProductName,
+			Price:               fmt.Sprintf("%.f", product.Price),
+			Description:         product.Description,
+			DetailMediaProducts: strings.Split(product.DetailMediaProducts, ", "),
+		})
+	}
+	
+	return products, nil
 }
 
 func (pu *productUseCase) Delete(id string) error {
@@ -93,7 +116,7 @@ func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, 
 
 func NewProductUseCase(repo repository.ProductRepositoryInterface, fileProductRepo repository.FileProductRepository) ProductUseCaseInterface {
 	return &productUseCase{
-		repo: repo,
+		repo:            repo,
 		fileProductRepo: fileProductRepo,
 	}
 }

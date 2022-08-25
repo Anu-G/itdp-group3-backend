@@ -17,10 +17,15 @@ type RepositoryManagerInterface interface {
 	CategoryRepo() repository.CategoryRepository
 	BusinessHourRepo() repository.BusinessHourRepositoryInterface
 	BusinessLinkRepo() repository.BusinessLinkRepositoryInterface
+	FAQRepo() repository.FAQRepositoryInterface
 }
 
 type repositoryManager struct {
 	infra InfraManagerInterface
+}
+
+func (rm *repositoryManager) FAQRepo() repository.FAQRepositoryInterface {
+	return repository.NewFAQRepo(rm.infra.DBCon())
 }
 
 func (rm *repositoryManager) BusinessHourRepo() repository.BusinessHourRepositoryInterface {

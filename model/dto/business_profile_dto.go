@@ -29,3 +29,10 @@ type BusinessProfileResponse struct {
 	BusinessProfile entity.BusinessProfile `json:"business_profile"`
 	PhoneNumber     string                 `json:"phone_number"`
 }
+
+type FAQRequest struct {
+	FAQID     string `json:"faq_id"`
+	AccountID string `json:"account_id"`
+	Question  string `json:"question"`
+	Answer    string `json:"answer"`
+}

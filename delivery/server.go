@@ -80,6 +80,7 @@ func (a *appServer) initControllers() {
 	controller.NewBusinessProfileController(a.engine, a.UseCaseManager.BusinessProfileUseCase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewNonBusinessProfileController(a.engine, a.UseCaseManager.NonBusinessProfileUseCase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewCategoryController(a.engine, a.UseCaseManager.CategoryUsecase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewFAQController(a.engine, a.UseCaseManager.FAQUseCase(), a.MiddlewareManager.AuthMiddleware())
 }
 
 // Run : run the server

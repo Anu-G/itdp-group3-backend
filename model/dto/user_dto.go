@@ -8,3 +8,9 @@ type RegisterUserRequest struct {
 
 type ResponseUserRegister struct {
 }
+
+type UpdateUserRequest struct {
+	Username    string `json:"user_name"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+}

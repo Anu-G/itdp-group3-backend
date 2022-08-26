@@ -212,7 +212,7 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 		},
 	}
 
-	user1.Encode()
+	user1.Encrypt()
 	err := repoMng.AuthRepo().CreateUser(&user1)
 	if err != nil {
 		log.Fatal(err)
@@ -348,7 +348,7 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 		},
 	}
 
-	user2.Encode()
+	user2.Encrypt()
 	err = repoMng.AuthRepo().CreateUser(&user2)
 	if err != nil {
 		log.Fatal(err)
@@ -484,7 +484,7 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 		},
 	}
 
-	user3.Encode()
+	user3.Encrypt()
 	err = repoMng.AuthRepo().CreateUser(&user3)
 	if err != nil {
 		log.Fatal(err)

@@ -40,7 +40,7 @@ func NewUseCase(manager RepositoryManagerInterface) UseCaseManagerInterface {
 }
 
 func (uc *useCaseManager) UserUsecase() usecase.UserUsecase {
-	return usecase.NewUserUsecase(uc.repo.UserRepo())
+	return usecase.NewUserUsecase(uc.repo.UserRepo(), uc.repo.AccountRepo())
 }
 
 func (uc *useCaseManager) AuthUsecase() usecase.AuthUsecase {

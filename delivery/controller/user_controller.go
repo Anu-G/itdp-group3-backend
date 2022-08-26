@@ -3,6 +3,7 @@ package controller
 import (
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
+	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 
@@ -35,24 +36,27 @@ func (u *UserController) readUser(ctx *gin.Context) {
 	err := u.ParseBodyRequest(ctx, &readUser)
 	if err != nil {
 		u.FailedResponse(ctx, err)
+		return
 	}
 	err = u.uUC.FindByUsername(&readUser)
 	if err != nil {
 		u.FailedResponse(ctx, err)
+		return
 	}
 	u.SuccessResponse(ctx, readUser)
 }
 
 func (u *UserController) updateUser(ctx *gin.Context) {
-	var newUser entity.User
+	var newUser dto.UpdateUserRequest
 	err := u.ParseBodyRequest(ctx, &newUser)
 	if err != nil {
 		u.FailedResponse(ctx, err)
+		return
 	}
-	newUser.Encode()
 	err = u.uUC.Update(&newUser)
 	if err != nil {
 		u.FailedResponse(ctx, err)
+		return
 	}
 	u.SuccessResponse(ctx, newUser)
 }

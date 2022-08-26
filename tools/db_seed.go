@@ -34,7 +34,7 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 			PhoneNumber: "08111",
 
 			BusinessProfile: entity.BusinessProfile{
-				CategoryID:   0,
+				CategoryID:   3,
 				Address:      "Surabaya",
 				ProfileImage: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\img-bp-febd3bfb-ac9d-40d0-b388-f1662cca906e.jpg",
 				ProfileBio:   "bio user1",

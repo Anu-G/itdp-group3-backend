@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
@@ -36,13 +37,14 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.GET("/category", controller.readCategoryFeed)
 	routeFeed.GET("/paged", controller.readByPageFeed)
 	routeFeed.POST("/create", controller.createFeed)
+	routeFeed.PUT("/update", controller.updateFeed)
 	routeFeed.DELETE("/", controller.deleteFeed)
 
 	return &controller
 }
 
 func (f *FeedController) readFeed(ctx *gin.Context) {
-	var readFeed entity.Feed
+	var readFeed []entity.Feed
 	err := f.fUC.Read(&readFeed)
 	if err != nil {
 		f.FailedResponse(ctx, err)
@@ -154,4 +156,36 @@ func (f *FeedController) createFeed(ctx *gin.Context) {
 		return
 	}
 	f.SuccessResponse(ctx, feedInput)
+}
+
+func (f *FeedController) updateFeed(ctx *gin.Context) {
+	var requestUpdateFeed dto.RequestUpdateFeed
+	var updateFeed entity.Feed
+	err := f.ParseBodyRequest(ctx, &requestUpdateFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	if requestUpdateFeed.FeedID == 0 {
+		f.FailedResponse(ctx, errors.New("no feed found"))
+		return
+	}
+	updateFeed.ID = requestUpdateFeed.FeedID
+	err = f.fUC.ReadByID(&updateFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	var holdLink string
+	for _, link := range requestUpdateFeed.MediaLinks {
+		holdLink = holdLink + link + ","
+	}
+	updateFeed.CaptionPost = requestUpdateFeed.CaptionPost
+	updateFeed.DetailMediaFeeds = holdLink
+	err = f.fUC.Update(&updateFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	f.SuccessResponse(ctx, updateFeed)
 }

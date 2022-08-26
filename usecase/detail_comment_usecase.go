@@ -8,6 +8,7 @@ import (
 type DetailCommentUsecase interface {
 	Create(cm *entity.DetailComment) error
 	Read(cm *entity.DetailComment) error
+	Delete(cm *entity.DetailComment) error
 }
 
 type detailCommentUsecase struct {
@@ -26,4 +27,8 @@ func (cmc *detailCommentUsecase) Create(cm *entity.DetailComment) error {
 
 func (cmc *detailCommentUsecase) Read(cm *entity.DetailComment) error {
 	return cmc.repo.Read(cm)
+}
+
+func (cmc *detailCommentUsecase) Delete(cm *entity.DetailComment) error {
+	return cmc.repo.Delete(cm)
 }

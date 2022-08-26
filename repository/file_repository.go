@@ -16,7 +16,8 @@ type FileRepository interface {
 }
 
 type fileRepository struct {
-	path string
+	path     string
+	pathFeed string
 }
 
 func (f *fileRepository) Save(file multipart.File, fileName string) (string, error) {
@@ -44,8 +45,9 @@ func (f *fileRepository) SavefromCtx(file *multipart.FileHeader, fileName string
 	return path, err
 }
 
-func NewFileRepository(path string) FileRepository {
+func NewFileRepository(path string, pathFeed string) FileRepository {
 	return &fileRepository{
-		path: path,
+		path:     path,
+		pathFeed: pathFeed,
 	}
 }

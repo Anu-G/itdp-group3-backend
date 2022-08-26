@@ -13,6 +13,18 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 
 	repoMng := manager.NewRepo(dbc)
 
+	categories := []entity.Category{
+		{CategoryName: "Food & Beverage"},
+		{CategoryName: "Place to Go"},
+		{CategoryName: "Wholesale"},
+	}
+	for _, category := range categories {
+		err := repoMng.CategoryRepo().Create(&category)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	user1 := entity.User{
 		Username: "user1",
 		Password: "user1",

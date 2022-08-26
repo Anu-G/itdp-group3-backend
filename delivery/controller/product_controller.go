@@ -33,6 +33,7 @@ func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface
 	routeProduct.POST("/get/by-account", controller.getByAccount)
 	routeProduct.POST("/get/by-product", controller.getByProduct)
 	routeProduct.POST("/delete/product", controller.deleteProduct)
+	routeProduct.POST("/search", controller.searchProduct)
 
 	return &controller
 }
@@ -155,4 +156,25 @@ func (b *ProductController) deleteProduct(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, "success delete productID "+productReq.ProductID)
+}
+
+func (b *ProductController) searchProduct (ctx *gin.Context) {
+	var (
+		searchProduct dto.SearchProductRequest
+		productRes []dto.ProductResponse
+	)
+
+	err := b.ParseBodyRequest(ctx, &searchProduct)
+	if searchProduct.Keyword == "" {
+		b.FailedResponse(ctx, utils.RequiredError("keyword"))
+		return
+	}
+
+	productRes, err = b.usecase.SearchProduct(searchProduct.Keyword)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+
+	b.SuccessResponse(ctx, productRes)
 }

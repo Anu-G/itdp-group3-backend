@@ -14,10 +14,15 @@ type UseCaseManagerInterface interface {
 	NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface
 	CategoryUsecase() usecase.CategoryUsecase
 	FollowUsecase() usecase.FollowUsecase
+	FAQUseCase() usecase.FAQUseCaseInterface
 }
 
 type useCaseManager struct {
 	repo RepositoryManagerInterface
+}
+
+func (um *useCaseManager) FAQUseCase() usecase.FAQUseCaseInterface {
+	return usecase.NewFAQUseCase(um.repo.FAQRepo(), um.repo.BusinessProfileRepo())
 }
 
 func (um *useCaseManager) ProductUseCase() usecase.ProductUseCaseInterface {

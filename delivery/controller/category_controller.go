@@ -36,13 +36,17 @@ func NewCategoryController(router *gin.Engine, catUC usecase.CategoryUsecase, md
 
 func (catc *CategoryController) readAll(ctx *gin.Context) {
 	var readCategory []entity.Category
-	var responseRead dto.ReadCategoryResponse
+	var resRead dto.ReadCategoryResponse
+	var responseRead []dto.ReadCategoryResponse
 	err := catc.catUC.ReadAll(&readCategory)
 	if err != nil {
 		catc.FailedResponse(ctx, err)
+		return
 	}
 	for _, cats := range readCategory {
-		responseRead.CategoryNames = append(responseRead.CategoryNames, cats.CategoryName)
+		resRead.CategoryID = cats.ID
+		resRead.CategoryNames = cats.CategoryName
+		responseRead = append(responseRead, resRead)
 	}
 	catc.SuccessResponse(ctx, responseRead)
 }
@@ -53,14 +57,17 @@ func (catc *CategoryController) create(ctx *gin.Context) {
 	err := catc.ParseBodyRequest(ctx, &requestCreate)
 	if err != nil {
 		catc.FailedResponse(ctx, err)
+		return
 	}
 	if requestCreate.CategoryName == "" {
 		catc.FailedResponse(ctx, errors.New("category name must be empty"))
+		return
 	}
 	createCategory.CategoryName = requestCreate.CategoryName
 	err = catc.catUC.Create(&createCategory)
 	if err != nil {
 		catc.FailedResponse(ctx, err)
+		return
 	}
 	responseCreate := fmt.Sprintf("category %s created successfully", requestCreate.CategoryName)
 	catc.SuccessResponse(ctx, responseCreate)

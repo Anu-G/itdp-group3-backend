@@ -5,5 +5,6 @@ type CreateCategoryRequest struct {
 }
 
 type ReadCategoryResponse struct {
-	CategoryNames []string `json:"category_names"`
+	CategoryID    uint   `json:"category_id"`
+	CategoryNames string `json:"category_names"`
 }

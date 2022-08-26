@@ -134,15 +134,79 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 							CommentFill: "wow bagus bgt",
 						},
 					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\0287a3f2-4aae-44e8-87ea-7e291dd2cf64\\img-product-c472054b-d56d-4710-bd35-e0c7b9ef54e2.png, E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\0287a3f2-4aae-44e8-87ea-7e291dd2cf64\\img-product-6e8be104-e1fb-4c97-b9a0-4c04b4f84f91.png",
 				},
 				entity.Feed{
 					CaptionPost: "hai gais ini kursi",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "wow wow bagus bgt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\610c371b-b053-4511-a888-764c90a5976f\\img-product-a391a588-1fbb-4404-9972-e30404ed7c2c.png, E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\610c371b-b053-4511-a888-764c90a5976f\\img-product-7b7ca42c-6a5c-4e0a-a967-a874f4c6dfd3.png, E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\610c371b-b053-4511-a888-764c90a5976f\\img-product-9bbdf023-6ac5-43b3-8919-ab5131f63884.png",
 				},
 				entity.Feed{
 					CaptionPost: "hai gais ini lemari",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "wow wow wow bagus bgt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\937a4ba2-6909-4989-a925-3819e966421b\\img-product-552caf53-4efa-49d9-b0c6-aa999859326f.png",
 				},
 				entity.Feed{
 					CaptionPost: "hai gais ini sofa",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "wow wow wow wow bagus bgt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\4b84cdeb-6ff5-475b-b957-dea0a2bf0e26\\img-product-96db3c66-1bed-4d58-992b-e0c45b550f23.png",
+				},
+				entity.Feed{
+					CaptionPost: "hai gais ini pot bunga",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "wow wow wow wow bagus bgt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\02f77cdd-a2b1-49ab-ad23-41b829720677\\img-product-e613a8a0-cdd2-4766-b028-0255f71f24e5.jpg",
+				},
+				entity.Feed{
+					CaptionPost: "hai gais ini bukan pot bunga",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "wow wow wow wow bagus bgt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\7223c1c2-9f32-4cb9-939a-13ebf3d1fa0e\\img-product-01a946f7-ee7d-42fb-8360-f1fa19367f09.jpg",
+				},
+				entity.Feed{
+					CaptionPost: "hai gais ini mungkin pot bunga",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "wow wow wow wow bagus bgt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\afb8f4db-1859-4482-80aa-08b4b035c7b6\\img-product-a90b61e8-8bfe-47b6-8b75-6d4c84cc9c66.png",
+				},
+				entity.Feed{
+					CaptionPost: "hai gais ini gajah",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "BUKAN ANJING",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\a850a8bc-9efd-4832-aaab-6d63d0c3987d\\img-product-00ac012d-c68c-4105-94f8-e4e0582d3d48.jpg",
+				},
+				entity.Feed{
+					CaptionPost: "hai gais ini lemari minimalis",
+					DetailComments: []entity.DetailComment{
+						entity.DetailComment{
+							CommentFill: "bagus bgttt",
+						},
+					},
+					DetailMediaFeeds: "E:\\ITDP Sinarmas Mining\\toktok_dev\\img\\products\\937a4ba2-6909-4989-a925-3819e966421b\\img-product-552caf53-4efa-49d9-b0c6-aa999859326f.png",
 				},
 			},
 		},

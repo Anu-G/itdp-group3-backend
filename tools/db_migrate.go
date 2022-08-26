@@ -26,6 +26,8 @@ func RunMigrate(dbc manager.InfraManagerInterface) error {
 		&entity.BusinessLink{},
 		&entity.DetailMediaFeed{},
 		&entity.DetailComment{},
+		&entity.Followed{},
+		&entity.Follower{},
 	)
 	if err != nil {
 		panic(err)

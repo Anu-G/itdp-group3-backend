@@ -17,6 +17,8 @@ type RepositoryManagerInterface interface {
 	CategoryRepo() repository.CategoryRepository
 	BusinessHourRepo() repository.BusinessHourRepositoryInterface
 	BusinessLinkRepo() repository.BusinessLinkRepositoryInterface
+	FollowerRepo() repository.FollowerRepository
+	FollowedRepo() repository.FollowedRepository
 }
 
 type repositoryManager struct {
@@ -84,4 +86,12 @@ func (r *repositoryManager) DetailCommentRepo() repository.DetailCommentReposito
 
 func (r *repositoryManager) CategoryRepo() repository.CategoryRepository {
 	return repository.NewCategoryRepository(r.infra.DBCon())
+}
+
+func (r *repositoryManager) FollowerRepo() repository.FollowerRepository {
+	return repository.NewFollowerRepository(r.infra.DBCon())
+}
+
+func (r *repositoryManager) FollowedRepo() repository.FollowedRepository {
+	return repository.NewFollowedRepository(r.infra.DBCon())
 }

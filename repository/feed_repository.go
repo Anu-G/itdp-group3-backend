@@ -8,11 +8,13 @@ import (
 
 type FeedRepository interface {
 	Create(f *entity.Feed) error
-	Read(f *entity.Feed) error
+	Read(f *[]entity.Feed) error
+	ReadByID(f *entity.Feed) error
 	ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
 	ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error)
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
 	ReadByFollowerAccountID(ids []uint, page int, pageLim int) ([]entity.Feed, error)
+	Update(f *entity.Feed) error
 	BaseRepository
 }
 
@@ -30,8 +32,12 @@ func (fr *feedRepository) Create(f *entity.Feed) error {
 	return fr.db.Create(&f).Error
 }
 
-func (fr *feedRepository) Read(f *entity.Feed) error {
+func (fr *feedRepository) Read(f *[]entity.Feed) error {
 	return fr.db.Preload("DetailComments").Find(&f).Error
+}
+
+func (fr *feedRepository) ReadByID(f *entity.Feed) error {
+	return fr.db.Preload("DetailComments").Find(&f, "id = ?", f.ID).Error
 }
 
 func (fr *feedRepository) ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error) {
@@ -70,6 +76,10 @@ func (fr *feedRepository) ReadByPage(page int, pageLim int) ([]entity.Feed, erro
 	read := fr.db.Preload("DetailComments")
 	res := fr.Paging(read, page, pageLim).Find(&feedRes).Order("id").Error
 	return feedRes, res
+}
+
+func (fr *feedRepository) Update(f *entity.Feed) error {
+	return fr.db.Save(&f).Error
 }
 
 func (fr *feedRepository) Paging(db *gorm.DB, page int, pageLim int) *gorm.DB {

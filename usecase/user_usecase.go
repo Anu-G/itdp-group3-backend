@@ -30,7 +30,7 @@ func (uc *userUsecase) Update(u *dto.UpdateUserRequest) error {
 	newUser.Email = u.Email
 	newAccount.Username = u.Username
 	newAccount.PhoneNumber = u.PhoneNumber
-	newUser.Encode()
+	newUser.Encrypt()
 	err := uc.repo.Update(&newUser)
 	if err != nil {
 		return err

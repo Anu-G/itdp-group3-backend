@@ -29,7 +29,6 @@ func (ar *authRepository) CreateUser(u *entity.User) error {
 }
 
 func (ar *authRepository) FindUser(u *entity.User) error {
-	u.Encode()
 	res := ar.db.Preload("Account").First(&u, "email = ?", u.Email)
 	return res.Error
 }

@@ -60,13 +60,16 @@ func (ac *AuthController) createUserAccount(ctx *gin.Context) {
 		ac.FailedResponse(ctx, err)
 		return
 	}
-
+	if !utils.EmailValidation(userReq.Email) || !utils.PasswordValidation(userReq.Password) {
+		ac.FailedResponse(ctx, errors.New("email or password is invalid"))
+		return
+	}
 	createdUser.Username = userReq.Username
 	createdUser.Password = userReq.Password
 	createdUser.Email = userReq.Email
 	createdUser.Account.Username = userReq.Username
 	createdUser.Account.RoleID = 1
-	createdUser.Encode()
+	createdUser.Encrypt()
 	if len(createdUser.Username) > 15 {
 		createdUser.Account.PhoneNumber = createdUser.Username[0:15]
 	} else {
@@ -98,14 +101,17 @@ func (ac *AuthController) loginUser(ctx *gin.Context) {
 		ac.FailedResponse(ctx, err)
 		return
 	}
-
+	if !utils.EmailValidation(user.Email) || !utils.PasswordValidation(user.Password) {
+		ac.FailedResponse(ctx, errors.New("email or password is invalid"))
+		return
+	}
 	realUser.Email = user.Email
 	err = ac.authUC.FindUser(&realUser)
 	if err != nil {
 		ac.FailedResponse(ctx, errors.New("wrong email"))
 		return
 	}
-	realUser.Decode()
+	realUser.Decrypt()
 	if realUser.Password != user.Password {
 		ac.FailedResponse(ctx, errors.New("wrong password"))
 		return

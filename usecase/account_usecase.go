@@ -8,6 +8,7 @@ import (
 
 type AccountUsecase interface {
 	Update(a *entity.Account) error
+	UpdateByID(id uint) (entity.Account, error)
 	FindByUsername(a *entity.Account) error
 	FollowList(rf dto.FollowListRequest) ([]dto.FollowListResponse, error)
 }
@@ -24,6 +25,17 @@ func NewAccountUsecse(repo repository.AccountRepository) AccountUsecase {
 
 func (ac *accountUsecase) Update(a *entity.Account) error {
 	return ac.repo.Update(a)
+}
+
+func (ac *accountUsecase) UpdateByID(id uint) (entity.Account, error) {
+	var newAccount entity.Account
+	newAccount.ID = id
+	err := ac.repo.FindById(&newAccount)
+	if err != nil {
+		return newAccount, err
+	}
+	newAccount.RoleID = 2
+	return newAccount, ac.repo.Update(&newAccount)
 }
 
 func (ac *accountUsecase) FindByUsername(a *entity.Account) error {

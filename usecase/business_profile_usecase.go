@@ -23,6 +23,7 @@ type businessProfileUseCase struct {
 	accountRepo      repository.AccountRepository
 	businessHourRepo repository.BusinessHourRepositoryInterface
 	businessLinkRepo repository.BusinessLinkRepositoryInterface
+	categoryRepo     repository.CategoryRepository
 	fileRepo         repository.FileRepository
 }
 
@@ -44,8 +45,14 @@ func (b *businessProfileUseCase) GetBusinessProfile(bp *dto.BusinessProfileReque
 		return dto.BusinessProfileResponse{}, err
 	}
 
+	categoryName, err := b.categoryRepo.FindById(createdBp.CategoryID)
+	if err != nil {
+		return dto.BusinessProfileResponse{}, err
+	}
+
 	response.BusinessProfile = createdBp
 	response.PhoneNumber = account.PhoneNumber
+	response.CategoryName = categoryName
 
 	return response, nil
 }
@@ -128,6 +135,7 @@ func NewBusinessProfileUseCase(
 	accountRepo repository.AccountRepository,
 	businessHourRepo repository.BusinessHourRepositoryInterface,
 	businessLinkRepo repository.BusinessLinkRepositoryInterface,
+	categoryRepo     repository.CategoryRepository,
 	fileRepo repository.FileRepository,
 ) BusinessProfileUseCaseInterface {
 
@@ -136,6 +144,7 @@ func NewBusinessProfileUseCase(
 		accountRepo:      accountRepo,
 		businessHourRepo: businessHourRepo,
 		businessLinkRepo: businessLinkRepo,
+		categoryRepo: categoryRepo,
 		fileRepo:         fileRepo,
 	}
 

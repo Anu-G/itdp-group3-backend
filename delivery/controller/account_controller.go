@@ -34,6 +34,7 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	routeAccount.POST("/follow", controller.follow)
 	routeAccount.POST("/unfollow", controller.unfollow)
 	routeAccount.GET("/list", controller.showFollowList)
+	routeAccount.PUT("/activate-business", controller.activateBusinessAccount)
 
 	return &controller
 }
@@ -81,6 +82,21 @@ func (ac *AccountController) createAccount(ctx *gin.Context) {
 		return
 	}
 	ac.SuccessResponse(ctx, newAccount)
+}
+
+func (ac *AccountController) activateBusinessAccount(ctx *gin.Context) {
+	var requestAccountID dto.ActivateBusinessAccountRequest
+	err := ac.ParseBodyRequest(ctx, &requestAccountID)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+	responseAccountID, err := ac.accUC.UpdateByID(requestAccountID.AccountID)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+	ac.SuccessResponse(ctx, responseAccountID)
 }
 
 func (ac *AccountController) follow(ctx *gin.Context) {

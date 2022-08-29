@@ -39,15 +39,15 @@ func (pr *productRepository) SearchProduct(keyword string) ([]entity.Product, er
 	query := fmt.Sprintf(`
 SELECT *
 FROM m_product as P
-WHERE P.product_name @@ to_tsquery('` + newKeyword + `' )
-OR regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g') @@ to_tsquery('` + newKeyword + `' )
+WHERE P.product_name @@ to_tsquery('`+newKeyword+`' )
+OR regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g') @@ to_tsquery('`+newKeyword+`' )
 OR %v
 ORDER BY ts_rank_cd(
 	to_tsvector('indonesian',P.product_name), 
-	to_tsquery('` + newKeyword + `')) +
+	to_tsquery('`+newKeyword+`')) +
 	ts_rank_cd(
 	to_tsvector('indonesian',regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g')), 
-	to_tsquery('` + newKeyword + `'), 32 /* rank/(rank+1) */) DESC;
+	to_tsquery('`+newKeyword+`'), 32 /* rank/(rank+1) */) DESC;
 	`, newKeywordLike)
 
 	res := pr.db.Raw(query).Find(&products)
@@ -67,7 +67,7 @@ func (pr *productRepository) Delete(id string) error {
 
 func (pr *productRepository) GetByAccount(p dto.ProductRequest) ([]entity.Product, error) {
 	var products []entity.Product
-	res := pr.db.Find(&products, "m_product.account_id = ?", p.AccountID)
+	res := pr.db.Order("id").Find(&products, "m_product.account_id = ?", p.AccountID)
 	if err := res.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return products, nil

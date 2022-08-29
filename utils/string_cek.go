@@ -8,7 +8,7 @@ func EmailValidation(text string) bool {
 }
 
 func PasswordValidation(text string) bool {
-	if len(text) > 8 {
+	if len(text) >= 8 {
 		return true
 	}
 	return false

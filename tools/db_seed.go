@@ -30,7 +30,7 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 		Password: "user12345",
 		Email:    "user1@gmail.com",
 		Account: entity.Account{
-			RoleID:      0,
+			RoleID:      2,
 			PhoneNumber: "08111",
 
 			BusinessProfile: entity.BusinessProfile{
@@ -232,10 +232,10 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 
 	user2 := entity.User{
 		Username: "user2",
-		Password: "user2",
+		Password: "user2345",
 		Email:    "user2@gmail.com",
 		Account: entity.Account{
-			RoleID:      0,
+			RoleID:      2,
 			PhoneNumber: "08112",
 
 			BusinessProfile: entity.BusinessProfile{
@@ -368,10 +368,10 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 
 	user3 := entity.User{
 		Username: "user3",
-		Password: "user3",
+		Password: "user3456",
 		Email:    "user3@gmail.com",
 		Account: entity.Account{
-			RoleID:      0,
+			RoleID:      2,
 			PhoneNumber: "08113",
 
 			BusinessProfile: entity.BusinessProfile{

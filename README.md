@@ -7,7 +7,10 @@
 ``` go run . db:migrate ```
 
 ## Run DB Seeds
-``` go run . db:seeds ```
+``` 
+go run . db:seeds 
+
+```
 
 ## Run API
 ``` go run . ```

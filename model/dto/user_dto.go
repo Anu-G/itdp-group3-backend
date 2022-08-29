@@ -10,7 +10,7 @@ type ResponseUserRegister struct {
 }
 
 type UpdateUserRequest struct {
-	Username    string `json:"user_name"`
+	AccountID   uint   `json:"account_id"`
 	Email       string `json:"email"`
 	PhoneNumber string `json:"phone_number"`
 }

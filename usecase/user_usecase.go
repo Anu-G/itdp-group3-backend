@@ -26,12 +26,16 @@ func NewUserUsecase(ur repository.UserRepository, urA repository.AccountReposito
 func (uc *userUsecase) Update(u *dto.UpdateUserRequest) error {
 	var newUser entity.User
 	var newAccount entity.Account
-	newUser.Username = u.Username
+	newAccount.ID = u.AccountID
+	err := uc.repoAcc.FindById(&newAccount)
+	if err != nil {
+		return err
+	}
+	newUser.Username = newAccount.Username
 	newUser.Email = u.Email
-	newAccount.Username = u.Username
 	newAccount.PhoneNumber = u.PhoneNumber
 	newUser.Encrypt()
-	err := uc.repo.Update(&newUser)
+	err = uc.repo.Update(&newUser)
 	if err != nil {
 		return err
 	}

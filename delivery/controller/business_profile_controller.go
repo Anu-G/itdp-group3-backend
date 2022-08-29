@@ -8,9 +8,11 @@ import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
-	"strings"
 
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type BusinessProfileController struct {
@@ -69,24 +71,27 @@ func (b *BusinessProfileController) addBusinessProfile(ctx *gin.Context) {
 }
 
 func (b *BusinessProfileController) addProfileImage(ctx *gin.Context) {
-	file, fileHeader, err := ctx.Request.FormFile("profile_image")
+	cld, _ := cloudinary.NewFromParams("ihdiannaja","954945529412874","7mFstMRVYEOlO784FGNo09mfk_4")
+
+	file, _, err := ctx.Request.FormFile("profile_image")
 	if err != nil {
 		b.FailedResponse(ctx, errors.New("failed get file"))
 		return
 	}
 
-	fileName := strings.Split(fileHeader.Filename, ".")
-	if len(fileName) != 2 {
-		b.FailedResponse(ctx, errors.New("Unrecognized file extension"))
-	}
+	newFileName := "img-business-profile" + uuid.New().String()
 
-	fileLocation, err := b.usecase.CreateProfileImage(file, fileName[1])
+	result, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{
+		PublicID: newFileName,
+		Folder: "Business Profile",
+	})
+
 	if err != nil {
-		b.FailedResponse(ctx, errors.New("failed while saving file"))
+		b.FailedResponse(ctx, errors.New("Upload to cloudinary failed"))
 		return
 	}
 
-	b.SuccessResponse(ctx, fileLocation)
+	b.SuccessResponse(ctx, result.SecureURL)
 }
 
 func (b *BusinessProfileController) getProfile(ctx *gin.Context) {

@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -41,11 +43,17 @@ func (f *fileRepository) Save(file multipart.File, fileName string) (string, err
 }
 
 func (f *fileRepository) SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
-	pathHold := "img-feed-" + uuid.New().String() + "." + fileName
-	path := f.pathFeed + pathHold
-	pathClient := f.pathClientFeed + pathHold
-	err := ctx.SaveUploadedFile(file, path)
-	return pathClient, err
+	cld, _ := cloudinary.NewFromParams("ihdiannaja", "954945529412874", "7mFstMRVYEOlO784FGNo09mfk_4")
+	pathHold := "img-feed" + uuid.New().String()
+	fileInput, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	result, err := cld.Upload.Upload(ctx, fileInput, uploader.UploadParams{
+		PublicID: pathHold,
+		Folder:   "Post Feed",
+	})
+	return result.SecureURL, err
 }
 
 func NewFileRepository(path string, pathFeed string, pathClientFeed string) FileRepository {

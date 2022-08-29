@@ -31,7 +31,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	}
 
 	routeFeed := controller.router.Group("/feed")
-	routeFeed.Use(md.RequireToken())
+	// routeFeed.Use(md.RequireToken())
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
 	routeFeed.GET("/category", controller.readCategoryFeed)

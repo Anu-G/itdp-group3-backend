@@ -51,7 +51,7 @@ func (rm *repositoryManager) FileProductRepo() repository.FileProductRepository 
 }
 
 func (rm *repositoryManager) FileRepo() repository.FileRepository {
-	return repository.NewFileRepository(rm.infra.GetMediaPath(), rm.infra.GetMediaPathFeed())
+	return repository.NewFileRepository(rm.infra.GetMediaPath(), rm.infra.GetMediaPathFeed(), rm.infra.GetMediaPathClientFeed())
 }
 
 func (rm *repositoryManager) NonBusinessProfileRepo() repository.NonBusinessProfileRepositoryInterface {

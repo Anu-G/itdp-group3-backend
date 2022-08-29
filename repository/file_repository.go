@@ -16,8 +16,9 @@ type FileRepository interface {
 }
 
 type fileRepository struct {
-	path     string
-	pathFeed string
+	path           string
+	pathFeed       string
+	pathClientFeed string
 }
 
 func (f *fileRepository) Save(file multipart.File, fileName string) (string, error) {
@@ -40,14 +41,17 @@ func (f *fileRepository) Save(file multipart.File, fileName string) (string, err
 }
 
 func (f *fileRepository) SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
-	path := f.path + "img-feed-" + uuid.New().String() + "." + fileName
+	pathHold := "img-feed-" + uuid.New().String() + "." + fileName
+	path := f.pathFeed + pathHold
+	pathClient := f.pathClientFeed + pathHold
 	err := ctx.SaveUploadedFile(file, path)
-	return path, err
+	return pathClient, err
 }
 
-func NewFileRepository(path string, pathFeed string) FileRepository {
+func NewFileRepository(path string, pathFeed string, pathClientFeed string) FileRepository {
 	return &fileRepository{
-		path:     path,
-		pathFeed: pathFeed,
+		path:           path,
+		pathFeed:       pathFeed,
+		pathClientFeed: pathClientFeed,
 	}
 }

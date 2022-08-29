@@ -1,5 +1,10 @@
 package dto
 
+import (
+	"itdp-group3-backend/model/entity"
+	"time"
+)
+
 type ReadPage struct {
 	ID      uint `json:"account_id"`
 	Cat     uint `json:"category"`
@@ -31,4 +36,14 @@ type RequestUpdateFeed struct {
 	FeedID      uint     `json:"feed_ID"`
 	CaptionPost string   `json:"caption_post"`
 	MediaLinks  []string `json:"media_links"`
+}
+
+type FeedDetailResponse struct {
+	PostID           uint                   `json:"post_id"`
+	ProfileImage     string                 `json:"avatar"`
+	CaptionPost      string                 `json:"caption_post"`
+	CreatedAt        time.Time              `json:"created_at"`
+	DetailMediaFeeds []string               `json:"detail_media_feed"`
+	DisplayName      string                 `json:"display_name"`
+	DetailComment    []entity.DetailComment `json:"detail_comment"`
 }

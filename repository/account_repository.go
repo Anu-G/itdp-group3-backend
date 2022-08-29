@@ -8,6 +8,8 @@ import (
 
 type AccountRepository interface {
 	Update(a *entity.Account) error
+	ReadForProductDetail(a *entity.Account) error
+	ReadForFeedDetail(a *entity.Account) error
 	FindByUsername(a *entity.Account) error
 	FindById(a *entity.Account) error
 	FindListById(ids []uint) ([]entity.Account, error)
@@ -25,6 +27,14 @@ func NewAccountRepository(db *gorm.DB) AccountRepository {
 
 func (ar *accountRepository) Update(a *entity.Account) error {
 	return ar.db.Where("username = ?", a.Username).Updates(&a).Error
+}
+
+func (ar *accountRepository) ReadForProductDetail(a *entity.Account) error {
+	return ar.db.Preload("Follower").Preload("Followed").Preload("BusinessProfile").Preload("NonBusinessProfile").Preload("Products").First(&a, "id = ?", a.ID).Error
+}
+
+func (ar *accountRepository) ReadForFeedDetail(a *entity.Account) error {
+	return ar.db.Preload("Follower").Preload("Followed").Preload("BusinessProfile").Preload("NonBusinessProfile").Preload("Feeds").First(&a, "id = ?", a.ID).Error
 }
 
 func (ar *accountRepository) FindByUsername(a *entity.Account) error {

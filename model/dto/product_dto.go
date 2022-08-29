@@ -18,6 +18,16 @@ type ProductResponse struct {
 	DetailMediaProducts []string `json:"detail_media_products"`
 }
 
-type SearchProductRequest struct{
+type SearchProductRequest struct {
 	Keyword string `json:"keyword"`
+}
+
+type ProductDetailResponse struct {
+	ProductID           uint     `json:"product_id"`
+	ProfileImage        string   `json:"avatar"`
+	Name                string   `json:"profile_name"`
+	ProductName         string   `json:"product_name"`
+	ProductPrice        float64  `json:"price"`
+	Caption             string   `json:"caption"`
+	DetailMediaProducts []string `json:"detail_media_products"`
 }

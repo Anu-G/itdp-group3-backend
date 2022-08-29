@@ -22,3 +22,7 @@ type FollowListResponse struct {
 type ActivateBusinessAccountRequest struct {
 	AccountID uint `json:"account_id"`
 }
+
+type AccountFillRequest struct {
+	AccountID uint `json:"account_id"`
+}

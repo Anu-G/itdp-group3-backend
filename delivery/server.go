@@ -25,6 +25,7 @@ type appServer struct {
 // Server : prepare config and read arguments
 func Server() *appServer {
 	r := gin.Default()
+	r.Use(CORSMiddleware())
 
 	appCfg := config.NewConfig()
 	dbCon := manager.NewInfraSetup(appCfg)
@@ -65,6 +66,13 @@ func Server() *appServer {
 		}
 	}
 
+	// first time migration for production
+	if appCfg.DBConfig.Environment == "PROD" {
+		tools.RunMigrate(dbCon)
+	} else {
+		log.Fatal("cannot migrate")
+	}
+
 	cfgServer.startServer = true
 	return cfgServer
 }
@@ -91,5 +99,21 @@ func (a *appServer) Run() {
 		if err := a.engine.Run(a.host); err != nil {
 			panic(err)
 		}
+	}
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
 	}
 }

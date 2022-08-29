@@ -9,7 +9,8 @@ import (
 type AccountUsecase interface {
 	Update(a *entity.Account) error
 	UpdateByID(id uint) (entity.Account, error)
-	FindByUsername(a *entity.Account) error
+	ReadForProductDetail(a *entity.Account) error
+	ReadForFeedDetail(a *entity.Account) error
 	FollowList(rf dto.FollowListRequest) ([]dto.FollowListResponse, error)
 }
 
@@ -38,8 +39,12 @@ func (ac *accountUsecase) UpdateByID(id uint) (entity.Account, error) {
 	return newAccount, ac.repo.Update(&newAccount)
 }
 
-func (ac *accountUsecase) FindByUsername(a *entity.Account) error {
-	return ac.repo.FindByUsername(a)
+func (ac *accountUsecase) ReadForProductDetail(a *entity.Account) error {
+	return ac.repo.ReadForProductDetail(a)
+}
+
+func (ac *accountUsecase) ReadForFeedDetail(a *entity.Account) error {
+	return ac.repo.ReadForFeedDetail(a)
 }
 
 func (ac *accountUsecase) FollowList(rf dto.FollowListRequest) ([]dto.FollowListResponse, error) {

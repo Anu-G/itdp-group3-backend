@@ -9,7 +9,7 @@ import (
 )
 
 type DetailMediaFeedUsecase interface {
-	Create(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error)
+	Create(file *multipart.FileHeader, fileName string, ctx *gin.Context, folderName string) (string, error)
 	Read(fm *entity.DetailMediaFeed) error
 }
 
@@ -25,8 +25,8 @@ func NewDetailMediaFeedUsecase(repo repository.DetailMediaFeedRepository, fileRe
 	}
 }
 
-func (fmc *detailMediaDetailMediaFeedUsecase) Create(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
-	return fmc.fileRepo.SavefromCtx(file, fileName, ctx)
+func (fmc *detailMediaDetailMediaFeedUsecase) Create(file *multipart.FileHeader, fileName string, ctx *gin.Context, folderName string) (string, error) {
+	return fmc.fileRepo.SaveMultipleFiles(file, ctx, folderName)
 }
 
 func (fmc *detailMediaDetailMediaFeedUsecase) Read(fm *entity.DetailMediaFeed) error {

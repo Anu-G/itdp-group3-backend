@@ -4,7 +4,6 @@ import (
 	"errors"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
-	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"strings"
@@ -50,7 +49,7 @@ func (fm *DetailMediaFeedController) readDetailMediaFeed(ctx *gin.Context) {
 }
 
 func (fm *DetailMediaFeedController) createDetailMediaFeed(ctx *gin.Context) {
-	var detailMediaFeed []dto.DetailMediaFeed
+	var detailMediaFeed []string
 
 	form, err := ctx.MultipartForm()
 	files := form.File["feed_images"]
@@ -67,16 +66,14 @@ func (fm *DetailMediaFeedController) createDetailMediaFeed(ctx *gin.Context) {
 			return
 		}
 
-		path, err := fm.fmUC.Create(file, newFileName[1], ctx)
+		path, err := fm.fmUC.Create(file, newFileName[1], ctx, "Post Feed")
 
 		if err != nil {
 			fm.FailedResponse(ctx, errors.New("failed while saving file"))
 			return
 		}
 
-		detailMediaFeed = append(detailMediaFeed, dto.DetailMediaFeed{
-			MediaLink: path,
-		})
+		detailMediaFeed = append(detailMediaFeed, path)
 	}
 
 	fm.SuccessResponse(ctx, detailMediaFeed)

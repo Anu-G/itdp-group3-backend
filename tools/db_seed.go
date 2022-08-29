@@ -27,7 +27,7 @@ func RunSeed(dbc manager.InfraManagerInterface) {
 
 	user1 := entity.User{
 		Username: "user1",
-		Password: "user1",
+		Password: "user12345",
 		Email:    "user1@gmail.com",
 		Account: entity.Account{
 			RoleID:      0,

@@ -8,7 +8,6 @@ import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,24 +61,19 @@ func (b *NonBusinessProfileController) addNonBusinessProfile(ctx *gin.Context) {
 }
 
 func (b *NonBusinessProfileController) addProfileImage(ctx *gin.Context) {
-	file, fileHeader, err := ctx.Request.FormFile("profile_image")
+	file, _, err := ctx.Request.FormFile("profile_image")
 	if err != nil {
 		b.FailedResponse(ctx, errors.New("failed get file"))
 		return
 	}
 
-	fileName := strings.Split(fileHeader.Filename, ".")
-	if len(fileName) != 2 {
-		b.FailedResponse(ctx, errors.New("Unrecognized file extension"))
-	}
-
-	fileLocation, err := b.usecase.CreateProfileImage(file, fileName[1])
+	result, err := b.usecase.CreateProfileImage(file, ctx, "Non Business Profile")
 	if err != nil {
-		b.FailedResponse(ctx, errors.New("failed while saving file"))
+		b.FailedResponse(ctx, errors.New("failed uploading file"))
 		return
 	}
 
-	b.SuccessResponse(ctx, fileLocation)
+	b.SuccessResponse(ctx, result)
 }
 
 func (b *NonBusinessProfileController) getProfile(ctx *gin.Context) {

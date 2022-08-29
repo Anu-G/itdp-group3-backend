@@ -18,3 +18,7 @@ type FollowListResponse struct {
 	AccountID uint   `json:"account_id"`
 	Username  string `json:"user_name"`
 }
+
+type ActivateBusinessAccountRequest struct {
+	AccountID uint `json:"account_id"`
+}

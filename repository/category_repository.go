@@ -9,6 +9,7 @@ import (
 type CategoryRepository interface {
 	Create(cat *entity.Category) error
 	ReadAll(cat *[]entity.Category) error
+	FindById(id uint) (string, error)
 }
 
 type categoryRepository struct {
@@ -32,3 +33,10 @@ func (catr *categoryRepository) ReadAll(cat *[]entity.Category) error {
 func (catr *categoryRepository) Delete(cat *entity.Category) error {
 	return catr.db.Where("id = ?", cat).Delete(&cat).Error
 }
+
+func (catr *categoryRepository) FindById(id uint) (string, error) {
+	var category entity.Category
+	err := catr.db.First(&category, "id = ?" , id).Error
+	return category.CategoryName, err
+}
+

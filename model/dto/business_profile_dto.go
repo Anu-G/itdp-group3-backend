@@ -28,6 +28,7 @@ type ShoppingLink struct {
 type BusinessProfileResponse struct {
 	BusinessProfile entity.BusinessProfile `json:"business_profile"`
 	PhoneNumber     string                 `json:"phone_number"`
+	CategoryName    string                 `json:"category_name"`
 }
 
 type FAQRequest struct {

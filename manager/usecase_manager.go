@@ -30,7 +30,7 @@ func (um *useCaseManager) ProductUseCase() usecase.ProductUseCaseInterface {
 }
 
 func (um *useCaseManager) BusinessProfileUseCase() usecase.BusinessProfileUseCaseInterface {
-	return usecase.NewBusinessProfileUseCase(um.repo.BusinessProfileRepo(), um.repo.AccountRepo(), um.repo.BusinessHourRepo(), um.repo.BusinessLinkRepo(), um.repo.FileRepo())
+	return usecase.NewBusinessProfileUseCase(um.repo.BusinessProfileRepo(), um.repo.AccountRepo(), um.repo.BusinessHourRepo(), um.repo.BusinessLinkRepo(), um.repo.CategoryRepo(), um.repo.FileRepo())
 }
 
 func (um *useCaseManager) NonBusinessProfileUseCase() usecase.NonBusinessProfileUseCaseInterface {

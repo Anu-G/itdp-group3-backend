@@ -66,7 +66,7 @@ func (fm *DetailMediaFeedController) createDetailMediaFeed(ctx *gin.Context) {
 			return
 		}
 
-		path, err := fm.fmUC.Create(file, newFileName[1], ctx)
+		path, err := fm.fmUC.Create(file, newFileName[1], ctx, "Post Feed")
 
 		if err != nil {
 			fm.FailedResponse(ctx, errors.New("failed while saving file"))

@@ -1,10 +1,7 @@
 package repository
 
 import (
-	"io"
 	"mime/multipart"
-	"os"
-	"path/filepath"
 
 	"github.com/cloudinary/cloudinary-go"
 	"github.com/cloudinary/cloudinary-go/api/uploader"
@@ -13,8 +10,8 @@ import (
 )
 
 type FileRepository interface {
-	Save(file multipart.File, fileName string) (string, error)
-	SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error)
+	SaveSingleFile(file multipart.File, ctx *gin.Context, folderName string) (string, error)
+	SaveMultipleFiles(file *multipart.FileHeader, ctx *gin.Context, folderName string) (string, error)
 }
 
 type fileRepository struct {
@@ -23,35 +20,33 @@ type fileRepository struct {
 	pathClientFeed string
 }
 
-func (f *fileRepository) Save(file multipart.File, fileName string) (string, error) {
-	fileLocation := filepath.Join(f.path, fileName)
-	out, err := os.OpenFile(fileLocation, os.O_WRONLY|os.O_CREATE, 0666)
+func (f *fileRepository) SaveSingleFile(file multipart.File, ctx *gin.Context, folderName string) (string, error) {
+	cld, _ := cloudinary.NewFromParams("ihdiannaja", "954945529412874", "7mFstMRVYEOlO784FGNo09mfk_4")
+
+	newFileName := "img" + uuid.New().String()
+
+	result, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{
+		PublicID: newFileName,
+		Folder:   folderName,
+	})
+
 	if err != nil {
 		return "", err
 	}
-	defer func(out *os.File) {
-		err := out.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(out)
-	_, err = io.Copy(out, file)
-	if err != nil {
-		return "", err
-	}
-	return fileLocation, nil
+
+	return result.SecureURL, nil
 }
 
-func (f *fileRepository) SavefromCtx(file *multipart.FileHeader, fileName string, ctx *gin.Context) (string, error) {
+func (f *fileRepository) SaveMultipleFiles(file *multipart.FileHeader, ctx *gin.Context, folderName string) (string, error) {
 	cld, _ := cloudinary.NewFromParams("ihdiannaja", "954945529412874", "7mFstMRVYEOlO784FGNo09mfk_4")
-	pathHold := "img-feed" + uuid.New().String()
+	pathHold := "img" + uuid.New().String()
 	fileInput, err := file.Open()
 	if err != nil {
 		return "", err
 	}
 	result, err := cld.Upload.Upload(ctx, fileInput, uploader.UploadParams{
 		PublicID: pathHold,
-		Folder:   "Post Feed",
+		Folder:   folderName,
 	})
 	return result.SecureURL, err
 }

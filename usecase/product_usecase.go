@@ -14,7 +14,7 @@ import (
 
 type ProductUseCaseInterface interface {
 	CreateProduct(p *dto.ProductRequest) (entity.Product, error)
-	CreateProductImage(files []*multipart.FileHeader, ctx *gin.Context) ([]string, error)
+	CreateProductImage(file *multipart.FileHeader, ctx *gin.Context, folderName string) (string, error)
 	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
 	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
 	SearchProduct(keyword string) ([]dto.ProductResponse, error)
@@ -22,8 +22,8 @@ type ProductUseCaseInterface interface {
 }
 
 type productUseCase struct {
-	repo            repository.ProductRepositoryInterface
-	fileProductRepo repository.FileProductRepository
+	repo     repository.ProductRepositoryInterface
+	fileRepo repository.FileRepository
 }
 
 func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductResponse, error) {
@@ -44,7 +44,7 @@ func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductResponse, 
 			DetailMediaProducts: strings.Split(product.DetailMediaProducts, ", "),
 		})
 	}
-	
+
 	return products, nil
 }
 
@@ -91,8 +91,8 @@ func (pu *productUseCase) GetByProduct(p dto.ProductRequest) (dto.ProductRespons
 	return product, nil
 }
 
-func (pu *productUseCase) CreateProductImage(files []*multipart.FileHeader, ctx *gin.Context) ([]string, error) {
-	return pu.fileProductRepo.CreateProductImage(files, ctx)
+func (pu *productUseCase) CreateProductImage(file *multipart.FileHeader, ctx *gin.Context, folderName string) (string, error) {
+	return pu.fileRepo.SaveMultipleFiles(file, ctx, folderName)
 }
 
 func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, error) {
@@ -114,9 +114,9 @@ func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, 
 
 }
 
-func NewProductUseCase(repo repository.ProductRepositoryInterface, fileProductRepo repository.FileProductRepository) ProductUseCaseInterface {
+func NewProductUseCase(repo repository.ProductRepositoryInterface, fileRepo repository.FileRepository) ProductUseCaseInterface {
 	return &productUseCase{
-		repo:            repo,
-		fileProductRepo: fileProductRepo,
+		repo:     repo,
+		fileRepo: fileRepo,
 	}
 }

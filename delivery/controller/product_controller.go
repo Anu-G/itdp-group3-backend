@@ -8,8 +8,10 @@ import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type ProductController struct {
@@ -81,9 +83,27 @@ func (b *ProductController) addProductImage(ctx *gin.Context) {
 		return
 	}
 
-	detailMediaProducts, err := b.usecase.CreateProductImage(files, ctx)
+	var detailMediaProduct []string
+	newFolder := uuid.New().String()
 
-	b.SuccessResponse(ctx, detailMediaProducts)
+	for _, file := range files {
+		newFileName := strings.Split(file.Filename, ".")
+		if len(newFileName) != 2 {
+			b.FailedResponse(ctx, errors.New("Unrecognize file extension"))
+			return
+		}
+
+		path, err := b.usecase.CreateProductImage(file, ctx, "Product/"+newFolder)
+
+		if err != nil {
+			b.FailedResponse(ctx, errors.New("failed while saving file"))
+			return
+		}
+
+		detailMediaProduct = append(detailMediaProduct, path)
+	}
+
+	b.SuccessResponse(ctx, strings.Join(detailMediaProduct, ", "))
 }
 
 func (b *ProductController) getByAccount(ctx *gin.Context) {
@@ -158,10 +178,10 @@ func (b *ProductController) deleteProduct(ctx *gin.Context) {
 	b.SuccessResponse(ctx, "success delete productID "+productReq.ProductID)
 }
 
-func (b *ProductController) searchProduct (ctx *gin.Context) {
+func (b *ProductController) searchProduct(ctx *gin.Context) {
 	var (
 		searchProduct dto.SearchProductRequest
-		productRes []dto.ProductResponse
+		productRes    []dto.ProductResponse
 	)
 
 	err := b.ParseBodyRequest(ctx, &searchProduct)

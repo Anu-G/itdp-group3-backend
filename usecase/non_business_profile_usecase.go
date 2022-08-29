@@ -1,19 +1,18 @@
 package usecase
 
 import (
-	"fmt"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
 	"mime/multipart"
 	"strconv"
 
-	"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
 )
 
 type NonBusinessProfileUseCaseInterface interface {
 	CreateNonBusinessProfile(bp *dto.NonBusinessProfileRequest) (entity.NonBusinessProfile, error)
-	CreateProfileImage(file multipart.File, fileExt string) (string, error)
+	CreateProfileImage(file multipart.File, ctx *gin.Context, folderName string) (string, error)
 	GetNonBusinessProfile(bp *dto.NonBusinessProfileRequest) (dto.NonBusinessProfileResponse, error)
 }
 
@@ -47,15 +46,8 @@ func (b *nonBusinessProfileUseCase) GetNonBusinessProfile(bp *dto.NonBusinessPro
 	return response, nil
 }
 
-func (b *nonBusinessProfileUseCase) CreateProfileImage(file multipart.File, fileExt string) (string, error) {
-	fileName := fmt.Sprintf("img-nbp-%s.%s", uuid.New().String(), fileExt)
-	fileLocation, err := b.fileRepo.Save(file, fileName)
-
-	if err != nil {
-		return "", err
-	}
-
-	return fileLocation, nil
+func (b *nonBusinessProfileUseCase) CreateProfileImage(file multipart.File, ctx *gin.Context, folderName string) (string, error) {
+	return b.fileRepo.SaveSingleFile(file, ctx, folderName)
 }
 
 func (b *nonBusinessProfileUseCase) CreateNonBusinessProfile(bp *dto.NonBusinessProfileRequest) (entity.NonBusinessProfile, error) {

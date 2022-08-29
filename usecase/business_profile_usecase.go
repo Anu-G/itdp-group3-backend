@@ -1,20 +1,19 @@
 package usecase
 
 import (
-	"fmt"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
 	"mime/multipart"
 	"strconv"
 
-	"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type BusinessProfileUseCaseInterface interface {
 	CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error)
-	CreateProfileImage(file multipart.File, fileExt string) (string, error)
+	CreateProfileImage(file multipart.File, ctx *gin.Context, folderName string) (string, error)
 	GetBusinessProfile(bp *dto.BusinessProfileRequest) (dto.BusinessProfileResponse, error)
 }
 
@@ -57,15 +56,8 @@ func (b *businessProfileUseCase) GetBusinessProfile(bp *dto.BusinessProfileReque
 	return response, nil
 }
 
-func (b *businessProfileUseCase) CreateProfileImage(file multipart.File, fileExt string) (string, error) {
-	fileName := fmt.Sprintf("img-bp-%s.%s", uuid.New().String(), fileExt)
-	fileLocation, err := b.fileRepo.Save(file, fileName)
-
-	if err != nil {
-		return "", err
-	}
-
-	return fileLocation, nil
+func (b *businessProfileUseCase) CreateProfileImage(file multipart.File, ctx *gin.Context, folderName string) (string, error) {
+	return b.fileRepo.SaveSingleFile(file, ctx, folderName)
 }
 
 func (b *businessProfileUseCase) CreateBusinessProfile(bp *dto.BusinessProfileRequest) (entity.BusinessProfile, error) {
@@ -135,7 +127,7 @@ func NewBusinessProfileUseCase(
 	accountRepo repository.AccountRepository,
 	businessHourRepo repository.BusinessHourRepositoryInterface,
 	businessLinkRepo repository.BusinessLinkRepositoryInterface,
-	categoryRepo     repository.CategoryRepository,
+	categoryRepo repository.CategoryRepository,
 	fileRepo repository.FileRepository,
 ) BusinessProfileUseCaseInterface {
 
@@ -144,7 +136,7 @@ func NewBusinessProfileUseCase(
 		accountRepo:      accountRepo,
 		businessHourRepo: businessHourRepo,
 		businessLinkRepo: businessLinkRepo,
-		categoryRepo: categoryRepo,
+		categoryRepo:     categoryRepo,
 		fileRepo:         fileRepo,
 	}
 

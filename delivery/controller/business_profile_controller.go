@@ -9,10 +9,7 @@ import (
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
 
-	"github.com/cloudinary/cloudinary-go"
-	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type BusinessProfileController struct {
@@ -71,27 +68,19 @@ func (b *BusinessProfileController) addBusinessProfile(ctx *gin.Context) {
 }
 
 func (b *BusinessProfileController) addProfileImage(ctx *gin.Context) {
-	cld, _ := cloudinary.NewFromParams("ihdiannaja","954945529412874","7mFstMRVYEOlO784FGNo09mfk_4")
-
 	file, _, err := ctx.Request.FormFile("profile_image")
 	if err != nil {
 		b.FailedResponse(ctx, errors.New("failed get file"))
 		return
 	}
 
-	newFileName := "img-business-profile" + uuid.New().String()
-
-	result, err := cld.Upload.Upload(ctx, file, uploader.UploadParams{
-		PublicID: newFileName,
-		Folder: "Business Profile",
-	})
-
+	result, err := b.usecase.CreateProfileImage(file, ctx, "Business Profile")
 	if err != nil {
-		b.FailedResponse(ctx, errors.New("Upload to cloudinary failed"))
+		b.FailedResponse(ctx, errors.New("failed uploading file"))
 		return
 	}
 
-	b.SuccessResponse(ctx, result.SecureURL)
+	b.SuccessResponse(ctx, result)
 }
 
 func (b *BusinessProfileController) getProfile(ctx *gin.Context) {

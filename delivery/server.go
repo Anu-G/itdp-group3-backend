@@ -89,7 +89,7 @@ func (a *appServer) initControllers() {
 func (a *appServer) Run() {
 	if a.startServer {
 		a.initControllers()
-		if err := a.engine.Run(a.host); err != nil {
+		if err := a.engine.Run(); err != nil {
 			panic(err)
 		}
 	}

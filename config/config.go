@@ -58,7 +58,6 @@ func (c *Config) loadConfig(path string) (config Config, err error) {
 	var tokenDur int
 
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 	viper.AutomaticEnv()
 

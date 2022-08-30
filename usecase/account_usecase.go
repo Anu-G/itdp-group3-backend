@@ -9,6 +9,7 @@ import (
 type AccountUsecase interface {
 	Update(a *entity.Account) error
 	UpdateByID(id uint) (entity.Account, error)
+	ReadForPostTimeline(a *[]entity.Account) error
 	ReadForProductDetail(a *entity.Account) error
 	ReadForFeedDetail(a *entity.Account) error
 	FollowList(rf dto.FollowListRequest) ([]dto.FollowListResponse, error)
@@ -37,6 +38,10 @@ func (ac *accountUsecase) UpdateByID(id uint) (entity.Account, error) {
 	}
 	newAccount.RoleID = 2
 	return newAccount, ac.repo.Update(&newAccount)
+}
+
+func (ac *accountUsecase) ReadForPostTimeline(a *[]entity.Account) error {
+	return ac.repo.ReadForPostTimeline(a)
 }
 
 func (ac *accountUsecase) ReadForProductDetail(a *entity.Account) error {

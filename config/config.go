@@ -54,11 +54,9 @@ type MediaPath struct {
 }
 
 // loadConfig : get configuration from .env
-func (c *Config) loadConfig(path string) (config Config, err error) {
+func (c *Config) loadConfig() (config Config, err error) {
 	var tokenDur int
 
-	viper.AddConfigPath(path)
-	viper.SetConfigType("env")
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()
@@ -101,7 +99,7 @@ func (c *Config) loadConfig(path string) (config Config, err error) {
 // NewConfig : export config to be used
 func NewConfig() Config {
 	cfg := Config{}
-	cfg, err := cfg.loadConfig(".")
+	cfg, err := cfg.loadConfig()
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}

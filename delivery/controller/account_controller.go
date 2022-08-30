@@ -61,9 +61,6 @@ func (ac *AccountController) readAccountForPostTimeline(ctx *gin.Context) {
 			responseAccountHold.CreatedAt = account.Feeds[i].CreatedAt
 			links := strings.Split(account.Feeds[i].DetailMediaFeeds, ",")
 			for _, link := range links {
-				if i == len(links)-1 {
-					break
-				}
 				responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
 			}
 			responseAccountHold.DisplayName = account.BusinessProfile.DisplayName
@@ -101,10 +98,7 @@ func (ac *AccountController) readAccountForProductDetail(ctx *gin.Context) {
 		responseAccountHold.ProductPrice = readAccount.Products[i].Price
 		responseAccountHold.Caption = readAccount.Products[i].Description
 		links := strings.Split(readAccount.Products[i].DetailMediaProducts, ",")
-		for i, link := range links {
-			if i == len(links)-1 {
-				break
-			}
+		for _, link := range links {
 			responseAccountHold.DetailMediaProducts = append(responseAccountHold.DetailMediaProducts, link)
 		}
 		responseAccount = append(responseAccount, responseAccountHold)
@@ -139,9 +133,6 @@ func (ac *AccountController) readAccountForFeedDetail(ctx *gin.Context) {
 		responseAccountHold.CreatedAt = readAccount.Feeds[i].CreatedAt
 		links := strings.Split(readAccount.Feeds[i].DetailMediaFeeds, ",")
 		for _, link := range links {
-			if i == len(links)-1 {
-				break
-			}
 			responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
 		}
 		responseAccountHold.DisplayName = readAccount.BusinessProfile.DisplayName

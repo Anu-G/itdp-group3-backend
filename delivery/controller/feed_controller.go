@@ -218,9 +218,7 @@ func (f *FeedController) createFeed(ctx *gin.Context) {
 	feedInput.AccountID = createFeed.AccountID
 	feedInput.CaptionPost = createFeed.CaptionPost
 	var holdLink string
-	for _, link := range createFeed.MediaLinks {
-		holdLink = holdLink + link + ","
-	}
+	holdLink = strings.Join(createFeed.MediaLinks, ",")
 	feedInput.DetailMediaFeeds = holdLink
 	err = f.fUC.Create(&feedInput)
 	if err != nil {

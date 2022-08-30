@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 
 	"gorm.io/gorm"
@@ -10,6 +12,7 @@ type FeedRepository interface {
 	Create(f *entity.Feed) error
 	Read(f *[]entity.Feed) error
 	ReadByID(f *entity.Feed) error
+	ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
 	ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error)
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
@@ -38,6 +41,19 @@ func (fr *feedRepository) Read(f *[]entity.Feed) error {
 
 func (fr *feedRepository) ReadByID(f *entity.Feed) error {
 	return fr.db.Preload("DetailComments").Find(&f, "id = ?", f.ID).Error
+}
+
+func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error) {
+	var feed *entity.Feed
+	var feedRequest *[]dto.FeedDetailRequest
+	selectQuery := fmt.Sprintln(`
+	m_feed.id as post_id, BP.profile_image as profile_image,BP.display_name as display_name, m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	joinQuery := fmt.Sprintln(`
+	JOIN m_account as A on A.id = m_feed.account_id 
+	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
+	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery).Preload("DetailComments")
+	res := fr.Paging(read, page, pageLim).Find(&feedRequest).Order("m_feed.created_at")
+	return *feedRequest, res.Error
 }
 
 func (fr *feedRepository) ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error) {

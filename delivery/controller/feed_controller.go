@@ -34,9 +34,10 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.Use(md.RequireToken())
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
-	routeFeed.GET("/category", controller.readCategoryFeed)
-	routeFeed.GET("/paged", controller.readByPageFeed)
-	routeFeed.GET("/followed", controller.readFollowedFeed)
+	routeFeed.POST("/category", controller.readCategoryFeed)
+	routeFeed.POST("/paged", controller.readByPageFeed)
+	routeFeed.POST("/timeline", controller.readForTimeline)
+	routeFeed.POST("/followed", controller.readFollowedFeed)
 	routeFeed.POST("/create", controller.createFeed)
 	routeFeed.PUT("/update", controller.updateFeed)
 	routeFeed.DELETE("/", controller.deleteFeed)
@@ -67,6 +68,41 @@ func (f *FeedController) readAccountFeed(ctx *gin.Context) {
 		return
 	}
 	f.SuccessResponse(ctx, resFeed)
+}
+
+func (f *FeedController) readForTimeline(ctx *gin.Context) {
+	var readFeed dto.ReadPage
+	var responseFeedTimeline []dto.FeedDetailResponse
+	var linkHold []string
+	err := f.ParseBodyRequest(ctx, &readFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	resFeed, err := f.fUC.ReadForTimeline(readFeed.Page, readFeed.PageLim)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	for _, feed := range resFeed {
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		for i, link := range links {
+			if i == len(links)-1 {
+				break
+			}
+			linkHold = append(linkHold, link)
+		}
+		responseFeedTimeline = append(responseFeedTimeline, dto.FeedDetailResponse{
+			PostID:           feed.PostID,
+			DisplayName:      feed.DisplayName,
+			CaptionPost:      feed.CaptionPost,
+			ProfileImage:     feed.ProfileImage,
+			CreatedAt:        feed.CreatedAt,
+			DetailComment:    feed.DetailComment,
+			DetailMediaFeeds: links,
+		})
+	}
+	f.SuccessResponse(ctx, responseFeedTimeline)
 }
 
 func (f *FeedController) readFollowedFeed(ctx *gin.Context) {

@@ -17,7 +17,7 @@ type ProductUseCaseInterface interface {
 	CreateProductImage(file *multipart.FileHeader, ctx *gin.Context, folderName string) (string, error)
 	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
 	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
-	SearchProduct(keyword string) ([]dto.ProductResponse, error)
+	SearchProduct(keyword string) ([]dto.ProductDetailResponse, error)
 	Delete(id string) error
 }
 
@@ -26,8 +26,9 @@ type productUseCase struct {
 	fileRepo repository.FileRepository
 }
 
-func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductResponse, error) {
-	var products []dto.ProductResponse
+func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductDetailResponse, error) {
+	var products []dto.ProductDetailResponse
+	var linkHold []string
 
 	res, err := pu.repo.SearchProduct(keyword)
 	if err != nil {
@@ -35,14 +36,23 @@ func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductResponse, 
 	}
 
 	for _, product := range res {
-		products = append(products, dto.ProductResponse{
-			ProductID:           fmt.Sprintf("%d", product.ID),
-			AccountID:           fmt.Sprintf("%d", product.AccountID),
+		links := strings.Split(product.DetailMediaProducts, ",")
+		for i, link := range links {
+			if i == len(links)-1 {
+				break
+			}
+			linkHold = append(linkHold, link)
+		}
+		products = append(products, dto.ProductDetailResponse{
+			ProductID:           product.ProductID,
+			ProfileImage:        product.AccountAvatar,
 			ProductName:         product.ProductName,
-			Price:               fmt.Sprintf("%.f", product.Price),
-			Description:         product.Description,
-			DetailMediaProducts: strings.Split(product.DetailMediaProducts, ", "),
+			ProductPrice:        product.ProductPrice,
+			Name:                product.AccountDisplayName,
+			Caption:             product.ProductDescription,
+			DetailMediaProducts: linkHold,
 		})
+		linkHold = nil
 	}
 
 	return products, nil

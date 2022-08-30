@@ -8,6 +8,7 @@ import (
 
 type AccountRepository interface {
 	Update(a *entity.Account) error
+	ReadForPostTimeline(a *[]entity.Account) error
 	ReadForProductDetail(a *entity.Account) error
 	ReadForFeedDetail(a *entity.Account) error
 	FindByUsername(a *entity.Account) error
@@ -27,6 +28,10 @@ func NewAccountRepository(db *gorm.DB) AccountRepository {
 
 func (ar *accountRepository) Update(a *entity.Account) error {
 	return ar.db.Where("username = ?", a.Username).Updates(&a).Error
+}
+
+func (ar *accountRepository) ReadForPostTimeline(a *[]entity.Account) error {
+	return ar.db.Preload("Follower").Preload("Followed").Preload("BusinessProfile").Preload("NonBusinessProfile").Preload("Feeds").Find(&a).Error
 }
 
 func (ar *accountRepository) ReadForProductDetail(a *entity.Account) error {

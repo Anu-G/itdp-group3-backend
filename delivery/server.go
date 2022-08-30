@@ -66,6 +66,13 @@ func Server() *appServer {
 		}
 	}
 
+	// first time migration for production
+	if appCfg.DBConfig.Environment == "PROD" {
+		tools.RunMigrate(dbCon)
+	} else {
+		log.Fatal("cannot migrate")
+	}
+
 	cfgServer.startServer = true
 	return cfgServer
 }

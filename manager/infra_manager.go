@@ -3,6 +3,7 @@ package manager
 import (
 	"fmt"
 	"itdp-group3-backend/config"
+	"itdp-group3-backend/model/entity"
 	"log"
 	"os"
 	"time"
@@ -63,6 +64,24 @@ func (im *infraManager) dbConnect() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
+
+	// test migrate prod
+	dbcon.AutoMigrate(
+		&entity.User{},
+		&entity.Account{},
+		&entity.Category{},
+		&entity.BusinessProfile{},
+		&entity.NonBusinessProfile{},
+		&entity.Product{},
+		&entity.Feed{},
+		&entity.BusinessFAQ{},
+		&entity.BusinessHour{},
+		&entity.BusinessLink{},
+		&entity.DetailMediaFeed{},
+		&entity.DetailComment{},
+		&entity.Followed{},
+		&entity.Follower{},
+	)
 
 	sqlDB, _ := dbcon.DB()
 	defer sqlDB.SetConnMaxLifetime(10 * time.Minute)

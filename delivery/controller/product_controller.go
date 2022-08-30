@@ -181,7 +181,7 @@ func (b *ProductController) deleteProduct(ctx *gin.Context) {
 func (b *ProductController) searchProduct(ctx *gin.Context) {
 	var (
 		searchProduct dto.SearchProductRequest
-		productRes    []dto.ProductResponse
+		productRes    []dto.ProductDetailResponse
 	)
 
 	err := b.ParseBodyRequest(ctx, &searchProduct)

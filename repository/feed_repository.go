@@ -14,9 +14,9 @@ type FeedRepository interface {
 	ReadByID(f *entity.Feed) error
 	ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
-	ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
-	ReadByFollowerAccountID(ids []uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByFollowerAccountID(ids []uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	Update(f *entity.Feed) error
 	BaseRepository
 }
@@ -64,26 +64,35 @@ func (fr *feedRepository) ReadByAccountID(id uint, page int, pageLim int) ([]ent
 	return feedRes, res
 }
 
-func (fr *feedRepository) ReadByFollowerAccountID(ids []uint, page int, pageLim int) ([]entity.Feed, error) {
+func (fr *feedRepository) ReadByFollowerAccountID(ids []uint, page int, pageLim int) ([]dto.FeedDetailRequest, error) {
 	var f entity.Feed
-	var feedRes []entity.Feed
+	var feedRes []dto.FeedDetailRequest
+	selectQuery := fmt.Sprintln(`
+	m_feed.id as post_id, BP.profile_image as profile_image,BP.display_name as display_name, m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	joinQuery := fmt.Sprintln(`
+	JOIN m_account as A on A.id = m_feed.account_id 
+	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	if len(ids) == 0 {
 		return nil, nil
 	}
-	read := fr.db.Model(&f).Where("account_id = ?", ids[0])
+	read := fr.db.Model(&f).Select(selectQuery).Joins(joinQuery).Where("m_feed.account_id = ?", ids[0])
 	for i := 1; i < len(ids); i++ {
 		read = read.Or("account_id = ?", ids[i])
 	}
-	read = read.Preload("DetailComments")
 	res := fr.Paging(read, page, pageLim).Find(&feedRes).Order("created_at").Error
 	return feedRes, res
 }
 
-func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error) {
+func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error) {
 	var f entity.Feed
-	var feedRes []entity.Feed
-	read := fr.db.Model(&f).Where("bp.category_id = ?", cat).Joins("join m_business_profile as bp on bp.account_id = m_feed.account_id")
-	res := fr.Paging(read, page, pageLim).Scan(&feedRes).Order("id").Error
+	var feedRes []dto.FeedDetailRequest
+	selectQuery := fmt.Sprintln(`
+	m_feed.id as post_id, BP.profile_image as profile_image,BP.display_name as display_name, m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	joinQuery := fmt.Sprintln(`
+	JOIN m_account as A on A.id = m_feed.account_id 
+	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
+	read := fr.db.Model(&f).Where("bp.category_id = ?", cat).Select(selectQuery).Joins(joinQuery)
+	res := fr.Paging(read, page, pageLim).Find(&feedRes).Order("id").Error
 	return feedRes, res
 }
 

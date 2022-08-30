@@ -73,7 +73,6 @@ func (f *FeedController) readAccountFeed(ctx *gin.Context) {
 func (f *FeedController) readForTimeline(ctx *gin.Context) {
 	var readFeed dto.ReadPage
 	var responseFeedTimeline []dto.FeedDetailResponse
-	var linkHold []string
 	err := f.ParseBodyRequest(ctx, &readFeed)
 	if err != nil {
 		f.FailedResponse(ctx, err)
@@ -86,12 +85,6 @@ func (f *FeedController) readForTimeline(ctx *gin.Context) {
 	}
 	for _, feed := range resFeed {
 		links := strings.Split(feed.DetailMediaFeeds, ",")
-		for i, link := range links {
-			if i == len(links)-1 {
-				break
-			}
-			linkHold = append(linkHold, link)
-		}
 		responseFeedTimeline = append(responseFeedTimeline, dto.FeedDetailResponse{
 			PostID:           feed.PostID,
 			DisplayName:      feed.DisplayName,
@@ -107,6 +100,7 @@ func (f *FeedController) readForTimeline(ctx *gin.Context) {
 
 func (f *FeedController) readFollowedFeed(ctx *gin.Context) {
 	var readFeed dto.ReadPage
+	var responseFollowedFeed []dto.FeedDetailResponse
 	err := f.ParseBodyRequest(ctx, &readFeed)
 	if err != nil {
 		f.FailedResponse(ctx, err)
@@ -117,11 +111,24 @@ func (f *FeedController) readFollowedFeed(ctx *gin.Context) {
 		f.FailedResponse(ctx, err)
 		return
 	}
-	f.SuccessResponse(ctx, resFeed)
+	for _, feed := range resFeed {
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		responseFollowedFeed = append(responseFollowedFeed, dto.FeedDetailResponse{
+			PostID:           feed.PostID,
+			DisplayName:      feed.DisplayName,
+			CaptionPost:      feed.CaptionPost,
+			ProfileImage:     feed.ProfileImage,
+			CreatedAt:        feed.CreatedAt,
+			DetailComment:    feed.DetailComment,
+			DetailMediaFeeds: links,
+		})
+	}
+	f.SuccessResponse(ctx, responseFollowedFeed)
 }
 
 func (f *FeedController) readCategoryFeed(ctx *gin.Context) {
 	var readFeed dto.ReadPage
+	var responseCategoryFeed []dto.FeedDetailResponse
 	err := f.ParseBodyRequest(ctx, &readFeed)
 	if err != nil {
 		f.FailedResponse(ctx, err)
@@ -132,7 +139,19 @@ func (f *FeedController) readCategoryFeed(ctx *gin.Context) {
 		f.FailedResponse(ctx, err)
 		return
 	}
-	f.SuccessResponse(ctx, resFeed)
+	for _, feed := range resFeed {
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		responseCategoryFeed = append(responseCategoryFeed, dto.FeedDetailResponse{
+			PostID:           feed.PostID,
+			DisplayName:      feed.DisplayName,
+			CaptionPost:      feed.CaptionPost,
+			ProfileImage:     feed.ProfileImage,
+			CreatedAt:        feed.CreatedAt,
+			DetailComment:    feed.DetailComment,
+			DetailMediaFeeds: links,
+		})
+	}
+	f.SuccessResponse(ctx, responseCategoryFeed)
 }
 
 func (f *FeedController) readByPageFeed(ctx *gin.Context) {

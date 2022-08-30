@@ -12,9 +12,9 @@ type FeedUsecase interface {
 	ReadByID(f *entity.Feed) error
 	ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
-	ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
-	ReadByFollowerAccountID(id uint, page int, pageLim int) ([]entity.Feed, error)
+	ReadByFollowerAccountID(id uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	Update(f *entity.Feed) error
 	Delete(id uint) error
 }
@@ -51,7 +51,7 @@ func (fc *feedUsecase) ReadByAccountID(id uint, page int, pageLim int) ([]entity
 	return fc.repo.ReadByAccountID(id, page, pageLim)
 }
 
-func (fc *feedUsecase) ReadByProfileCategory(cat uint, page int, pageLim int) ([]entity.Feed, error) {
+func (fc *feedUsecase) ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error) {
 	return fc.repo.ReadByProfileCategory(cat, page, pageLim)
 }
 
@@ -59,7 +59,7 @@ func (fc *feedUsecase) ReadByPage(page int, pageLim int) ([]entity.Feed, error) 
 	return fc.repo.ReadByPage(page, pageLim)
 }
 
-func (fc *feedUsecase) ReadByFollowerAccountID(id uint, page int, pageLim int) ([]entity.Feed, error) {
+func (fc *feedUsecase) ReadByFollowerAccountID(id uint, page int, pageLim int) ([]dto.FeedDetailRequest, error) {
 	var accountInput entity.Account
 	var accountIDList []uint
 	accountInput.ID = id

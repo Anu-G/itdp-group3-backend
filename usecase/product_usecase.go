@@ -28,7 +28,6 @@ type productUseCase struct {
 
 func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductDetailResponse, error) {
 	var products []dto.ProductDetailResponse
-	var linkHold []string
 
 	res, err := pu.repo.SearchProduct(keyword)
 	if err != nil {
@@ -37,12 +36,6 @@ func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductDetailResp
 
 	for _, product := range res {
 		links := strings.Split(product.DetailMediaProducts, ",")
-		for i, link := range links {
-			if i == len(links)-1 {
-				break
-			}
-			linkHold = append(linkHold, link)
-		}
 		products = append(products, dto.ProductDetailResponse{
 			ProductID:           product.ProductID,
 			ProfileImage:        product.AccountAvatar,
@@ -50,9 +43,8 @@ func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductDetailResp
 			ProductPrice:        product.ProductPrice,
 			Name:                product.AccountDisplayName,
 			Caption:             product.ProductDescription,
-			DetailMediaProducts: linkHold,
+			DetailMediaProducts: links,
 		})
-		linkHold = nil
 	}
 
 	return products, nil

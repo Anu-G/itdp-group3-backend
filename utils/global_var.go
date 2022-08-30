@@ -15,7 +15,7 @@ func CallGlobalVar() (globalVar GlobalVar) {
 	v.AutomaticEnv()
 	v.BindEnv("SECRET")
 
-	if err := viper.Unmarshal(&globalVar); err != nil {
+	if err := v.Unmarshal(&globalVar); err != nil {
 		return
 	}
 	return

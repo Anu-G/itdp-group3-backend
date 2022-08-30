@@ -30,6 +30,7 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	}
 	routeAccount := controller.router.Group("/account")
 	routeAccount.Use(middleware.RequireToken())
+	routeAccount.GET("/timeline", controller.readAccountForPostTimeline)
 	routeAccount.POST("/product", controller.readAccountForProductDetail)
 	routeAccount.POST("/feed", controller.readAccountForFeedDetail)
 	routeAccount.PUT("/update", controller.createAccount)
@@ -39,6 +40,37 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	routeAccount.PUT("/activate-business", controller.activateBusinessAccount)
 
 	return &controller
+}
+
+func (ac *AccountController) readAccountForPostTimeline(ctx *gin.Context) {
+	var readAccount []entity.Account
+	var responseAccountHold dto.FeedDetailResponse
+	var responseAccount []dto.FeedDetailResponse
+
+	err := ac.accUC.ReadForPostTimeline(&readAccount)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+
+	for _, account := range readAccount {
+		for i := range account.Feeds {
+			responseAccountHold.PostID = account.Feeds[i].ID
+			responseAccountHold.ProfileImage = account.BusinessProfile.ProfileImage
+			responseAccountHold.CaptionPost = account.Feeds[i].CaptionPost
+			responseAccountHold.CreatedAt = account.Feeds[i].CreatedAt
+			links := strings.Split(account.Feeds[i].DetailMediaFeeds, ",")
+			for _, link := range links {
+				responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
+			}
+			responseAccountHold.DisplayName = account.BusinessProfile.DisplayName
+			responseAccountHold.DetailComment = account.Feeds[i].DetailComments
+			responseAccount = append(responseAccount, responseAccountHold)
+			responseAccountHold.DetailMediaFeeds = nil
+		}
+	}
+
+	ac.SuccessResponse(ctx, responseAccount)
 }
 
 func (ac *AccountController) readAccountForProductDetail(ctx *gin.Context) {
@@ -64,14 +96,14 @@ func (ac *AccountController) readAccountForProductDetail(ctx *gin.Context) {
 		responseAccountHold.Name = readAccount.BusinessProfile.DisplayName
 		responseAccountHold.ProductName = readAccount.Products[i].ProductName
 		responseAccountHold.ProductPrice = readAccount.Products[i].Price
+		responseAccountHold.Caption = readAccount.Products[i].Description
 		links := strings.Split(readAccount.Products[i].DetailMediaProducts, ",")
-		for i, link := range links {
-			if i == len(links)-1 {
-				break
-			}
+		for _, link := range links {
 			responseAccountHold.DetailMediaProducts = append(responseAccountHold.DetailMediaProducts, link)
 		}
 		responseAccount = append(responseAccount, responseAccountHold)
+		responseAccountHold.DetailMediaProducts = nil
+
 	}
 
 	ac.SuccessResponse(ctx, responseAccount)
@@ -100,12 +132,13 @@ func (ac *AccountController) readAccountForFeedDetail(ctx *gin.Context) {
 		responseAccountHold.CaptionPost = readAccount.Feeds[i].CaptionPost
 		responseAccountHold.CreatedAt = readAccount.Feeds[i].CreatedAt
 		links := strings.Split(readAccount.Feeds[i].DetailMediaFeeds, ",")
-		for _, link := range links[0 : len(links)-2] {
+		for _, link := range links {
 			responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
 		}
 		responseAccountHold.DisplayName = readAccount.BusinessProfile.DisplayName
 		responseAccountHold.DetailComment = readAccount.Feeds[i].DetailComments
 		responseAccount = append(responseAccount, responseAccountHold)
+		responseAccountHold.DetailMediaFeeds = nil
 	}
 
 	ac.SuccessResponse(ctx, responseAccount)

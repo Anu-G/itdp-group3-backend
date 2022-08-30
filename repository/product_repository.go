@@ -14,7 +14,7 @@ type ProductRepositoryInterface interface {
 	Create(p *entity.Product) error
 	GetByAccount(p dto.ProductRequest) ([]entity.Product, error)
 	GetByProduct(p dto.ProductRequest) (entity.Product, error)
-	SearchProduct(keyword string) ([]entity.Product, error)
+	SearchProduct(keyword string) ([]dto.SearchProductResponse, error)
 	Delete(id string) error
 }
 
@@ -22,8 +22,8 @@ type productRepository struct {
 	db *gorm.DB
 }
 
-func (pr *productRepository) SearchProduct(keyword string) ([]entity.Product, error) {
-	var products []entity.Product
+func (pr *productRepository) SearchProduct(keyword string) ([]dto.SearchProductResponse, error) {
+	var products []dto.SearchProductResponse
 	var keywordLike = strings.Split(keyword, " ")
 	var newKeywordLike string
 	newKeyword := strings.ReplaceAll(keyword, " ", " | ")
@@ -37,12 +37,14 @@ func (pr *productRepository) SearchProduct(keyword string) ([]entity.Product, er
 	}
 
 	query := fmt.Sprintf(`
-SELECT *
-FROM m_product as P
-WHERE P.product_name @@ to_tsquery('`+newKeyword+`' )
-OR regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g') @@ to_tsquery('`+newKeyword+`' )
-OR %v
-ORDER BY ts_rank_cd(
+	SELECT P.id as product_id,BP.profile_image as account_avatar,BP.display_name as account_display_name,P.product_name as product_name,P.price as product_price,P.description as product_description,P.detail_media_products as detail_media_products
+	FROM m_product as P
+	JOIN m_account as A on A.id = P.account_id
+	JOIN m_business_profile as BP on BP.account_id = P.account_id
+	WHERE P.product_name @@ to_tsquery('`+newKeyword+`' )
+	OR regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g') @@ to_tsquery('`+newKeyword+`' )
+	OR %v
+	ORDER BY ts_rank_cd(
 	to_tsvector('indonesian',P.product_name), 
 	to_tsquery('`+newKeyword+`')) +
 	ts_rank_cd(

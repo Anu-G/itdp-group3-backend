@@ -38,7 +38,19 @@ type RequestUpdateFeed struct {
 	MediaLinks  []string `json:"media_links"`
 }
 
+type FeedDetailRequest struct {
+	AccountID        uint                   `json:"account_id"`
+	PostID           uint                   `json:"post_id"`
+	ProfileImage     string                 `json:"avatar"`
+	CaptionPost      string                 `json:"caption_post"`
+	CreatedAt        time.Time              `json:"created_at"`
+	DetailMediaFeeds string                 `json:"detail_media_feed"`
+	DisplayName      string                 `json:"display_name"`
+	DetailComment    []entity.DetailComment `json:"detail_comment"`
+}
+
 type FeedDetailResponse struct {
+	AccountID        uint                   `json:"account_id"`
 	PostID           uint                   `json:"post_id"`
 	ProfileImage     string                 `json:"avatar"`
 	CaptionPost      string                 `json:"caption_post"`

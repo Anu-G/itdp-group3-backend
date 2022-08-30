@@ -86,6 +86,7 @@ func (f *FeedController) readForTimeline(ctx *gin.Context) {
 	for _, feed := range resFeed {
 		links := strings.Split(feed.DetailMediaFeeds, ",")
 		responseFeedTimeline = append(responseFeedTimeline, dto.FeedDetailResponse{
+			AccountID:        feed.AccountID,
 			PostID:           feed.PostID,
 			DisplayName:      feed.DisplayName,
 			CaptionPost:      feed.CaptionPost,

@@ -39,6 +39,7 @@ type RequestUpdateFeed struct {
 }
 
 type FeedDetailRequest struct {
+	AccountID        uint                   `json:"account_id"`
 	PostID           uint                   `json:"post_id"`
 	ProfileImage     string                 `json:"avatar"`
 	CaptionPost      string                 `json:"caption_post"`
@@ -49,6 +50,7 @@ type FeedDetailRequest struct {
 }
 
 type FeedDetailResponse struct {
+	AccountID        uint                   `json:"account_id"`
 	PostID           uint                   `json:"post_id"`
 	ProfileImage     string                 `json:"avatar"`
 	CaptionPost      string                 `json:"caption_post"`

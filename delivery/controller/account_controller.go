@@ -138,7 +138,10 @@ func (ac *AccountController) readAccountForFeedDetail(ctx *gin.Context) {
 		responseAccountHold.CaptionPost = readAccount.Feeds[i].CaptionPost
 		responseAccountHold.CreatedAt = readAccount.Feeds[i].CreatedAt
 		links := strings.Split(readAccount.Feeds[i].DetailMediaFeeds, ",")
-		for _, link := range links[0 : len(links)-2] {
+		for _, link := range links {
+			if i == len(links)-1 {
+				break
+			}
 			responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
 		}
 		responseAccountHold.DisplayName = readAccount.BusinessProfile.DisplayName

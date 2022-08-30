@@ -47,7 +47,7 @@ func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDeta
 	var feed *entity.Feed
 	var feedRequest *[]dto.FeedDetailRequest
 	selectQuery := fmt.Sprintln(`
-	m_feed.id as post_id, BP.profile_image as profile_image,BP.display_name as display_name, m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	m_feed.id as post_id, m_feed.account_id, BP.profile_image as profile_image,BP.display_name as display_name, m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
 	joinQuery := fmt.Sprintln(`
 	JOIN m_account as A on A.id = m_feed.account_id 
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)

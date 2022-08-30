@@ -93,8 +93,9 @@ func (c *Config) loadConfig() (config Config, err error) {
 		return
 	}
 	newRedisClient := redis.NewClient(&redis.Options{
-		Addr: config.RedisAddress,
-		DB:   0,
+		Addr:        config.RedisAddress,
+		Password:    "9sTmeM4bD16w0cG1OTdRrkOU0BpTnyPH",
+		DialTimeout: (1 * time.Minute),
 	})
 	config.TokenConfig.Redis = newRedisClient
 

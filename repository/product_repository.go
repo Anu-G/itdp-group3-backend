@@ -45,10 +45,10 @@ func (pr *productRepository) SearchProduct(keyword string) ([]dto.SearchProductR
 	OR regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g') @@ to_tsquery('`+newKeyword+`' )
 	OR %v
 	ORDER BY ts_rank_cd(
-	to_tsvector('indonesian',P.product_name), 
+	to_tsvector('english',P.product_name), 
 	to_tsquery('`+newKeyword+`')) +
 	ts_rank_cd(
-	to_tsvector('indonesian',regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g')), 
+	to_tsvector('english',regexp_replace(REPLACE((regexp_replace(P.description, '(^|\s)[^#]+(\s|$)', '', 'g')),'#',''), E'[\\n\\r]+', ' ', 'g')), 
 	to_tsquery('`+newKeyword+`'), 32 /* rank/(rank+1) */) DESC;
 	`, newKeywordLike)
 

@@ -31,7 +31,8 @@ func (uc *userUsecase) Update(u *dto.UpdateUserRequest) error {
 	if err != nil {
 		return err
 	}
-	newUser.Username = newAccount.Username
+	newUser.Password = u.Password
+	newUser.Username = u.Username
 	newUser.Email = u.Email
 	newAccount.PhoneNumber = u.PhoneNumber
 	newUser.Encrypt()

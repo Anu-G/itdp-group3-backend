@@ -30,7 +30,7 @@ func (pr *productRepository) SearchProduct(keyword string) ([]dto.SearchProductR
 
 	for i := 0; i < len(keywordLike); i++ {
 		var key = keywordLike[i]
-		newKeywordLike += fmt.Sprintf(" P.product_name LIKE '%%%s%%'", key)
+		newKeywordLike += fmt.Sprintf(" P.product_name ILIKE '%%%s%%'", key)
 		if i != len(keywordLike)-1 {
 			newKeywordLike += "AND "
 		}

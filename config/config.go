@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"itdp-group3-backend/utils"
 	"log"
 	"time"
@@ -59,20 +58,14 @@ func (c *Config) loadConfig() (config Config, err error) {
 	var tokenDur int
 
 	v := viper.New()
+	v.SetConfigFile(".env")
+	v.SetConfigType("env")
 	v.AutomaticEnv()
-	v.BindEnv("DB_HOST")
-	v.BindEnv("DB_USER")
-	v.BindEnv("DB_PASSWORD")
-	v.BindEnv("DB_NAME")
-	v.BindEnv("DB_PORT")
-	v.BindEnv("SSL_MODE")
-	v.BindEnv("TIME_ZONE")
-	v.BindEnv("ENV")
-	v.BindEnv("APP_NAME")
-	v.BindEnv("SECRET_KEY")
-	v.BindEnv("TOKEN_DURATION")
-	v.BindEnv("REDIS_ADDRESS")
-	v.BindEnv("SECRET")
+
+	err = v.ReadInConfig()
+	if err != nil {
+		return
+	}
 
 	if err = v.Unmarshal(&config.APIConfig); err != nil {
 		return
@@ -85,7 +78,7 @@ func (c *Config) loadConfig() (config Config, err error) {
 	if err = v.Unmarshal(&config.TokenConfig); err != nil {
 		return
 	}
-	fmt.Println("cek", err)
+
 	if tokenDur, err = utils.StringToInt64(config.TokenDuration); err != nil {
 		return
 	}

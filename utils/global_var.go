@@ -12,7 +12,7 @@ type GlobalVar struct {
 
 func CallGlobalVar() (globalVar GlobalVar) {
 	viper.AddConfigPath(".")
-	viper.AutomaticEnv()
+	viper.SetConfigFile(".env")
 	viper.SetConfigType("env")
 
 	err := viper.ReadInConfig()

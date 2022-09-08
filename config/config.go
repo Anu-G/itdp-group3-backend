@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"itdp-group3-backend/utils"
 	"log"
 	"time"
@@ -84,6 +85,7 @@ func (c *Config) loadConfig() (config Config, err error) {
 	if err = v.Unmarshal(&config.TokenConfig); err != nil {
 		return
 	}
+	fmt.Println("cek", err)
 	if tokenDur, err = utils.StringToInt64(config.TokenDuration); err != nil {
 		return
 	}

@@ -8,6 +8,7 @@ type Feed struct {
 	CaptionPost string `gorm:"size:280;not null" json:"caption_post"`
 
 	DetailMediaFeeds string          `json:"detail_media_feeds"`
+	DetailLikes      []DetailLike    `json:"detail_likes"`
 	DetailComments   []DetailComment `json:"detail_comments"`
 }
 

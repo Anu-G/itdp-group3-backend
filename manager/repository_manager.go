@@ -19,6 +19,7 @@ type RepositoryManagerInterface interface {
 	FollowerRepo() repository.FollowerRepository
 	FollowedRepo() repository.FollowedRepository
 	FAQRepo() repository.FAQRepositoryInterface
+	DetailLikeRepo() repository.DetailLikeRepository
 }
 
 type repositoryManager struct {
@@ -94,4 +95,8 @@ func (r *repositoryManager) FollowerRepo() repository.FollowerRepository {
 
 func (r *repositoryManager) FollowedRepo() repository.FollowedRepository {
 	return repository.NewFollowedRepository(r.infra.DBCon())
+}
+
+func (r *repositoryManager) DetailLikeRepo() repository.DetailLikeRepository {
+	return repository.NewDetailLikeRepository(r.infra.DBCon())
 }

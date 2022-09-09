@@ -33,7 +33,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	}
 
 	routeFeed := controller.router.Group("/feed")
-	routeFeed.Use(md.RequireToken())
+	// routeFeed.Use(md.RequireToken())
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
 	routeFeed.POST("/category", controller.readCategoryFeed)
@@ -98,6 +98,8 @@ func (f *FeedController) readForTimeline(ctx *gin.Context) {
 			CreatedAt:        feed.CreatedAt,
 			DetailComment:    feed.DetailComment,
 			DetailMediaFeeds: links,
+			DetailLike:       feed.DetailLike,
+			TotalLike:        len(feed.DetailLike),
 		})
 	}
 	f.SuccessResponse(ctx, responseFeedTimeline)
@@ -127,6 +129,7 @@ func (f *FeedController) readFollowedFeed(ctx *gin.Context) {
 			DetailComment:    feed.DetailComment,
 			DetailLike:       feed.DetailLike,
 			DetailMediaFeeds: links,
+			TotalLike:        len(feed.DetailLike),
 		})
 	}
 	f.SuccessResponse(ctx, responseFollowedFeed)
@@ -157,6 +160,7 @@ func (f *FeedController) readCategoryFeed(ctx *gin.Context) {
 			DetailComment:    feed.DetailComment,
 			DetailLike:       feed.DetailLike,
 			DetailMediaFeeds: links,
+			TotalLike:        len(feed.DetailLike),
 		})
 	}
 	f.SuccessResponse(ctx, responseCategoryFeed)

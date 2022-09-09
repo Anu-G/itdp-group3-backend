@@ -60,6 +60,7 @@ type FeedDetailResponse struct {
 	DisplayName      string                 `json:"display_name"`
 	DetailComment    []entity.DetailComment `json:"detail_comment"`
 	DetailLike       []entity.DetailLike    `json:"detail_like"`
+	TotalLike        int                    `json:"total_like"`
 }
 
 type LikeRequest struct {

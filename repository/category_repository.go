@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"itdp-group3-backend/model/entity"
 
 	"gorm.io/gorm"
@@ -36,7 +37,14 @@ func (catr *categoryRepository) Delete(cat *entity.Category) error {
 
 func (catr *categoryRepository) FindById(id uint) (string, error) {
 	var category entity.Category
-	err := catr.db.First(&category, "id = ?" , id).Error
-	return category.CategoryName, err
+	res := catr.db.First(&category, "id = ?" , id)
+	if err := res.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return "", nil
+		} else {
+			return "", err
+		}
+	}
+	return category.CategoryName, nil
 }
 

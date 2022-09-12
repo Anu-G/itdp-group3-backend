@@ -65,7 +65,9 @@ func (im *infraManager) dbConnect() *gorm.DB {
 	}
 
 	sqlDB, _ := dbcon.DB()
-	defer sqlDB.SetConnMaxLifetime(15 * time.Minute)
+	defer sqlDB.SetConnMaxLifetime(10 * time.Minute)
+	defer sqlDB.SetConnMaxIdleTime(5 * time.Minute)
+	defer sqlDB.SetMaxOpenConns(10)
 
 	return dbcon
 }

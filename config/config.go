@@ -54,37 +54,38 @@ type MediaPath struct {
 }
 
 // loadConfig : get configuration from .env
-func (c *Config) loadConfig(path string) (config Config, err error) {
+func (c *Config) loadConfig() (config Config, err error) {
 	var tokenDur int
 
-	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
-	viper.SetConfigType("env")
-	viper.AutomaticEnv()
+	v := viper.New()
+	v.SetConfigFile(".env")
+	v.SetConfigType("env")
+	v.AutomaticEnv()
 
-	err = viper.ReadInConfig()
+	err = v.ReadInConfig()
 	if err != nil {
 		return
 	}
 
-	if err = viper.Unmarshal(&config.APIConfig); err != nil {
+	if err = v.Unmarshal(&config.APIConfig); err != nil {
 		return
 	}
 
-	if err = viper.Unmarshal(&config.DBConfig); err != nil {
+	if err = v.Unmarshal(&config.DBConfig); err != nil {
 		return
 	}
 
-	if err = viper.Unmarshal(&config.TokenConfig); err != nil {
+	if err = v.Unmarshal(&config.TokenConfig); err != nil {
 		return
 	}
+
 	if tokenDur, err = utils.StringToInt64(config.TokenDuration); err != nil {
 		return
 	}
 	config.TokenConfig.JwtSigningMethod = jwt.SigningMethodHS256
 	config.TokenConfig.AccessTokenLifeTime = time.Duration(tokenDur) * time.Minute
 
-	if err = viper.Unmarshal(&config.RedisClient); err != nil {
+	if err = v.Unmarshal(&config.RedisClient); err != nil {
 		return
 	}
 	newRedisClient := redis.NewClient(&redis.Options{
@@ -93,7 +94,7 @@ func (c *Config) loadConfig(path string) (config Config, err error) {
 	})
 	config.TokenConfig.Redis = newRedisClient
 
-	if err = viper.Unmarshal(&config.MediaPath); err != nil {
+	if err = v.Unmarshal(&config.MediaPath); err != nil {
 		return
 	}
 	return
@@ -102,7 +103,7 @@ func (c *Config) loadConfig(path string) (config Config, err error) {
 // NewConfig : export config to be used
 func NewConfig() Config {
 	cfg := Config{}
-	cfg, err := cfg.loadConfig(".")
+	cfg, err := cfg.loadConfig()
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}

@@ -47,6 +47,7 @@ type FeedDetailRequest struct {
 	DetailMediaFeeds string                 `json:"detail_media_feed"`
 	DisplayName      string                 `json:"display_name"`
 	DetailComment    []entity.DetailComment `json:"detail_comment"`
+	DetailLike       []entity.DetailLike    `json:"detail_like"`
 }
 
 type FeedDetailResponse struct {
@@ -58,4 +59,11 @@ type FeedDetailResponse struct {
 	DetailMediaFeeds []string               `json:"detail_media_feed"`
 	DisplayName      string                 `json:"display_name"`
 	DetailComment    []entity.DetailComment `json:"detail_comment"`
+	DetailLike       []entity.DetailLike    `json:"detail_like"`
+	TotalLike        int                    `json:"total_like"`
+}
+
+type LikeRequest struct {
+	AccountID uint `json:"account_id"`
+	FeedID    uint `json:"feed_id"`
 }

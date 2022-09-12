@@ -15,6 +15,7 @@ type UseCaseManagerInterface interface {
 	CategoryUsecase() usecase.CategoryUsecase
 	FollowUsecase() usecase.FollowUsecase
 	FAQUseCase() usecase.FAQUseCaseInterface
+	DetailLikeUsecase() usecase.DetailLikeUsecase
 }
 
 type useCaseManager struct {
@@ -74,4 +75,8 @@ func (um useCaseManager) CategoryUsecase() usecase.CategoryUsecase {
 
 func (um *useCaseManager) FollowUsecase() usecase.FollowUsecase {
 	return usecase.NewFollowUsecase(um.repo.FollowerRepo(), um.repo.FollowedRepo())
+}
+
+func (um *useCaseManager) DetailLikeUsecase() usecase.DetailLikeUsecase {
+	return usecase.NewDetailLikeUsecase(um.repo.DetailLikeRepo())
 }

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"itdp-group3-backend/model/entity"
 
 	"gorm.io/gorm"
@@ -9,6 +10,7 @@ import (
 type BusinessProfileRepositoryInterface interface {
 	Create(bp *entity.BusinessProfile) error
 	GetByIdPreload(bp *entity.BusinessProfile) error
+	Update(bp *entity.BusinessProfile, with map[string]interface{}) error
 	Delete(id string) error
 }
 
@@ -20,8 +22,20 @@ func (b *businessProfileRepository) Delete(id string) error {
 	return b.db.Unscoped().Where("account_id = ?", id).Delete(&entity.BusinessProfile{}).Error
 }
 
+func (b *businessProfileRepository) Update(bp *entity.BusinessProfile, with map[string]interface{}) error {
+	return b.db.Model(&bp).Updates(with).Error
+}
+
 func (b *businessProfileRepository) GetByIdPreload(bp *entity.BusinessProfile) error {
-	return b.db.Preload("BusinessHours").Preload("BusinessLinks").Preload("BusinessFAQs").First(&bp, "m_business_profile.account_id = ?", bp.AccountID).Error
+	res := b.db.Preload("BusinessHours").Preload("BusinessLinks").Preload("BusinessFAQs").First(&bp, "m_business_profile.account_id = ?", bp.AccountID)
+	if err := res.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		} else {
+			return err
+		}
+	}
+	return nil
 }
 
 func (b *businessProfileRepository) Create(bp *entity.BusinessProfile) error {

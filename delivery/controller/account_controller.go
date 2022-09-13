@@ -8,6 +8,7 @@ import (
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
+	"itdp-group3-backend/utils"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -38,6 +39,7 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 	routeAccount.POST("/unfollow", controller.unfollow)
 	routeAccount.GET("/list", controller.showFollowList)
 	routeAccount.PUT("/activate-business", controller.activateBusinessAccount)
+	routeAccount.POST("/get-account", controller.getAccount)
 
 	return &controller
 }
@@ -229,4 +231,24 @@ func (ac *AccountController) unfollow(ctx *gin.Context) {
 	}
 	responseFollow := fmt.Sprintf("%d unfollow %d success", requestUnfollow.FollowerAccounID, requestUnfollow.FollowedAccountID)
 	ac.SuccessResponse(ctx, responseFollow)
+}
+
+func (ac *AccountController) getAccount(ctx *gin.Context) {
+	var account dto.GetAccountRequest
+	err := ac.ParseBodyRequest(ctx, &account)
+
+	if account.AccountID == "" {
+		ac.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	} else if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+
+	detailAccount, err := ac.accUC.GetAccount(account.AccountID)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+	ac.SuccessResponse(ctx, detailAccount)
 }

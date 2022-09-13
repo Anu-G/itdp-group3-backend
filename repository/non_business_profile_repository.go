@@ -9,7 +9,7 @@ import (
 type NonBusinessProfileRepositoryInterface interface {
 	Create(bp *entity.NonBusinessProfile) error
 	GetById(bp *entity.NonBusinessProfile) error
-	Update(bp *entity.NonBusinessProfile) error
+	Update(bp *entity.NonBusinessProfile, with map[string]interface{}) error
 	Delete(id string) error
 }
 
@@ -21,8 +21,8 @@ func (n *nonBusinessProfileRepository) Delete(id string) error {
 	return n.db.Unscoped().Where("account_id = ?", id).Delete(&entity.NonBusinessProfile{}).Error
 }
 
-func (n *nonBusinessProfileRepository) Update(bp *entity.NonBusinessProfile) error {
-	return n.db.Where("account_id = ?", bp.AccountID).Updates(bp).Error
+func (n *nonBusinessProfileRepository) Update(bp *entity.NonBusinessProfile, with map[string]interface{}) error {
+	return n.db.Model(&bp).Updates(with).Error
 }
 
 func (n *nonBusinessProfileRepository) GetById(bp *entity.NonBusinessProfile) error {

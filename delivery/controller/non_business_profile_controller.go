@@ -31,6 +31,7 @@ func NewNonBusinessProfileController(router *gin.Engine, uc usecase.NonBusinessP
 	routeNonBusinessProfile.POST("/add/profile", controller.addNonBusinessProfile)
 	routeNonBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
 	routeNonBusinessProfile.POST("/get/profile", controller.getProfile)
+	routeNonBusinessProfile.POST("/update/profile", controller.updateNonBusinessProfile)
 
 	return &controller
 }
@@ -97,4 +98,29 @@ func (b *NonBusinessProfileController) getProfile(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, nonBusinessProfileRes)
+}
+
+func (b *NonBusinessProfileController) updateNonBusinessProfile(ctx *gin.Context) {
+	var (
+		nonBusinessProfileReq dto.NonBusinessProfileRequest
+		createdBp             entity.NonBusinessProfile
+	)
+
+	err := b.ParseBodyRequest(ctx, &nonBusinessProfileReq)
+	if nonBusinessProfileReq.AccountID == "" {
+		b.FailedResponse(ctx, utils.RequiredError("account_id"))
+		return
+	} else if nonBusinessProfileReq.DisplayName == "" {
+		b.FailedResponse(ctx, utils.RequiredError("display_name"))
+		return
+	} else if err != nil {
+		b.FailedResponse(ctx, err)
+	}
+
+	createdBp, err = b.usecase.UpdateNonBusinessProfile(&nonBusinessProfileReq)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+	b.SuccessResponse(ctx, createdBp)
 }

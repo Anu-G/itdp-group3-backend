@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 
 	"gorm.io/gorm"
@@ -14,6 +16,7 @@ type AccountRepository interface {
 	FindByUsername(a *entity.Account) error
 	FindById(a *entity.Account) error
 	FindListById(ids []uint) ([]entity.Account, error)
+	GetAccount(id uint) (dto.GetAccountResponse, error)
 }
 
 type accountRepository struct {
@@ -61,4 +64,18 @@ func (ar *accountRepository) FindListById(ids []uint) ([]entity.Account, error) 
 	}
 	res = res.Find(&accountList)
 	return *accountList, res.Error
+}
+
+func (ar *accountRepository) GetAccount(id uint) (dto.GetAccountResponse, error) {
+	var account dto.GetAccountResponse
+
+	res := ar.db.Raw(`SELECT email, phone_number from m_user_credential a INNER JOIN m_account b ON a.username = b.username WHERE b.id = ?`, id).Scan(&account)
+	if err := res.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return account, nil
+		} else {
+			return account, err
+		}
+	}
+	return account, nil
 }

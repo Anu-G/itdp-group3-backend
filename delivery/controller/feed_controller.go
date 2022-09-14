@@ -18,20 +18,22 @@ type FeedController struct {
 	router     *gin.Engine
 	fUC        usecase.FeedUsecase
 	fmUC       usecase.DetailMediaFeedUsecase
+	flUC       usecase.DetailLikeUsecase
 	middleware middleware.AuthTokenMiddleware
 	api.BaseApi
 }
 
-func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase.DetailMediaFeedUsecase, md middleware.AuthTokenMiddleware) *FeedController {
+func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase.DetailMediaFeedUsecase, flUC usecase.DetailLikeUsecase, md middleware.AuthTokenMiddleware) *FeedController {
 	controller := FeedController{
 		router:     router,
 		fUC:        fUC,
 		fmUC:       fmUC,
+		flUC:       flUC,
 		middleware: md,
 	}
 
 	routeFeed := controller.router.Group("/feed")
-	routeFeed.Use(md.RequireToken())
+	// routeFeed.Use(md.RequireToken())
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
 	routeFeed.POST("/category", controller.readCategoryFeed)
@@ -41,6 +43,8 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.POST("/create", controller.createFeed)
 	routeFeed.PUT("/update", controller.updateFeed)
 	routeFeed.DELETE("/", controller.deleteFeed)
+	routeFeed.POST("/like", controller.likeFeed)
+	routeFeed.DELETE("/unlike", controller.unlikeFeed)
 
 	return &controller
 }
@@ -94,6 +98,8 @@ func (f *FeedController) readForTimeline(ctx *gin.Context) {
 			CreatedAt:        feed.CreatedAt,
 			DetailComment:    feed.DetailComment,
 			DetailMediaFeeds: links,
+			DetailLike:       feed.DetailLike,
+			TotalLike:        len(feed.DetailLike),
 		})
 	}
 	f.SuccessResponse(ctx, responseFeedTimeline)
@@ -121,7 +127,9 @@ func (f *FeedController) readFollowedFeed(ctx *gin.Context) {
 			ProfileImage:     feed.ProfileImage,
 			CreatedAt:        feed.CreatedAt,
 			DetailComment:    feed.DetailComment,
+			DetailLike:       feed.DetailLike,
 			DetailMediaFeeds: links,
+			TotalLike:        len(feed.DetailLike),
 		})
 	}
 	f.SuccessResponse(ctx, responseFollowedFeed)
@@ -143,13 +151,16 @@ func (f *FeedController) readCategoryFeed(ctx *gin.Context) {
 	for _, feed := range resFeed {
 		links := strings.Split(feed.DetailMediaFeeds, ",")
 		responseCategoryFeed = append(responseCategoryFeed, dto.FeedDetailResponse{
+			AccountID:        feed.AccountID,
 			PostID:           feed.PostID,
 			DisplayName:      feed.DisplayName,
 			CaptionPost:      feed.CaptionPost,
 			ProfileImage:     feed.ProfileImage,
 			CreatedAt:        feed.CreatedAt,
 			DetailComment:    feed.DetailComment,
+			DetailLike:       feed.DetailLike,
 			DetailMediaFeeds: links,
+			TotalLike:        len(feed.DetailLike),
 		})
 	}
 	f.SuccessResponse(ctx, responseCategoryFeed)
@@ -258,4 +269,34 @@ func (f *FeedController) updateFeed(ctx *gin.Context) {
 		return
 	}
 	f.SuccessResponse(ctx, updateFeed)
+}
+
+func (f *FeedController) likeFeed(ctx *gin.Context) {
+	var requestLike dto.LikeRequest
+	err := f.ParseBodyRequest(ctx, &requestLike)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	err = f.flUC.Like(&requestLike)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	f.SuccessResponse(ctx, requestLike)
+}
+
+func (f *FeedController) unlikeFeed(ctx *gin.Context) {
+	var requestLike dto.LikeRequest
+	err := f.ParseBodyRequest(ctx, &requestLike)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	err = f.flUC.Unlike(&requestLike)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	f.SuccessResponse(ctx, requestLike)
 }

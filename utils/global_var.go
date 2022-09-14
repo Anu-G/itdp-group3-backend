@@ -11,11 +11,15 @@ type GlobalVar struct {
 }
 
 func CallGlobalVar() (globalVar GlobalVar) {
-	v := viper.New()
-	v.AutomaticEnv()
-	v.BindEnv("SECRET")
+	viper.AddConfigPath(".")
+	viper.SetConfigFile(".env")
+	viper.SetConfigType("env")
 
-	if err := v.Unmarshal(&globalVar); err != nil {
+	err := viper.ReadInConfig()
+	if err != nil {
+		return
+	}
+	if err = viper.Unmarshal(&globalVar); err != nil {
 		return
 	}
 	return

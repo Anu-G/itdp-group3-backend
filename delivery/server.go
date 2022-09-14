@@ -66,8 +66,8 @@ func Server() *appServer {
 		}
 	}
 
-	// init prod migration
-	// if appCfg.DBConfig.Environment == "DEV" {
+	// first time migration for production
+	// if appCfg.DBConfig.Environment == "PROD" {
 	// 	tools.RunMigrate(dbCon)
 	// } else {
 	// 	log.Fatal("cannot migrate")
@@ -82,7 +82,7 @@ func (a *appServer) initControllers() {
 	controller.NewUserController(a.engine, a.UseCaseManager.UserUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAccountController(a.engine, a.UseCaseManager.AccountUsecase(), a.MiddlewareManager.AuthMiddleware(), a.UseCaseManager.FollowUsecase())
 	controller.NewDetailMediaFeedController(a.engine, a.UseCaseManager.DetailMediaFeedUsecase(), a.MiddlewareManager.AuthMiddleware())
-	controller.NewFeedController(a.engine, a.UseCaseManager.FeedUsecase(), a.UseCaseManager.DetailMediaFeedUsecase(), a.MiddlewareManager.AuthMiddleware())
+	controller.NewFeedController(a.engine, a.UseCaseManager.FeedUsecase(), a.UseCaseManager.DetailMediaFeedUsecase(), a.UseCaseManager.DetailLikeUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewCommentController(a.engine, a.UseCaseManager.DetailCommentUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewAuthController(a.engine, a.UseCaseManager.AuthUsecase(), a.UseCaseManager.UserUsecase(), a.Auth)
 	controller.NewProductController(a.engine, a.UseCaseManager.ProductUseCase(), a.MiddlewareManager.AuthMiddleware())

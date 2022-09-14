@@ -26,3 +26,13 @@ type ActivateBusinessAccountRequest struct {
 type AccountFillRequest struct {
 	AccountID uint `json:"account_id"`
 }
+
+type GetAccountRequest struct {
+	AccountID string `json:"account_id"`
+}
+
+type GetAccountResponse struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+	PhoneNumber string `json:"phone_number"`
+}

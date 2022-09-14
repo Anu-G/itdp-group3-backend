@@ -1,14 +1,12 @@
 package manager
 
 import (
-	"database/sql"
+	"fmt"
 	"itdp-group3-backend/config"
-	"itdp-group3-backend/model/entity"
 	"log"
 	"os"
 	"time"
 
-	"github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -45,6 +43,9 @@ func NewInfraSetup(config config.Config) InfraManagerInterface {
 
 // dbConnect : connect postgres
 func (im *infraManager) dbConnect() *gorm.DB {
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v timezone=%v",
+		im.cfgDB.DBHost, im.cfgDB.DBUser, im.cfgDB.DBPassword, im.cfgDB.DBName, im.cfgDB.DBPort, im.cfgDB.SSLMode, im.cfgDB.TimeZone)
+
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
@@ -58,44 +59,15 @@ func (im *infraManager) dbConnect() *gorm.DB {
 		gormCfg.Logger = newLogger
 	}
 
-	pgUrl, err := pq.ParseURL(os.Getenv("ELEPHANTSQL_URL"))
+	dbcon, err := gorm.Open(postgres.Open(dsn), gormCfg)
 	if err != nil {
-		log.Fatal(err)
+		panic("failed to connect database")
 	}
 
-	db, err := sql.Open("pgx", pgUrl)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	dbcon, err := gorm.Open(postgres.New(postgres.Config{
-		Conn: db,
-	}), gormCfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if !dbcon.Migrator().HasTable(&entity.User{}) || !dbcon.Migrator().HasTable(&entity.Account{}) || !dbcon.Migrator().HasTable(&entity.Category{}) || !dbcon.Migrator().HasTable(&entity.BusinessProfile{}) || !dbcon.Migrator().HasTable(&entity.NonBusinessProfile{}) || !dbcon.Migrator().HasTable(&entity.Product{}) || !dbcon.Migrator().HasTable(&entity.Feed{}) || !dbcon.Migrator().HasTable(&entity.BusinessFAQ{}) || !dbcon.Migrator().HasTable(&entity.BusinessHour{}) || !dbcon.Migrator().HasTable(&entity.BusinessLink{}) || !dbcon.Migrator().HasTable(&entity.DetailMediaFeed{}) || !dbcon.Migrator().HasTable(&entity.DetailComment{}) || !dbcon.Migrator().HasTable(&entity.Followed{}) || !dbcon.Migrator().HasTable(&entity.Follower{}) {
-		dbcon.AutoMigrate(
-			// put entity models here
-			&entity.User{},
-			&entity.Account{},
-			&entity.Category{},
-			&entity.BusinessProfile{},
-			&entity.NonBusinessProfile{},
-			&entity.Product{},
-			&entity.Feed{},
-			&entity.BusinessFAQ{},
-			&entity.BusinessHour{},
-			&entity.BusinessLink{},
-			&entity.DetailMediaFeed{},
-			&entity.DetailComment{},
-			&entity.Followed{},
-			&entity.Follower{},
-		)
-	}
-
-	db.SetConnMaxLifetime(15 * time.Minute)
+	sqlDB, _ := dbcon.DB()
+	defer sqlDB.SetConnMaxLifetime(10 * time.Minute)
+	defer sqlDB.SetConnMaxIdleTime(5 * time.Minute)
+	defer sqlDB.SetMaxOpenConns(10)
 
 	return dbcon
 }

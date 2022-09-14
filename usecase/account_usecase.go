@@ -4,6 +4,7 @@ import (
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/repository"
+	"strconv"
 )
 
 type AccountUsecase interface {
@@ -13,6 +14,7 @@ type AccountUsecase interface {
 	ReadForProductDetail(a *entity.Account) error
 	ReadForFeedDetail(a *entity.Account) error
 	FollowList(rf dto.FollowListRequest) ([]dto.FollowListResponse, error)
+	GetAccount(id string) (dto.GetAccountResponse, error)
 }
 
 type accountUsecase struct {
@@ -78,4 +80,10 @@ func (ac *accountUsecase) FollowList(rf dto.FollowListRequest) ([]dto.FollowList
 		})
 	}
 	return response, err
+}
+
+func (ac *accountUsecase) GetAccount(id string) (dto.GetAccountResponse, error) {
+	accountId, _ := strconv.Atoi(id)
+
+	return ac.repo.GetAccount(uint(accountId))
 }

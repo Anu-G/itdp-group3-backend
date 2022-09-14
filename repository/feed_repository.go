@@ -56,8 +56,8 @@ func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDeta
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery)
 	readCL := fr.db.Preload("DetailComments").Preload("DetailLikes")
-	res := fr.Paging(read, page, pageLim).Find(&feedRequest).Order("m_feed.created_at")
-	resCL := fr.Paging(readCL, page, pageLim).Find(&feedCL).Order("m_feed.created_at")
+	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
+	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range *feedCL {
 		(*feedRequest)[i].DetailComment = feed.DetailComments
 		(*feedRequest)[i].DetailLike = feed.DetailLikes
@@ -96,8 +96,8 @@ func (fr *feedRepository) ReadByFollowerAccountID(ids []uint, page int, pageLim 
 	for i := 1; i < len(ids); i++ {
 		read = read.Or("account_id = ?", ids[i])
 	}
-	res := fr.Paging(read, page, pageLim).Find(&feedRes).Order("created_at")
-	resCL := fr.Paging(readCL, page, pageLim).Find(&feedCL).Order("m_feed.created_at")
+	res := fr.Paging(read, page, pageLim).Order("created_at DESC").Find(&feedRes)
+	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range feedCL {
 		feedRes[i].DetailComment = feed.DetailComments
 		feedRes[i].DetailLike = feed.DetailLikes
@@ -122,8 +122,8 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	read := fr.db.Model(&f).Where("bp.category_id = ?", cat).Select(selectQuery).Joins(joinQuery)
 	readCL := fr.db.Preload("DetailComments").Preload("DetailLikes")
-	res := fr.Paging(read, page, pageLim).Find(&feedRes).Order("m_feed.created_at")
-	resCL := fr.Paging(readCL, page, pageLim).Find(&feedCL).Order("m_feed.created_at")
+	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRes)
+	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range *feedCL {
 		feedRes[i].DetailComment = feed.DetailComments
 		feedRes[i].DetailLike = feed.DetailLikes

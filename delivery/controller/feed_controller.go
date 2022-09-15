@@ -33,7 +33,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	}
 
 	routeFeed := controller.router.Group("/feed")
-	// routeFeed.Use(md.RequireToken())
+	routeFeed.Use(md.RequireToken())
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
 	routeFeed.POST("/category", controller.readCategoryFeed)
@@ -44,7 +44,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.PUT("/update", controller.updateFeed)
 	routeFeed.DELETE("/", controller.deleteFeed)
 	routeFeed.POST("/like", controller.likeFeed)
-	routeFeed.DELETE("/unlike", controller.unlikeFeed)
+	routeFeed.POST("/unlike", controller.unlikeFeed)
 
 	return &controller
 }
@@ -61,17 +61,33 @@ func (f *FeedController) readFeed(ctx *gin.Context) {
 
 func (f *FeedController) readAccountFeed(ctx *gin.Context) {
 	var readFeed dto.ReadPage
+	var responseFeedTimeline []dto.FeedDetailResponse
 	err := f.ParseBodyRequest(ctx, &readFeed)
 	if err != nil {
 		f.FailedResponse(ctx, err)
 		return
 	}
-	resFeed, err := f.fUC.ReadByAccountID(readFeed.ID, readFeed.Page, readFeed.PageLim)
+	resFeed, err := f.fUC.ReadByAccountID(readFeed.ID)
 	if err != nil {
 		f.FailedResponse(ctx, err)
 		return
 	}
-	f.SuccessResponse(ctx, resFeed)
+	for _, feed := range resFeed {
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		responseFeedTimeline = append(responseFeedTimeline, dto.FeedDetailResponse{
+			AccountID:        feed.AccountID,
+			PostID:           feed.PostID,
+			DisplayName:      feed.DisplayName,
+			CaptionPost:      feed.CaptionPost,
+			ProfileImage:     feed.ProfileImage,
+			CreatedAt:        feed.CreatedAt,
+			DetailComment:    feed.DetailComment,
+			DetailMediaFeeds: links,
+			DetailLike:       feed.DetailLike,
+			TotalLike:        len(feed.DetailLike),
+		})
+	}
+	f.SuccessResponse(ctx, responseFeedTimeline)
 }
 
 func (f *FeedController) readForTimeline(ctx *gin.Context) {

@@ -16,9 +16,11 @@ type ProductUseCaseInterface interface {
 	CreateProduct(p *dto.ProductRequest) (entity.Product, error)
 	CreateProductImage(file *multipart.FileHeader, ctx *gin.Context, folderName string) (string, error)
 	GetByAccount(p dto.ProductRequest) ([]dto.ProductResponse, error)
+	GetById(p *entity.Product) error
 	GetByProduct(p dto.ProductRequest) (dto.ProductResponse, error)
 	SearchProduct(keyword string) ([]dto.ProductDetailResponse, error)
 	Delete(id string) error
+	Update(p *entity.Product) error
 }
 
 type productUseCase struct {
@@ -113,7 +115,14 @@ func (pu *productUseCase) CreateProduct(p *dto.ProductRequest) (entity.Product, 
 	}
 
 	return createdProduct, nil
+}
 
+func (pu *productUseCase) Update(p *entity.Product) error {
+	return pu.repo.Update(p)
+}
+
+func (pu *productUseCase) GetById(p *entity.Product) error {
+	return pu.repo.GetById(p)
 }
 
 func NewProductUseCase(repo repository.ProductRepositoryInterface, fileRepo repository.FileRepository) ProductUseCaseInterface {

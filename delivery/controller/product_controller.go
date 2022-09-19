@@ -8,6 +8,7 @@ import (
 	"itdp-group3-backend/model/entity"
 	"itdp-group3-backend/usecase"
 	"itdp-group3-backend/utils"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -36,6 +37,7 @@ func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface
 	routeProduct.POST("/get/by-product", controller.getByProduct)
 	routeProduct.POST("/delete/product", controller.deleteProduct)
 	routeProduct.POST("/search", controller.searchProduct)
+	routeProduct.POST("/update", controller.updateProduct)
 
 	return &controller
 }
@@ -197,4 +199,36 @@ func (b *ProductController) searchProduct(ctx *gin.Context) {
 	}
 
 	b.SuccessResponse(ctx, productRes)
+}
+
+func (b *ProductController) updateProduct(ctx *gin.Context) {
+	var (
+		productRequest dto.ProductRequest
+		updateProduct  entity.Product
+	)
+	err := b.ParseBodyRequest(ctx, &productRequest)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+	productID, _ := strconv.Atoi(productRequest.ProductID)
+	productPrice, _ := strconv.Atoi(productRequest.Price)
+	updateProduct.ID = uint(productID)
+	err = b.usecase.GetById(&updateProduct)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+	var holdLink string
+	holdLink = strings.Join(productRequest.DetailMediaProducts, ",")
+	updateProduct.ProductName = productRequest.ProductName
+	updateProduct.Price = float64(productPrice)
+	updateProduct.Description = productRequest.Description
+	updateProduct.DetailMediaProducts = holdLink
+	err = b.usecase.Update(&updateProduct)
+	if err != nil {
+		b.FailedResponse(ctx, err)
+		return
+	}
+	b.SuccessResponse(ctx, updateProduct)
 }

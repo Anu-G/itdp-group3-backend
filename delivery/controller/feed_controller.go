@@ -41,8 +41,8 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.POST("/timeline", controller.readForTimeline)
 	routeFeed.POST("/followed", controller.readFollowedFeed)
 	routeFeed.POST("/create", controller.createFeed)
-	routeFeed.PUT("/update", controller.updateFeed)
-	routeFeed.DELETE("/", controller.deleteFeed)
+	routeFeed.POST("/update", controller.updateFeed)
+	routeFeed.POST("/delete", controller.deleteFeed)
 	routeFeed.POST("/like", controller.likeFeed)
 	routeFeed.POST("/unlike", controller.unlikeFeed)
 
@@ -274,9 +274,7 @@ func (f *FeedController) updateFeed(ctx *gin.Context) {
 		return
 	}
 	var holdLink string
-	for _, link := range requestUpdateFeed.MediaLinks {
-		holdLink = holdLink + link + ","
-	}
+	holdLink = strings.Join(requestUpdateFeed.MediaLinks, ",")
 	updateFeed.CaptionPost = requestUpdateFeed.CaptionPost
 	updateFeed.DetailMediaFeeds = holdLink
 	err = f.fUC.Update(&updateFeed)

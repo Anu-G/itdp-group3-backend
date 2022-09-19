@@ -144,8 +144,10 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRes)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range *feedCL {
-		feedRes[i].DetailComment = feed.DetailComments
-		feedRes[i].DetailLike = feed.DetailLikes
+		if i < len(feedRes) {
+			feedRes[i].DetailComment = feed.DetailComments
+			feedRes[i].DetailLike = feed.DetailLikes
+		}
 	}
 	if res.Error == nil {
 		err = resCL.Error

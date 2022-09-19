@@ -46,8 +46,8 @@ type FeedDetailRequest struct {
 	CreatedAt        time.Time              `json:"created_at"`
 	DetailMediaFeeds string                 `json:"detail_media_feed"`
 	DisplayName      string                 `json:"display_name"`
-	DetailComment    []entity.DetailComment `json:"detail_comment"`
-	DetailLike       []entity.DetailLike    `json:"detail_like"`
+	DetailComment    []entity.DetailComment `json:"detail_comment" gorm:"foreignKey:FeedID;references:PostID"`
+	DetailLike       []entity.DetailLike    `json:"detail_like" gorm:"foreignKey:FeedID;references:PostID"`
 }
 
 type FeedDetailResponse struct {

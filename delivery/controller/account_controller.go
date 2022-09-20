@@ -66,8 +66,12 @@ func (ac *AccountController) readAccountForPostTimeline(ctx *gin.Context) {
 				responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
 			}
 			responseAccountHold.DisplayName = account.BusinessProfile.DisplayName
-			responseAccountHold.DetailComment = account.Feeds[i].DetailComments
-			responseAccount = append(responseAccount, responseAccountHold)
+			for j := range responseAccountHold.DetailComment {
+				responseAccountHold.DetailComment[j].AccountID = account.Feeds[i].DetailComments[j].AccountID
+				responseAccountHold.DetailComment[j].FeedID = account.Feeds[i].DetailComments[j].FeedID
+				responseAccountHold.DetailComment[j].CommentFill = account.Feeds[i].DetailComments[j].CommentFill
+			}
+				responseAccount = append(responseAccount, responseAccountHold)
 			responseAccountHold.DetailMediaFeeds = nil
 		}
 	}
@@ -138,7 +142,11 @@ func (ac *AccountController) readAccountForFeedDetail(ctx *gin.Context) {
 			responseAccountHold.DetailMediaFeeds = append(responseAccountHold.DetailMediaFeeds, link)
 		}
 		responseAccountHold.DisplayName = readAccount.BusinessProfile.DisplayName
-		responseAccountHold.DetailComment = readAccount.Feeds[i].DetailComments
+		for j := range responseAccountHold.DetailComment {
+			responseAccountHold.DetailComment[j].AccountID = readAccount.Feeds[i].DetailComments[j].AccountID
+			responseAccountHold.DetailComment[j].FeedID = readAccount.Feeds[i].DetailComments[j].FeedID
+			responseAccountHold.DetailComment[j].CommentFill = readAccount.Feeds[i].DetailComments[j].CommentFill
+		}
 		responseAccount = append(responseAccount, responseAccountHold)
 		responseAccountHold.DetailMediaFeeds = nil
 	}

@@ -46,7 +46,7 @@ type FeedDetailRequest struct {
 	CreatedAt        time.Time              `json:"created_at"`
 	DetailMediaFeeds string                 `json:"detail_media_feed"`
 	DisplayName      string                 `json:"display_name"`
-	DetailComment    []entity.DetailComment `json:"detail_comment" gorm:"foreignKey:FeedID;references:PostID"`
+	DetailComment    []RequestCreateComment `json:"detail_comment" gorm:"foreignKey:FeedID;references:PostID"`
 	DetailLike       []entity.DetailLike    `json:"detail_like" gorm:"foreignKey:FeedID;references:PostID"`
 }
 
@@ -58,12 +58,22 @@ type FeedDetailResponse struct {
 	CreatedAt        time.Time              `json:"created_at"`
 	DetailMediaFeeds []string               `json:"detail_media_feed"`
 	DisplayName      string                 `json:"display_name"`
-	DetailComment    []entity.DetailComment `json:"detail_comment"`
+	DetailComment    []RequestCreateComment `json:"detail_comment"`
 	DetailLike       []entity.DetailLike    `json:"detail_like"`
 	TotalLike        int                    `json:"total_like"`
 }
 
 type LikeRequest struct {
-	AccountID uint `json:"account_id"`
-	FeedID    uint `json:"feed_id"`
+	AccountID uint `json:"account_id,string"`
+	FeedID    uint `json:"feed_id,string"`
+}
+
+type FeedResponse struct {
+	ID          uint   `json:"id"`
+	AccountID   uint   `json:"account_id"`
+	CaptionPost string `json:"caption_post"`
+
+	DetailMediaFeeds string                 `json:"detail_media_feeds"`
+	DetailLikes      []entity.DetailLike    `json:"detail_likes" gorm:"foreignKey:FeedID;references:ID"`
+	DetailComments   []RequestCreateComment `json:"detail_comments" gorm:"foreignKey:FeedID;references:ID"`
 }

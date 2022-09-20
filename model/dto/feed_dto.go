@@ -26,6 +26,12 @@ type RequestFeed struct {
 	MediaLinks  []string `json:"media_links"`
 }
 
+type RequestIDFeed struct {
+	ID      uint `json:"feed_id"`
+	Page    int  `json:"page"`
+	PageLim int  `json:"page_lim"`
+}
+
 type ResponseFeed struct {
 	AccountID   uint     `json:"account_ID"`
 	CaptionPost string   `json:"caption_post"`

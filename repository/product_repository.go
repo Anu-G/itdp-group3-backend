@@ -14,8 +14,10 @@ type ProductRepositoryInterface interface {
 	Create(p *entity.Product) error
 	GetByAccount(p dto.ProductRequest) ([]entity.Product, error)
 	GetByProduct(p dto.ProductRequest) (entity.Product, error)
+	GetById(p *entity.Product) error
 	SearchProduct(keyword string) ([]dto.SearchProductResponse, error)
 	Delete(id string) error
+	Update(p *entity.Product) error
 }
 
 type productRepository struct {
@@ -95,6 +97,14 @@ func (pr *productRepository) GetByProduct(p dto.ProductRequest) (entity.Product,
 
 func (pr *productRepository) Create(p *entity.Product) error {
 	return pr.db.Create(&p).Error
+}
+
+func (pr *productRepository) Update(p *entity.Product) error {
+	return pr.db.Save(&p).Error
+}
+
+func (pr *productRepository) GetById(p *entity.Product) error {
+	return pr.db.First(&p, "id = ?", p.ID).Error
 }
 
 func NewProductRepo(db *gorm.DB) ProductRepositoryInterface {

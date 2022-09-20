@@ -33,16 +33,17 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	}
 
 	routeFeed := controller.router.Group("/feed")
-	routeFeed.Use(md.RequireToken())
+	// routeFeed.Use(md.RequireToken())
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
+	routeFeed.POST("/id", controller.readDetailFeedbyId)
 	routeFeed.POST("/category", controller.readCategoryFeed)
 	routeFeed.POST("/paged", controller.readByPageFeed)
 	routeFeed.POST("/timeline", controller.readForTimeline)
 	routeFeed.POST("/followed", controller.readFollowedFeed)
 	routeFeed.POST("/create", controller.createFeed)
-	routeFeed.PUT("/update", controller.updateFeed)
-	routeFeed.DELETE("/", controller.deleteFeed)
+	routeFeed.POST("/update", controller.updateFeed)
+	routeFeed.POST("/delete", controller.deleteFeed)
 	routeFeed.POST("/like", controller.likeFeed)
 	routeFeed.POST("/unlike", controller.unlikeFeed)
 
@@ -57,6 +58,35 @@ func (f *FeedController) readFeed(ctx *gin.Context) {
 		return
 	}
 	f.SuccessResponse(ctx, readFeed)
+}
+
+func (f *FeedController) readDetailFeedbyId(ctx *gin.Context) {
+	var requestId dto.RequestIDFeed
+	var responseFeed dto.FeedDetailResponse
+	err := f.ParseBodyRequest(ctx, &requestId)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	resultFeed, err := f.fUC.ReadDetailByID(requestId.ID, requestId.Page, requestId.PageLim)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	links := strings.Split(resultFeed.DetailMediaFeeds, ",")
+	responseFeed = dto.FeedDetailResponse{
+		AccountID:        resultFeed.AccountID,
+		PostID:           resultFeed.PostID,
+		DisplayName:      resultFeed.DisplayName,
+		CaptionPost:      resultFeed.CaptionPost,
+		ProfileImage:     resultFeed.ProfileImage,
+		CreatedAt:        resultFeed.CreatedAt,
+		DetailComment:    resultFeed.DetailComment,
+		DetailMediaFeeds: links,
+		DetailLike:       resultFeed.DetailLike,
+		TotalLike:        len(resultFeed.DetailLike),
+	}
+	f.SuccessResponse(ctx, responseFeed)
 }
 
 func (f *FeedController) readAccountFeed(ctx *gin.Context) {
@@ -274,9 +304,7 @@ func (f *FeedController) updateFeed(ctx *gin.Context) {
 		return
 	}
 	var holdLink string
-	for _, link := range requestUpdateFeed.MediaLinks {
-		holdLink = holdLink + link + ","
-	}
+	holdLink = strings.Join(requestUpdateFeed.MediaLinks, ",")
 	updateFeed.CaptionPost = requestUpdateFeed.CaptionPost
 	updateFeed.DetailMediaFeeds = holdLink
 	err = f.fUC.Update(&updateFeed)

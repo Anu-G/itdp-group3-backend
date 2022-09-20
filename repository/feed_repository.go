@@ -12,6 +12,7 @@ type FeedRepository interface {
 	Create(f *entity.Feed) error
 	Read(f *[]entity.Feed) error
 	ReadByID(f *entity.Feed) error
+	ReadDetailByID(id uint, page int, pageLim int) (dto.FeedDetailRequest, error)
 	ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByAccountID(id int) ([]dto.FeedDetailRequest, error)
 	ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
@@ -41,6 +42,31 @@ func (fr *feedRepository) Read(f *[]entity.Feed) error {
 
 func (fr *feedRepository) ReadByID(f *entity.Feed) error {
 	return fr.db.Preload("DetailComments").Preload("DetailLikes").Find(&f, "id = ?", f.ID).Error
+}
+
+func (fr *feedRepository) ReadDetailByID(id uint, page int, pageLim int) (dto.FeedDetailRequest, error) {
+	var feed *entity.Feed
+	var feedCL *entity.Feed
+	var feedRequest *dto.FeedDetailRequest
+	var err error
+	selectQuery := fmt.Sprintln(`
+	m_feed.id as post_id, m_feed.account_id, BP.profile_image as profile_image,BP.display_name as display_name, 
+	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	joinQuery := fmt.Sprintln(`
+	JOIN m_account as A on A.id = m_feed.account_id 
+	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
+	read := fr.db.Model(&feed).Where("m_feed.id = ?", id).Select(selectQuery).Joins(joinQuery)
+	readCL := fr.db.Preload("DetailComments").Preload("DetailLikes")
+	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
+	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
+	feedRequest.DetailComment = feedCL.DetailComments
+	feedRequest.DetailLike = feedCL.DetailLikes
+	if res.Error == nil {
+		err = resCL.Error
+	} else {
+		err = res.Error
+	}
+	return *feedRequest, err
 }
 
 func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error) {

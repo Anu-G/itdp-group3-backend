@@ -18,15 +18,19 @@ type AccountController struct {
 	router     *gin.Engine
 	accUC      usecase.AccountUsecase
 	flUC       usecase.FollowUsecase
+	bpUC       usecase.BusinessProfileUseCaseInterface
+	nbpUC      usecase.NonBusinessProfileUseCaseInterface
 	middleware middleware.AuthTokenMiddleware
 	api.BaseApi
 }
 
-func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, middleware middleware.AuthTokenMiddleware, flUC usecase.FollowUsecase) *AccountController {
+func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, middleware middleware.AuthTokenMiddleware, flUC usecase.FollowUsecase, bpUC usecase.BusinessProfileUseCaseInterface, nbpUC usecase.NonBusinessProfileUseCaseInterface) *AccountController {
 	controller := AccountController{
 		router:     router,
 		accUC:      accUc,
 		flUC:       flUC,
+		bpUC:       bpUC,
+		nbpUC:      nbpUC,
 		middleware: middleware,
 	}
 	routeAccount := controller.router.Group("/account")
@@ -185,13 +189,33 @@ func (ac *AccountController) createAccount(ctx *gin.Context) {
 }
 
 func (ac *AccountController) activateBusinessAccount(ctx *gin.Context) {
-	var requestAccountID dto.ActivateBusinessAccountRequest
+	var (
+		requestAccountID dto.ActivateBusinessAccountRequest
+		requestNBProfile dto.NonBusinessProfileRequest
+		requestBProfile  dto.BusinessProfileRequest
+	)
 	err := ac.ParseBodyRequest(ctx, &requestAccountID)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 		return
 	}
 	responseAccountID, err := ac.accUC.UpdateByID(requestAccountID.AccountID)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+	requestNBProfile.AccountID = fmt.Sprint(responseAccountID.ID)
+	responseNBProfile, err := ac.nbpUC.GetNonBusinessProfile(&requestNBProfile)
+	if err != nil {
+		ac.FailedResponse(ctx, err)
+		return
+	}
+	requestBProfile.AccountID = fmt.Sprint(responseAccountID.ID)
+	requestBProfile.DisplayName = responseNBProfile.NonBusinessProfile.DisplayName
+	requestBProfile.ProfileImage = responseNBProfile.NonBusinessProfile.ProfileImage
+	requestBProfile.ProfileBio = responseNBProfile.NonBusinessProfile.ProfileBio
+	requestBProfile.CategoryID = "1"
+	_, err = ac.bpUC.CreateBusinessProfile(&requestBProfile)
 	if err != nil {
 		ac.FailedResponse(ctx, err)
 		return

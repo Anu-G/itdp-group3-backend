@@ -56,8 +56,18 @@ func (fr *feedRepository) ReadDetailByID(id uint, page int, pageLim int) (dto.Fe
 	JOIN m_account as A on A.id = m_feed.account_id 
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	read := fr.db.Model(&feed).Where("m_feed.id = ?", id).Select(selectQuery).Joins(joinQuery)
-	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
-		return fr.db.Model(&entity.DetailComment{}).Select("m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill, bp.display_name, bp.profile_image").Joins("JOIN m_business_profile as bp on bp.account_id = m_detail_comment.account_id")
+	readCL := fr.db.Model(&entity.Feed{}).Where("m_feed.id = ?", id).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
+		return fr.db.Model(&entity.DetailComment{}).Select(`
+m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.display_name ELSE mnbp.display_name
+END AS "display_name",
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.profile_image ELSE mnbp.profile_image
+END AS "profile_image"
+`).Joins(`
+LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
+LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes")
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
@@ -84,7 +94,17 @@ func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDeta
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery)
 	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
-		return fr.db.Model(&entity.DetailComment{}).Select("m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill, bp.display_name, bp.profile_image").Joins("JOIN m_business_profile as bp on bp.account_id = m_detail_comment.account_id")
+		return fr.db.Model(&entity.DetailComment{}).Select(`
+m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.display_name ELSE mnbp.display_name
+END AS "display_name",
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.profile_image ELSE mnbp.profile_image
+END AS "profile_image"
+`).Joins(`
+LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
+LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes")
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
@@ -113,7 +133,17 @@ func (fr *feedRepository) ReadByAccountID(id int) ([]dto.FeedDetailRequest, erro
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	res := fr.db.Model(&feed).Where("m_feed.account_id = ?", id).Select(selectQuery).Joins(joinQuery).Order("m_feed.created_at DESC").Find(&feedRequest)
 	resCL := fr.db.Model(&entity.Feed{}).Where("account_id = ?", id).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
-		return fr.db.Model(&entity.DetailComment{}).Select("m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill, bp.display_name, bp.profile_image").Joins("JOIN m_business_profile as bp on bp.account_id = m_detail_comment.account_id")
+		return fr.db.Model(&entity.DetailComment{}).Select(`
+m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.display_name ELSE mnbp.display_name
+END AS "display_name",
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.profile_image ELSE mnbp.profile_image
+END AS "profile_image"
+`).Joins(`
+LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
+LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes").Order("m_feed.created_at DESC").Find(&feedCL)
 	fmt.Println(len(*feedRequest))
 	fmt.Println("comment\n", len(*feedCL))
@@ -144,7 +174,17 @@ func (fr *feedRepository) ReadByFollowerAccountID(ids []uint, page int, pageLim 
 	}
 	read := fr.db.Model(&f).Select(selectQuery).Joins(joinQuery).Where("m_feed.account_id = ?", ids[0])
 	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
-		return fr.db.Model(&entity.DetailComment{}).Select("m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill, bp.display_name, bp.profile_image").Joins("JOIN m_business_profile as bp on bp.account_id = m_detail_comment.account_id")
+		return fr.db.Model(&entity.DetailComment{}).Select(`
+m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.display_name ELSE mnbp.display_name
+END AS "display_name",
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.profile_image ELSE mnbp.profile_image
+END AS "profile_image"
+`).Joins(`
+LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
+LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes")
 	for i := 1; i < len(ids); i++ {
 		read = read.Or("account_id = ?", ids[i])
@@ -175,7 +215,17 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
 	read := fr.db.Model(&f).Where("bp.category_id = ?", cat).Select(selectQuery).Joins(joinQuery)
 	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
-		return fr.db.Model(&entity.DetailComment{}).Select("m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill, bp.display_name, bp.profile_image").Joins("JOIN m_business_profile as bp on bp.account_id = m_detail_comment.account_id")
+		return fr.db.Model(&entity.DetailComment{}).Select(`
+m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.display_name ELSE mnbp.display_name
+END AS "display_name",
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.profile_image ELSE mnbp.profile_image
+END AS "profile_image"
+`).Joins(`
+LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
+LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes")
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRes)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)

@@ -18,6 +18,7 @@ type FeedRepository interface {
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
 	ReadByFollowerAccountID(ids []uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	Update(f *entity.Feed) error
+	ReadForDetailTimeline(page int, pageLim int, feedId uint) ([]dto.FeedDetailRequest, error)
 	BaseRepository
 }
 
@@ -186,4 +187,33 @@ func (fr *feedRepository) Paging(db *gorm.DB, page int, pageLim int) *gorm.DB {
 func (fr *feedRepository) Delete(id uint) error {
 	var feedRes entity.Feed
 	return fr.db.Where("id = ?", id).Delete(&feedRes).Error
+}
+
+func (fr *feedRepository) ReadForDetailTimeline(page int, pageLim int, feedId uint) ([]dto.FeedDetailRequest, error) {
+	var feed *entity.Feed
+	var feedCL *[]dto.FeedResponse
+	var feedRequest *[]dto.FeedDetailRequest
+	var err error
+	selectQuery := fmt.Sprintln(`
+	m_feed.id as post_id, m_feed.account_id, BP.profile_image as profile_image,BP.display_name as display_name, 
+	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	joinQuery := fmt.Sprintln(`
+	JOIN m_account as A on A.id = m_feed.account_id 
+	JOIN m_business_profile as BP on BP.account_id = m_feed.account_id`)
+	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery).Where(`"m_feed"."id" = ?`, feedId)
+	readCL := fr.db.Model(&entity.Feed{}).Where(`"m_feed"."id" = ?`, feedId).Preload("DetailComments", func (db *gorm.DB) *gorm.DB {
+		return fr.db.Model(&entity.DetailComment{}).Select("m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill, bp.display_name, bp.profile_image").Joins("JOIN m_business_profile as bp on bp.account_id = m_detail_comment.account_id")
+	}).Preload("DetailLikes")
+	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
+	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
+	for i, feed := range *feedCL {
+		(*feedRequest)[i].DetailComment = feed.DetailComments
+		(*feedRequest)[i].DetailLike = feed.DetailLikes
+	}
+	if res.Error == nil {
+		err = resCL.Error
+	} else {
+		err = res.Error
+	}
+	return *feedRequest, err
 }

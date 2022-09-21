@@ -62,6 +62,7 @@ func (cm *DetailCommentController) createDetailComment(ctx *gin.Context) {
 		return
 	}
 	createDetailComment.FeedID = requestCreateComment.FeedID
+	createDetailComment.AccountID = requestCreateComment.AccountID
 	createDetailComment.CommentFill = requestCreateComment.CommentFill
 	if createDetailComment.FeedID == 0 {
 		cm.FailedResponse(ctx, errors.New("no feed found"))

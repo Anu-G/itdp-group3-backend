@@ -80,7 +80,7 @@ func Server() *appServer {
 // initControllers : prepare the controller API
 func (a *appServer) initControllers() {
 	controller.NewUserController(a.engine, a.UseCaseManager.UserUsecase(), a.MiddlewareManager.AuthMiddleware())
-	controller.NewAccountController(a.engine, a.UseCaseManager.AccountUsecase(), a.MiddlewareManager.AuthMiddleware(), a.UseCaseManager.FollowUsecase())
+	controller.NewAccountController(a.engine, a.UseCaseManager.AccountUsecase(), a.MiddlewareManager.AuthMiddleware(), a.UseCaseManager.FollowUsecase(), a.UseCaseManager.BusinessProfileUseCase(), a.UseCaseManager.NonBusinessProfileUseCase())
 	controller.NewDetailMediaFeedController(a.engine, a.UseCaseManager.DetailMediaFeedUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewFeedController(a.engine, a.UseCaseManager.FeedUsecase(), a.UseCaseManager.DetailMediaFeedUsecase(), a.UseCaseManager.DetailLikeUsecase(), a.MiddlewareManager.AuthMiddleware())
 	controller.NewCommentController(a.engine, a.UseCaseManager.DetailCommentUsecase(), a.MiddlewareManager.AuthMiddleware())

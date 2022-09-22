@@ -46,6 +46,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.POST("/delete", controller.deleteFeed)
 	routeFeed.POST("/like", controller.likeFeed)
 	routeFeed.POST("/unlike", controller.unlikeFeed)
+	routeFeed.POST("/detail-timeline", controller.detailTimeline)
 
 	return &controller
 }
@@ -343,4 +344,38 @@ func (f *FeedController) unlikeFeed(ctx *gin.Context) {
 		return
 	}
 	f.SuccessResponse(ctx, requestLike)
+}
+
+func (f *FeedController) detailTimeline(ctx *gin.Context) {
+	var readFeed dto.ReadPage
+	var responseFeedTimeline []dto.FeedDetailResponse
+	err := f.ParseBodyRequest(ctx, &readFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	} else if readFeed.FeedId == 0 {
+		f.FailedResponse(ctx, utils.RequiredError("feed_id"))
+	}
+
+	resFeed, err := f.fUC.ReadForDetailTimeline(readFeed.Page, readFeed.PageLim, readFeed.FeedId)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	for _, feed := range resFeed {
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		responseFeedTimeline = append(responseFeedTimeline, dto.FeedDetailResponse{
+			AccountID:        feed.AccountID,
+			PostID:           feed.PostID,
+			DisplayName:      feed.DisplayName,
+			CaptionPost:      feed.CaptionPost,
+			ProfileImage:     feed.ProfileImage,
+			CreatedAt:        feed.CreatedAt,
+			DetailComment:    feed.DetailComment,
+			DetailMediaFeeds: links,
+			DetailLike:       feed.DetailLike,
+			TotalLike:        len(feed.DetailLike),
+		})
+	}
+	f.SuccessResponse(ctx, responseFeedTimeline)
 }

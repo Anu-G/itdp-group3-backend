@@ -18,6 +18,7 @@ type FeedUsecase interface {
 	ReadByFollowerAccountID(id uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	Update(f *entity.Feed) error
 	Delete(id uint) error
+	ReadForDetailTimeline(page int, pageLim int, feedId uint) ([]dto.FeedDetailRequest, error)
 }
 
 type feedUsecase struct {
@@ -89,3 +90,8 @@ func (fc *feedUsecase) Update(f *entity.Feed) error {
 func (fc *feedUsecase) Delete(id uint) error {
 	return fc.repo.Delete(id)
 }
+
+func (fc *feedUsecase) ReadForDetailTimeline(page int, pageLim int, feedId uint) ([]dto.FeedDetailRequest, error) {
+	return fc.repo.ReadForDetailTimeline(page, pageLim, feedId)
+}
+

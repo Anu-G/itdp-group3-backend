@@ -28,7 +28,7 @@ type RequestFeed struct {
 }
 
 type RequestIDFeed struct {
-	ID      uint `json:"feed_id"`
+	ID      uint `json:"feed_id,string"`
 	Page    int  `json:"page"`
 	PageLim int  `json:"page_lim"`
 }

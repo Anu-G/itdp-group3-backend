@@ -95,7 +95,7 @@ func (b *nonBusinessProfileUseCase) CreateNonBusinessProfile(bp *dto.NonBusiness
 	account.ID = uint(accountId)
 	b.accountRepo.FindById(&account)
 
-	if account.Username != "" {
+	if account.Username == "" {
 		return createdNonBusinessProfile, errors.New("user not found")
 	}
 

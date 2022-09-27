@@ -51,8 +51,18 @@ func (fr *feedRepository) ReadDetailByID(id uint, page int, pageLim int) (dto.Fe
 	var feedRequest *dto.FeedDetailRequest
 	var err error
 	selectQuery := fmt.Sprintln(`
-	m_feed.id as post_id, m_feed.account_id, BP.profile_image AS profile_image,NBP.profile_image AS profile_image,BP.display_name AS display_name,NBP.display_name AS display_name, 
-	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	m_feed.id as post_id, 
+	m_feed.account_id, 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.profile_image 
+		ELSE NBP.profile_image
+	END AS "profile_image", 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
+		ELSE NBP.display_name
+	END AS "display_name",
+		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
+	`)
 	joinQuery := fmt.Sprintln(`
 	JOIN m_account as A on A.id = m_feed.account_id 
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
@@ -89,8 +99,18 @@ func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDeta
 	var feedRequest *[]dto.FeedDetailRequest
 	var err error
 	selectQuery := fmt.Sprintln(`
-	m_feed.id as post_id, m_feed.account_id, BP.profile_image AS profile_image,NBP.profile_image AS profile_image,BP.display_name AS display_name,NBP.display_name AS display_name, 
-	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	m_feed.id as post_id, 
+	m_feed.account_id, 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.profile_image 
+		ELSE NBP.profile_image
+	END AS "profile_image", 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
+		ELSE NBP.display_name
+	END AS "display_name",
+		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
+	`)
 	joinQuery := fmt.Sprintln(`
 	JOIN m_account as A on A.id = m_feed.account_id 
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
@@ -129,8 +149,18 @@ func (fr *feedRepository) ReadByAccountID(id int) ([]dto.FeedDetailRequest, erro
 	var feedRequest *[]dto.FeedDetailRequest
 	var err error
 	selectQuery := fmt.Sprintln(`
-	m_feed.id as post_id, m_feed.account_id, BP.profile_image AS profile_image,NBP.profile_image AS profile_image,BP.display_name AS display_name,NBP.display_name AS display_name, 
-	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	m_feed.id as post_id, 
+	m_feed.account_id, 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.profile_image 
+		ELSE NBP.profile_image
+	END AS "profile_image", 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
+		ELSE NBP.display_name
+	END AS "display_name",
+		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
+	`)
 	joinQuery := fmt.Sprintln(`
 	JOIN m_account as A on A.id = m_feed.account_id 
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
@@ -214,8 +244,18 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 	var feedRes []dto.FeedDetailRequest
 	var err error
 	selectQuery := fmt.Sprintln(`
-	m_feed.id as post_id, m_feed.account_id, BP.profile_image AS profile_image,NBP.profile_image AS profile_image,BP.display_name AS display_name,NBP.display_name AS display_name, 
-	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	m_feed.id as post_id, 
+	m_feed.account_id, 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.profile_image 
+		ELSE NBP.profile_image
+	END AS "profile_image", 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
+		ELSE NBP.display_name
+	END AS "display_name",
+		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
+	`)
 	joinQuery := fmt.Sprintln(`
 	JOIN m_account as A on A.id = m_feed.account_id 
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
@@ -279,8 +319,18 @@ func (fr *feedRepository) ReadForDetailTimeline(page int, pageLim int, feedId ui
 	var feedRequest *[]dto.FeedDetailRequest
 	var err error
 	selectQuery := fmt.Sprintln(`
-	m_feed.id as post_id, m_feed.account_id, BP.profile_image AS profile_image,NBP.profile_image AS profile_image,BP.display_name AS display_name,NBP.display_name AS display_name, 
-	m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds`)
+	m_feed.id as post_id, 
+	m_feed.account_id, 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.profile_image 
+		ELSE NBP.profile_image
+	END AS "profile_image", 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
+		ELSE NBP.display_name
+	END AS "display_name",
+		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
+	`)
 	joinQuery := fmt.Sprintln(`
 	JOIN m_account as A on A.id = m_feed.account_id 
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id

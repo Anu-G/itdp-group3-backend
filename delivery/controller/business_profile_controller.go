@@ -2,7 +2,6 @@ package controller
 
 import (
 	"errors"
-	"fmt"
 	"itdp-group3-backend/delivery/api"
 	"itdp-group3-backend/middleware"
 	"itdp-group3-backend/model/dto"
@@ -63,7 +62,6 @@ func (b *BusinessProfileController) addBusinessProfile(ctx *gin.Context) {
 
 	createdBp, err = b.usecase.CreateBusinessProfile(&businessProfileReq)
 	if err != nil {
-		fmt.Println(err)
 		b.FailedResponse(ctx, err)
 		return
 	}
@@ -103,7 +101,6 @@ func (b *BusinessProfileController) getProfile(ctx *gin.Context) {
 
 	businessProfileRes, err = b.usecase.GetBusinessProfile(&businessProfileReq)
 	if err != nil {
-		fmt.Println(err)
 		b.FailedResponse(ctx, err)
 		return
 	}

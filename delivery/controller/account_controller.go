@@ -75,7 +75,7 @@ func (ac *AccountController) readAccountForPostTimeline(ctx *gin.Context) {
 				responseAccountHold.DetailComment[j].FeedID = account.Feeds[i].DetailComments[j].FeedID
 				responseAccountHold.DetailComment[j].CommentFill = account.Feeds[i].DetailComments[j].CommentFill
 			}
-				responseAccount = append(responseAccount, responseAccountHold)
+			responseAccount = append(responseAccount, responseAccountHold)
 			responseAccountHold.DetailMediaFeeds = nil
 		}
 	}

@@ -24,7 +24,7 @@ type ActivateBusinessAccountRequest struct {
 }
 
 type AccountFillRequest struct {
-	AccountID uint `json:"account_id"`
+	AccountID uint `json:"account_id,string"`
 }
 
 type GetAccountRequest struct {

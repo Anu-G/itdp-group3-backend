@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"itdp-group3-backend/model/dto"
 	"itdp-group3-backend/model/entity"
+	"strconv"
 	"strings"
 
 	"gorm.io/gorm"
@@ -84,7 +85,11 @@ func (pr *productRepository) GetByAccount(p dto.ProductRequest) ([]entity.Produc
 
 func (pr *productRepository) GetByProduct(p dto.ProductRequest) (entity.Product, error) {
 	var product entity.Product
-	res := pr.db.Find(&product, "m_product.account_id = ? AND m_product.id = ?", p.AccountID, p.ProductID)
+
+	accId,_ := strconv.Atoi(p.AccountID)
+	prodId,_ := strconv.Atoi(p.ProductID)
+
+	res := pr.db.Find(&product, "m_product.account_id = ? AND m_product.id = ?", accId, prodId)
 	if err := res.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return product, nil

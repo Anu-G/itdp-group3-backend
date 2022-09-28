@@ -55,6 +55,7 @@ type FeedDetailRequest struct {
 	DisplayName      string                 `json:"display_name"`
 	DetailComment    []RequestCreateComment `json:"detail_comment" gorm:"foreignKey:FeedID;references:PostID"`
 	DetailLike       []entity.DetailLike    `json:"detail_like" gorm:"foreignKey:FeedID;references:PostID"`
+	AccountType      uint                   `json:"account_type"`
 }
 
 type FeedDetailResponse struct {
@@ -68,6 +69,7 @@ type FeedDetailResponse struct {
 	DetailComment    []RequestCreateComment `json:"detail_comment"`
 	DetailLike       []entity.DetailLike    `json:"detail_like"`
 	TotalLike        int                    `json:"total_like"`
+	AccountType      uint                   `json:"account_type"`
 }
 
 type LikeRequest struct {

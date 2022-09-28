@@ -61,6 +61,10 @@ func (fr *feedRepository) ReadDetailByID(id uint, page int, pageLim int) (dto.Fe
 		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
 		ELSE NBP.display_name
 	END AS "display_name",
+	CASE
+		WHEN BP.account_id IS NOT NULL THEN 2
+		ELSE 1
+	END AS "account_type",
 		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
 	`)
 	joinQuery := fmt.Sprintln(`
@@ -109,6 +113,10 @@ func (fr *feedRepository) ReadForTimeline(page int, pageLim int) ([]dto.FeedDeta
 		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
 		ELSE NBP.display_name
 	END AS "display_name",
+	CASE
+		WHEN BP.account_id IS NOT NULL THEN 2
+		ELSE 1
+	END AS "account_type",
 		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
 	`)
 	joinQuery := fmt.Sprintln(`
@@ -159,6 +167,10 @@ func (fr *feedRepository) ReadByAccountID(id int) ([]dto.FeedDetailRequest, erro
 		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
 		ELSE NBP.display_name
 	END AS "display_name",
+	CASE
+		WHEN BP.account_id IS NOT NULL THEN 2
+		ELSE 1
+	END AS "account_type",
 		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
 	`)
 	joinQuery := fmt.Sprintln(`
@@ -179,8 +191,6 @@ END AS "profile_image"
 LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
 LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes").Order("m_feed.created_at DESC").Find(&feedCL)
-	fmt.Println(len(*feedRequest))
-	fmt.Println("comment\n", len(*feedCL))
 	for i, feed := range *feedCL {
 		(*feedRequest)[i].DetailComment = feed.DetailComments
 		(*feedRequest)[i].DetailLike = feed.DetailLikes
@@ -254,6 +264,10 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
 		ELSE NBP.display_name
 	END AS "display_name",
+	CASE
+		WHEN BP.account_id IS NOT NULL THEN 2
+		ELSE 1
+	END AS "account_type",
 		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
 	`)
 	joinQuery := fmt.Sprintln(`
@@ -329,6 +343,10 @@ func (fr *feedRepository) ReadForDetailTimeline(page int, pageLim int, feedId ui
 		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
 		ELSE NBP.display_name
 	END AS "display_name",
+	CASE
+		WHEN BP.account_id IS NOT NULL THEN 2
+		ELSE 1
+	END AS "account_type",
 		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
 	`)
 	joinQuery := fmt.Sprintln(`

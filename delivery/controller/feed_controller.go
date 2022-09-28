@@ -86,6 +86,7 @@ func (f *FeedController) readDetailFeedbyId(ctx *gin.Context) {
 		DetailMediaFeeds: links,
 		DetailLike:       resultFeed.DetailLike,
 		TotalLike:        len(resultFeed.DetailLike),
+		AccountType:      responseFeed.AccountType,
 	}
 	f.SuccessResponse(ctx, responseFeed)
 }
@@ -116,6 +117,7 @@ func (f *FeedController) readAccountFeed(ctx *gin.Context) {
 			DetailMediaFeeds: links,
 			DetailLike:       feed.DetailLike,
 			TotalLike:        len(feed.DetailLike),
+			AccountType:      feed.AccountType,
 		})
 	}
 	f.SuccessResponse(ctx, responseFeedTimeline)
@@ -147,6 +149,7 @@ func (f *FeedController) readForTimeline(ctx *gin.Context) {
 			DetailMediaFeeds: links,
 			DetailLike:       feed.DetailLike,
 			TotalLike:        len(feed.DetailLike),
+			AccountType:      feed.AccountType,
 		})
 	}
 	f.SuccessResponse(ctx, responseFeedTimeline)
@@ -177,6 +180,7 @@ func (f *FeedController) readFollowedFeed(ctx *gin.Context) {
 			DetailLike:       feed.DetailLike,
 			DetailMediaFeeds: links,
 			TotalLike:        len(feed.DetailLike),
+			AccountType:      feed.AccountType,
 		})
 	}
 	f.SuccessResponse(ctx, responseFollowedFeed)
@@ -208,6 +212,7 @@ func (f *FeedController) readCategoryFeed(ctx *gin.Context) {
 			DetailLike:       feed.DetailLike,
 			DetailMediaFeeds: links,
 			TotalLike:        len(feed.DetailLike),
+			AccountType:      feed.AccountType,
 		})
 	}
 	f.SuccessResponse(ctx, responseCategoryFeed)

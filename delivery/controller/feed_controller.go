@@ -86,7 +86,7 @@ func (f *FeedController) readDetailFeedbyId(ctx *gin.Context) {
 		DetailMediaFeeds: links,
 		DetailLike:       resultFeed.DetailLike,
 		TotalLike:        len(resultFeed.DetailLike),
-		AccountType:      responseFeed.AccountType,
+		AccountType:      resultFeed.AccountType,
 	}
 	f.SuccessResponse(ctx, responseFeed)
 }

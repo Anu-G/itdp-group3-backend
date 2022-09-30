@@ -23,7 +23,7 @@ func (pr *faqRepository) Delete(id string) error {
 
 func (pr *faqRepository) GetFAQByAccount(id string) ([]entity.BusinessFAQ, error) {
 	var faqs []entity.BusinessFAQ
-	res := pr.db.Find(&faqs, "m_business_faq.business_profile_id = ?", id)
+	res := pr.db.Select("bp.id as business_profile_id, m_business_faq.question as question, m_business_faq.answer as answer").Joins("JOIN m_business_profile as bp on m_business_faq.business_profile_id = bp.id").Find(&faqs, "bp.account_id = ?", id)
 	if err := res.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return faqs, nil

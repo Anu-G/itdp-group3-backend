@@ -47,6 +47,7 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 	routeFeed.POST("/like", controller.likeFeed)
 	routeFeed.POST("/unlike", controller.unlikeFeed)
 	routeFeed.POST("/detail-timeline", controller.detailTimeline)
+	routeFeed.POST("/search", controller.readForSearch)
 
 	return &controller
 }
@@ -380,6 +381,38 @@ func (f *FeedController) detailTimeline(ctx *gin.Context) {
 			DetailMediaFeeds: links,
 			DetailLike:       feed.DetailLike,
 			TotalLike:        len(feed.DetailLike),
+		})
+	}
+	f.SuccessResponse(ctx, responseFeedTimeline)
+}
+
+func (f *FeedController) readForSearch(ctx *gin.Context) {
+	var readFeed dto.ReadPage
+	var responseFeedTimeline []dto.FeedDetailResponse
+	err := f.ParseBodyRequest(ctx, &readFeed)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	resFeed, err := f.fUC.ReadForSearch(readFeed.Page, readFeed.PageLim, readFeed.Keyword)
+	if err != nil {
+		f.FailedResponse(ctx, err)
+		return
+	}
+	for _, feed := range resFeed {
+		links := strings.Split(feed.DetailMediaFeeds, ",")
+		responseFeedTimeline = append(responseFeedTimeline, dto.FeedDetailResponse{
+			AccountID:        feed.AccountID,
+			PostID:           feed.PostID,
+			DisplayName:      feed.DisplayName,
+			CaptionPost:      feed.CaptionPost,
+			ProfileImage:     feed.ProfileImage,
+			CreatedAt:        feed.CreatedAt,
+			DetailComment:    feed.DetailComment,
+			DetailMediaFeeds: links,
+			DetailLike:       feed.DetailLike,
+			TotalLike:        len(feed.DetailLike),
+			AccountType:      feed.AccountType,
 		})
 	}
 	f.SuccessResponse(ctx, responseFeedTimeline)

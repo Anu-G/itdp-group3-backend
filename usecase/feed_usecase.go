@@ -12,6 +12,7 @@ type FeedUsecase interface {
 	ReadByID(f *entity.Feed) error
 	ReadDetailByID(id uint, page int, pageLim int) (dto.FeedDetailRequest, error)
 	ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error)
+	ReadForSearch(page int, pageLim int, keyword string) ([]dto.FeedDetailRequest, error)
 	ReadByAccountID(id uint) ([]dto.FeedDetailRequest, error)
 	ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
@@ -51,6 +52,10 @@ func (fc *feedUsecase) ReadDetailByID(id uint, page int, pageLim int) (dto.FeedD
 
 func (fc *feedUsecase) ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error) {
 	return fc.repo.ReadForTimeline(page, pageLim)
+}
+
+func (fc *feedUsecase) ReadForSearch(page int, pageLim int, keyword string) ([]dto.FeedDetailRequest, error) {
+	return fc.repo.ReadForSearch(page, pageLim, keyword)
 }
 
 func (fc *feedUsecase) ReadByAccountID(id uint) ([]dto.FeedDetailRequest, error) {

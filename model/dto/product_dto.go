@@ -24,6 +24,7 @@ type SearchProductRequest struct {
 
 type SearchProductResponse struct {
 	ProductID           uint    `json:"product_id"`
+	AccountID           string  `json:"account_id"`
 	AccountAvatar       string  `json:"account_avatar"`
 	AccountDisplayName  string  `json:"account_display_name"`
 	ProductName         string  `json:"product_name"`
@@ -34,6 +35,7 @@ type SearchProductResponse struct {
 
 type ProductDetailResponse struct {
 	ProductID           uint     `json:"product_id"`
+	AccountID           string   `json:"account_id"`
 	ProfileImage        string   `json:"avatar"`
 	Name                string   `json:"profile_name"`
 	ProductName         string   `json:"product_name"`

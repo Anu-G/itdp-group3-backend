@@ -34,21 +34,21 @@ func NewFeedController(router *gin.Engine, fUC usecase.FeedUsecase, fmUC usecase
 
 	routeFeed := controller.router.Group("/feed")
 	// routeFeed.Use(md.RequireToken())
+	routeFeed.POST("/id", controller.readDetailFeedbyId)     //this
+	routeFeed.POST("/category", controller.readCategoryFeed) //this
+	routeFeed.POST("/timeline", controller.readForTimeline)  //this
+	routeFeed.POST("/search", controller.readForSearch)      //this
 	routeFeed.GET("/", controller.readFeed)
 	routeFeed.POST("/account", controller.readAccountFeed)
-	routeFeed.POST("/id", controller.readDetailFeedbyId)
-	routeFeed.POST("/category", controller.readCategoryFeed)
 	routeFeed.POST("/paged", controller.readByPageFeed)
-	routeFeed.POST("/timeline", controller.readForTimeline)
-	routeFeed.POST("/followed", controller.readFollowedFeed)
-	routeFeed.POST("/create", controller.createFeed)
-	routeFeed.POST("/update", controller.updateFeed)
-	routeFeed.POST("/delete", controller.deleteFeed)
-	routeFeed.POST("/like", controller.likeFeed)
-	routeFeed.POST("/unlike", controller.unlikeFeed)
 	routeFeed.POST("/detail-timeline", controller.detailTimeline)
-	routeFeed.POST("/search", controller.readForSearch)
 
+	routeFeed.POST("/followed", controller.readFollowedFeed).Use(md.RequireToken())
+	routeFeed.POST("/create", controller.createFeed).Use(md.RequireToken())
+	routeFeed.POST("/update", controller.updateFeed).Use(md.RequireToken())
+	routeFeed.POST("/delete", controller.deleteFeed).Use(md.RequireToken())
+	routeFeed.POST("/like", controller.likeFeed).Use(md.RequireToken())
+	routeFeed.POST("/unlike", controller.unlikeFeed).Use(md.RequireToken())
 	return &controller
 }
 

@@ -178,7 +178,7 @@ func (fr *feedRepository) ReadForSearch(page int, pageLim int, keyword string) (
 	JOIN m_account as A on A.id = m_feed.account_id 
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
 	LEFT OUTER JOIN m_non_business_profile as NBP on NBP.account_id = m_feed.account_id`)
-	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery).Where("m_feed.caption_post ILIKE '%" + keyword+ "%'")
+	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery).Where("m_feed.caption_post ILIKE '%" + keyword + "%'")
 	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
 		return fr.db.Model(&entity.DetailComment{}).Select(`
 m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
@@ -191,7 +191,7 @@ END AS "profile_image"
 `).Joins(`
 LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
 LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
-	}).Preload("DetailLikes").Where("m_feed.caption_post ILIKE '%" + keyword+ "%'")
+	}).Preload("DetailLikes").Where("m_feed.caption_post ILIKE '%" + keyword + "%'")
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range *feedCL {
@@ -330,8 +330,8 @@ func (fr *feedRepository) ReadByProfileCategory(cat uint, page int, pageLim int)
 	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
 	LEFT OUTER JOIN m_non_business_profile as NBP on NBP.account_id = m_feed.account_id`)
 	read := fr.db.Model(&f).Where("bp.category_id = ?", cat).Select(selectQuery).Joins(joinQuery)
-	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
-		return fr.db.Model(&entity.DetailComment{}).Select(`
+	readCL := fr.db.Model(&entity.Feed{}).Where("bp.category_id = ?", cat).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
+		return fr.db.Model(&entity.DetailComment{}).Where("mbp.category_id = ?", cat).Select(`
 m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
 CASE WHEN mbp.account_id IS NOT NULL 
 THEN mbp.display_name ELSE mnbp.display_name
@@ -342,7 +342,7 @@ END AS "profile_image"
 `).Joins(`
 LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
 LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
-	}).Preload("DetailLikes")
+	}).Preload("DetailLikes").Joins(joinQuery)
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRes)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range *feedCL {

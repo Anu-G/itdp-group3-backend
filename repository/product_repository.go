@@ -40,7 +40,7 @@ func (pr *productRepository) SearchProduct(keyword string) ([]dto.SearchProductR
 	}
 
 	query := fmt.Sprintf(`
-	SELECT P.id as product_id,BP.profile_image as account_avatar,BP.display_name as account_display_name,P.product_name as product_name,P.price as product_price,P.description as product_description,P.detail_media_products as detail_media_products
+	SELECT P.id as product_id,P.account_id as account_id,BP.profile_image as account_avatar,BP.display_name as account_display_name,P.product_name as product_name,P.price as product_price,P.description as product_description,P.detail_media_products as detail_media_products, BP.category_id as category_id
 	FROM m_product as P
 	JOIN m_account as A on A.id = P.account_id
 	JOIN m_business_profile as BP on BP.account_id = P.account_id
@@ -86,8 +86,8 @@ func (pr *productRepository) GetByAccount(p dto.ProductRequest) ([]entity.Produc
 func (pr *productRepository) GetByProduct(p dto.ProductRequest) (entity.Product, error) {
 	var product entity.Product
 
-	accId,_ := strconv.Atoi(p.AccountID)
-	prodId,_ := strconv.Atoi(p.ProductID)
+	accId, _ := strconv.Atoi(p.AccountID)
+	prodId, _ := strconv.Atoi(p.ProductID)
 
 	res := pr.db.Find(&product, "m_product.account_id = ? AND m_product.id = ?", accId, prodId)
 	if err := res.Error; err != nil {

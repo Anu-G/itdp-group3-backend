@@ -6,11 +6,12 @@ import (
 )
 
 type ReadPage struct {
-	ID      uint `json:"account_id,string"`
-	Cat     uint `json:"category"`
-	Page    int  `json:"page"`
-	PageLim int  `json:"page_lim"`
-	FeedId  uint `json:"feed_id,string"`
+	ID      uint   `json:"account_id,string"`
+	Cat     uint   `json:"category"`
+	Page    int    `json:"page"`
+	PageLim int    `json:"page_lim"`
+	FeedId  uint   `json:"feed_id,string"`
+	Keyword string `json:"keyword"`
 }
 
 type DeleteFeed struct {

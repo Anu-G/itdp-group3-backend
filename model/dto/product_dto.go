@@ -24,16 +24,19 @@ type SearchProductRequest struct {
 
 type SearchProductResponse struct {
 	ProductID           uint    `json:"product_id"`
+	AccountID           string  `json:"account_id"`
 	AccountAvatar       string  `json:"account_avatar"`
 	AccountDisplayName  string  `json:"account_display_name"`
 	ProductName         string  `json:"product_name"`
 	ProductPrice        float64 `json:"product_price"`
 	ProductDescription  string  `json:"product_description"`
 	DetailMediaProducts string  `json:"detail_media_products"`
+	CategoryID          string  `json:"category_id"`
 }
 
 type ProductDetailResponse struct {
 	ProductID           uint     `json:"product_id"`
+	AccountID           string   `json:"account_id"`
 	ProfileImage        string   `json:"avatar"`
 	Name                string   `json:"profile_name"`
 	ProductName         string   `json:"product_name"`

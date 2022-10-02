@@ -14,6 +14,7 @@ type FeedRepository interface {
 	ReadByID(f *entity.Feed) error
 	ReadDetailByID(id uint, page int, pageLim int) (dto.FeedDetailRequest, error)
 	ReadForTimeline(page int, pageLim int) ([]dto.FeedDetailRequest, error)
+	ReadForSearch(page int, pageLim int, keyword string) ([]dto.FeedDetailRequest, error)
 	ReadByAccountID(id int) ([]dto.FeedDetailRequest, error)
 	ReadByProfileCategory(cat uint, page int, pageLim int) ([]dto.FeedDetailRequest, error)
 	ReadByPage(page int, pageLim int) ([]entity.Feed, error)
@@ -137,6 +138,60 @@ END AS "profile_image"
 LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
 LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
 	}).Preload("DetailLikes")
+	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
+	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
+	for i, feed := range *feedCL {
+		(*feedRequest)[i].DetailComment = feed.DetailComments
+		(*feedRequest)[i].DetailLike = feed.DetailLikes
+	}
+	if res.Error == nil {
+		err = resCL.Error
+	} else {
+		err = res.Error
+	}
+	return *feedRequest, err
+}
+
+func (fr *feedRepository) ReadForSearch(page int, pageLim int, keyword string) ([]dto.FeedDetailRequest, error) {
+	var feed *entity.Feed
+	var feedCL *[]dto.FeedResponse
+	var feedRequest *[]dto.FeedDetailRequest
+	var err error
+	selectQuery := fmt.Sprintln(`
+	m_feed.id as post_id, 
+	m_feed.account_id, 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.profile_image 
+		ELSE NBP.profile_image
+	END AS "profile_image", 
+	CASE 
+		WHEN BP.account_id IS NOT NULL THEN BP.display_name 
+		ELSE NBP.display_name
+	END AS "display_name",
+	CASE
+		WHEN BP.account_id IS NOT NULL THEN 2
+		ELSE 1
+	END AS "account_type",
+		m_feed.caption_post as caption_post, m_feed.created_at as created_at, m_feed.detail_media_feeds as detail_media_feeds
+	`)
+	joinQuery := fmt.Sprintln(`
+	JOIN m_account as A on A.id = m_feed.account_id 
+	LEFT OUTER JOIN m_business_profile as BP on BP.account_id = m_feed.account_id
+	LEFT OUTER JOIN m_non_business_profile as NBP on NBP.account_id = m_feed.account_id`)
+	read := fr.db.Model(&feed).Select(selectQuery).Joins(joinQuery).Where("m_feed.caption_post ILIKE '%" + keyword+ "%'")
+	readCL := fr.db.Model(&entity.Feed{}).Preload("DetailComments", func(db *gorm.DB) *gorm.DB {
+		return fr.db.Model(&entity.DetailComment{}).Select(`
+m_detail_comment.feed_id, m_detail_comment.account_id, m_detail_comment.comment_fill,  
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.display_name ELSE mnbp.display_name
+END AS "display_name",
+CASE WHEN mbp.account_id IS NOT NULL 
+THEN mbp.profile_image ELSE mnbp.profile_image
+END AS "profile_image"
+`).Joins(`
+LEFT OUTER JOIN m_business_profile mbp ON mbp.account_id = m_detail_comment.account_id 
+LEFT OUTER JOIN m_non_business_profile mnbp ON mnbp.account_id = m_detail_comment.account_id `)
+	}).Preload("DetailLikes").Where("m_feed.caption_post ILIKE '%" + keyword+ "%'")
 	res := fr.Paging(read, page, pageLim).Order("m_feed.created_at DESC").Find(&feedRequest)
 	resCL := fr.Paging(readCL, page, pageLim).Order("m_feed.created_at DESC").Find(&feedCL)
 	for i, feed := range *feedCL {

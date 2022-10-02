@@ -40,6 +40,7 @@ func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductDetailResp
 		links := strings.Split(product.DetailMediaProducts, ",")
 		products = append(products, dto.ProductDetailResponse{
 			ProductID:           product.ProductID,
+			AccountID:           product.AccountID,
 			ProfileImage:        product.AccountAvatar,
 			ProductName:         product.ProductName,
 			ProductPrice:        product.ProductPrice,

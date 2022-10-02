@@ -47,6 +47,7 @@ func (pu *productUseCase) SearchProduct(keyword string) ([]dto.ProductDetailResp
 			Name:                product.AccountDisplayName,
 			Caption:             product.ProductDescription,
 			DetailMediaProducts: links,
+			CategoryID: product.CategoryID,
 		})
 	}
 

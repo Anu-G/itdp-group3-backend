@@ -27,11 +27,12 @@ func NewNonBusinessProfileController(router *gin.Engine, uc usecase.NonBusinessP
 	}
 
 	routeNonBusinessProfile := controller.router.Group("/non-business-profile")
-	routeNonBusinessProfile.Use(middleware.RequireToken())
-	routeNonBusinessProfile.POST("/add/profile", controller.addNonBusinessProfile)
-	routeNonBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
-	routeNonBusinessProfile.POST("/get/profile", controller.getProfile)
-	routeNonBusinessProfile.POST("/update/profile", controller.updateNonBusinessProfile)
+	// routeNonBusinessProfile.Use(middleware.RequireToken())
+	routeNonBusinessProfile.POST("/get/profile", controller.getProfile) //this
+
+	routeNonBusinessProfile.POST("/add/profile", controller.addNonBusinessProfile).Use(middleware.RequireToken())
+	routeNonBusinessProfile.POST("/add/profile-image", controller.addProfileImage).Use(middleware.RequireToken())
+	routeNonBusinessProfile.POST("/update/profile", controller.updateNonBusinessProfile).Use(middleware.RequireToken())
 
 	return &controller
 }

@@ -27,11 +27,12 @@ func NewBusinessProfileController(router *gin.Engine, uc usecase.BusinessProfile
 	}
 
 	routeBusinessProfile := controller.router.Group("/business-profile")
-	routeBusinessProfile.Use(middleware.RequireToken())
-	routeBusinessProfile.POST("/add/profile", controller.addBusinessProfile)
-	routeBusinessProfile.POST("/add/profile-image", controller.addProfileImage)
-	routeBusinessProfile.POST("/get/profile", controller.getProfile)
-	routeBusinessProfile.POST("/update/profile", controller.updateProfile)
+	// routeBusinessProfile.Use(middleware.RequireToken())
+	routeBusinessProfile.POST("/get/profile", controller.getProfile) //this
+
+	routeBusinessProfile.POST("/add/profile", controller.addBusinessProfile).Use(middleware.RequireToken())
+	routeBusinessProfile.POST("/add/profile-image", controller.addProfileImage).Use(middleware.RequireToken())
+	routeBusinessProfile.POST("/update/profile", controller.updateProfile).Use(middleware.RequireToken())
 
 	return &controller
 }

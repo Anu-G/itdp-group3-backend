@@ -30,14 +30,15 @@ func NewProductController(router *gin.Engine, uc usecase.ProductUseCaseInterface
 	}
 
 	routeProduct := controller.router.Group("/product")
-	routeProduct.Use(middleware.RequireToken())
-	routeProduct.POST("/add/product", controller.addProduct)
-	routeProduct.POST("/add/product-image", controller.addProductImage)
+	// routeProduct.Use(middleware.RequireToken())
+	routeProduct.POST("/search", controller.searchProduct) //this
 	routeProduct.POST("/get/by-account", controller.getByAccount)
 	routeProduct.POST("/get/by-product", controller.getByProduct)
-	routeProduct.POST("/delete/product", controller.deleteProduct)
-	routeProduct.POST("/search", controller.searchProduct)
-	routeProduct.POST("/update", controller.updateProduct)
+
+	routeProduct.POST("/add/product", controller.addProduct).Use(middleware.RequireToken())
+	routeProduct.POST("/add/product-image", controller.addProductImage).Use(middleware.RequireToken())
+	routeProduct.POST("/delete/product", controller.deleteProduct).Use(middleware.RequireToken())
+	routeProduct.POST("/update", controller.updateProduct).Use(middleware.RequireToken())
 
 	return &controller
 }

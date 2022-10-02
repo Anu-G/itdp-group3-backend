@@ -26,10 +26,11 @@ func NewFAQController(router *gin.Engine, uc usecase.FAQUseCaseInterface, middle
 	}
 
 	routeFAQ := controller.router.Group("/faq")
-	routeFAQ.Use(middleware.RequireToken())
-	routeFAQ.POST("/add/faq", controller.addFAQ)
-	routeFAQ.POST("/get/faq", controller.getFAQ)
-	routeFAQ.POST("/delete/faq", controller.deleteFAQ)
+	// routeFAQ.Use(middleware.RequireToken())
+	routeFAQ.POST("/get/faq", controller.getFAQ) //this
+
+	routeFAQ.POST("/add/faq", controller.addFAQ).Use(middleware.RequireToken())
+	routeFAQ.POST("/delete/faq", controller.deleteFAQ).Use(middleware.RequireToken())
 
 	return &controller
 }

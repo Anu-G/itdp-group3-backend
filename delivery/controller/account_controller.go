@@ -34,16 +34,17 @@ func NewAccountController(router *gin.Engine, accUc usecase.AccountUsecase, midd
 		middleware: middleware,
 	}
 	routeAccount := controller.router.Group("/account")
-	routeAccount.Use(middleware.RequireToken())
+	// routeAccount.Use(middleware.RequireToken())
+	routeAccount.POST("/product", controller.readAccountForProductDetail) //this
 	routeAccount.GET("/timeline", controller.readAccountForPostTimeline)
-	routeAccount.POST("/product", controller.readAccountForProductDetail)
 	routeAccount.POST("/feed", controller.readAccountForFeedDetail)
-	routeAccount.PUT("/update", controller.createAccount)
-	routeAccount.POST("/follow", controller.follow)
-	routeAccount.POST("/unfollow", controller.unfollow)
-	routeAccount.GET("/list", controller.showFollowList)
-	routeAccount.PUT("/activate-business", controller.activateBusinessAccount)
 	routeAccount.POST("/get-account", controller.getAccount)
+
+	routeAccount.PUT("/update", controller.createAccount).Use(middleware.RequireToken())
+	routeAccount.POST("/follow", controller.follow).Use(middleware.RequireToken())
+	routeAccount.POST("/unfollow", controller.unfollow).Use(middleware.RequireToken())
+	routeAccount.GET("/list", controller.showFollowList).Use(middleware.RequireToken())
+	routeAccount.PUT("/activate-business", controller.activateBusinessAccount).Use(middleware.RequireToken())
 
 	return &controller
 }

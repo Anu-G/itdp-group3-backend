@@ -43,4 +43,5 @@ type ProductDetailResponse struct {
 	ProductPrice        float64  `json:"price"`
 	Caption             string   `json:"caption"`
 	DetailMediaProducts []string `json:"detail_media_products"`
+	CategoryID          string  `json:"category_id"`
 }

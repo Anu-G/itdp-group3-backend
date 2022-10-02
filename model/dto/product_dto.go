@@ -31,6 +31,7 @@ type SearchProductResponse struct {
 	ProductPrice        float64 `json:"product_price"`
 	ProductDescription  string  `json:"product_description"`
 	DetailMediaProducts string  `json:"detail_media_products"`
+	CategoryID          string  `json:"category_id"`
 }
 
 type ProductDetailResponse struct {
